@@ -11,112 +11,74 @@ public class RegistrationTests : TestBase
     public RegistrationTests(CustomWebApplicationFactory factory) : base(factory) { }
 
     [Fact]
-    public async Task SearchStudents_WithoutToken_ReturnsUnauthorized()
+    public async Task GetStudentInfo_WithoutToken_ReturnsUnauthorized()
     {
         // Arrange
         ClearAuthToken();
 
         // Act
-        var response = await GetAsync("/api/v1/registration/search?query=test");
+        var response = await GetAsync("/api/v1/registration/student-info");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task SearchStudents_WithValidToken_ReturnsResults()
+    public async Task GetMyRegistration_WithoutToken_ReturnsUnauthorized()
     {
         // Arrange
-        var loginResponse = await PostAsync("/api/v1/auth/login", new { username = "admin", password = "admin123" });
-        if (!loginResponse.IsSuccessStatusCode)
-        {
-            return;
-        }
-
-        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
-        SetAuthToken(loginResult!.Data!.Token!);
+        ClearAuthToken();
 
         // Act
-        var response = await GetAsync("/api/v1/registration/search?query=أحمد");
+        var response = await GetAsync("/api/v1/registration/my-registration");
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task GetPendingRequests_WithValidToken_ReturnsList()
+    public async Task GetPendingRegistrations_WithoutToken_ReturnsUnauthorized()
     {
         // Arrange
-        var loginResponse = await PostAsync("/api/v1/auth/login", new { username = "admin", password = "admin123" });
-        if (!loginResponse.IsSuccessStatusCode)
-        {
-            return;
-        }
-
-        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
-        SetAuthToken(loginResult!.Data!.Token!);
+        ClearAuthToken();
 
         // Act
         var response = await GetAsync("/api/v1/registration/pending");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task CreateRegistrationRequest_WithValidData_ReturnsCreated()
-    {
-        // Arrange
-        var loginResponse = await PostAsync("/api/v1/auth/login", new { username = "admin", password = "admin123" });
-        if (!loginResponse.IsSuccessStatusCode)
-        {
-            return;
-        }
-
-        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
-        SetAuthToken(loginResult!.Data!.Token!);
-
-        var request = new
-        {
-            studentId = Guid.NewGuid(),
-            busId = Guid.NewGuid(),
-            transportType = 1,
-            notes = "طلب تسجيل جديد"
-        };
-
-        // Act
-        var response = await PostAsync("/api/v1/registration/request", request);
-
-        // Assert
-        // Could be Created, OK, BadRequest (if student/bus not found), or Forbidden
-        response.StatusCode.Should().BeOneOf(
-            HttpStatusCode.Created,
-            HttpStatusCode.OK,
-            HttpStatusCode.BadRequest,
-            HttpStatusCode.Forbidden,
-            HttpStatusCode.NotFound
-        );
-    }
-
-    [Fact]
-    public async Task CreateRegistrationRequest_WithoutToken_ReturnsUnauthorized()
+    public async Task SubmitRegistration_WithoutToken_ReturnsUnauthorized()
     {
         // Arrange
         ClearAuthToken();
         var request = new
         {
-            studentId = Guid.NewGuid(),
-            busId = Guid.NewGuid(),
+            districtId = Guid.NewGuid(),
+            preferredBusId = Guid.NewGuid(),
             transportType = 1
         };
 
         // Act
-        var response = await PostAsync("/api/v1/registration/request", request);
+        var response = await PostAsync("/api/v1/registration", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    private record LoginResponse(bool Success, LoginData? Data, string? Message);
-    private record LoginData(string? Token);
+    [Fact]
+    public async Task GetById_WithoutToken_ReturnsUnauthorized()
+    {
+        // Arrange
+        ClearAuthToken();
+        var registrationId = Guid.NewGuid();
+
+        // Act
+        var response = await GetAsync($"/api/v1/registration/{registrationId}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }
