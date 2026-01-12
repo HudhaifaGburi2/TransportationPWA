@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "aHWGQt61RHfpki0N9jz76YFf/YqpntoPKTQsCpT9KJE=",
+  "Source": "TransportationAttendance.API",
+  "BasePath": "_content/TransportationAttendance.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "gJAgE272GEs=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\hg\\Desktop\\PWA\\tums\\src\\TransportationAttendance.Domain\\TransportationAttendance.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hg\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.1\\microsoft.extensions.dependencyinjection.abstractions.10.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

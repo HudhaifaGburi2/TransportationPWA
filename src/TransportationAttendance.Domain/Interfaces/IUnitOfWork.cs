@@ -1,0 +1,19 @@
+using TransportationAttendance.Domain.Interfaces.Repositories;
+
+namespace TransportationAttendance.Domain.Interfaces;
+
+public interface IUnitOfWork : IDisposable, IAsyncDisposable
+{
+    IStudentRepository Students { get; }
+    IDistrictRepository Districts { get; }
+    ILocationRepository Locations { get; }
+    IRegistrationRequestRepository RegistrationRequests { get; }
+    IBusRepository Buses { get; }
+    IAttendanceSessionRepository AttendanceSessions { get; }
+    IAuditLogRepository AuditLogs { get; }
+
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task CommitAsync(CancellationToken cancellationToken = default);
+    Task RollbackAsync(CancellationToken cancellationToken = default);
+}

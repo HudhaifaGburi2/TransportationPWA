@@ -1,0 +1,12 @@
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\bin\Debug\net9.0\TransportationAttendance.Shared.deps.json
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\bin\Debug\net9.0\TransportationAttendance.Shared.dll
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\bin\Debug\net9.0\TransportationAttendance.Shared.pdb
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\TransportationAttendance.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\TransportationAttendance.Shared.AssemblyInfoInputs.cache
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\TransportationAttendance.Shared.AssemblyInfo.cs
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\TransportationAttendance.Shared.csproj.CoreCompileInputs.cache
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\TransportationAttendance.Shared.sourcelink.json
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\TransportationAttendance.Shared.dll
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\refint\TransportationAttendance.Shared.dll
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\TransportationAttendance.Shared.pdb
+C:\Users\hg\Desktop\PWA\tums\src\TransportationAttendance.Shared\obj\Debug\net9.0\ref\TransportationAttendance.Shared.dll
