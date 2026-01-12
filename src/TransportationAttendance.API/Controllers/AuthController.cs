@@ -72,6 +72,26 @@ public class AuthController : BaseApiController
         }, "Token is valid."));
     }
 
+    [HttpPost("refresh-token")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ApiResponse<LoginResponseDto>>> RefreshToken(
+        [FromBody] RefreshTokenRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Token refresh attempt");
+
+        var result = await _authService.RefreshTokenAsync(request, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Token refresh failed: {Error}", result.Error);
+            return Unauthorized(ApiResponse<LoginResponseDto>.FailureResponse(result.Error!));
+        }
+
+        _logger.LogInformation("Token refresh successful for user: {UserId}", result.Value!.UserId);
+        return Ok(ApiResponse<LoginResponseDto>.SuccessResponse(result.Value!, "Token refreshed successfully."));
+    }
+
     [HttpPost("logout")]
     [Authorize]
     public ActionResult<ApiResponse> Logout()
