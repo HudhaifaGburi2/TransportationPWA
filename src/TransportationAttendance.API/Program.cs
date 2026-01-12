@@ -79,8 +79,11 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Seed database
-await DataSeeder.SeedAsync(app.Services);
+// Seed database (skip in Testing environment)
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await DataSeeder.SeedAsync(app.Services);
+}
 
 // Configure the HTTP request pipeline
 app.UseExceptionHandling();
