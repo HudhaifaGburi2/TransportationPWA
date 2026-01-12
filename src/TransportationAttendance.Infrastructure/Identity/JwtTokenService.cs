@@ -10,6 +10,7 @@ public interface IJwtTokenService
 {
     string GenerateToken(string userId, string username, IEnumerable<string> roles, string? fullName = null);
     ClaimsPrincipal? ValidateToken(string token);
+    ClaimsPrincipal? ValidateTokenIgnoreExpiry(string token);
     string GenerateRefreshToken();
 }
 
@@ -76,6 +77,33 @@ public class JwtTokenService : IJwtTokenService
                 ValidateAudience = true,
                 ValidAudience = _settings.Audience,
                 ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            }, out _);
+
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public ClaimsPrincipal? ValidateTokenIgnoreExpiry(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_settings.SecretKey);
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = _settings.Issuer,
+                ValidateAudience = true,
+                ValidAudience = _settings.Audience,
+                ValidateLifetime = false, // Allow expired tokens for refresh
                 ClockSkew = TimeSpan.Zero
             }, out _);
 
