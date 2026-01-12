@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-green: #3d5a4f;
+  --primary-green-light: #4d6f62;
+  --primary-green-dark: #2d4a3f;
+  --secondary-gold: #b8935f;
+  --secondary-gold-light: #c9a570;
+  --success: #28a745;
+  --warning: #ffa726;
+  --danger: #dc3545;
+  --info: #17a2b8;
+  --neutral: #6c757d;
+  --background: #f8f9fa;
+  --card-bg: #ffffff;
+  --border: #dee2e6;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+}
+
+html {
+  direction: rtl;
+  text-align: right;
+}
+
+body {
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-3 rounded-md font-semibold text-sm transition-all duration-300 ease-in-out;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white shadow-sm hover:bg-primary-dark active:bg-primary-dark;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-white shadow-sm hover:bg-secondary-light;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white;
+  }
+
+  .btn-disabled {
+    @apply bg-gray-200 text-neutral cursor-not-allowed;
+  }
+
+  .card {
+    @apply bg-card border border-border rounded-lg p-5 shadow-sm;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-200;
+  }
+
+  .input-error {
+    @apply border-danger focus:border-danger focus:ring-danger;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-medium text-white;
+  }
+
+  .badge-success {
+    @apply bg-success;
+  }
+
+  .badge-warning {
+    @apply bg-warning;
+  }
+
+  .badge-danger {
+    @apply bg-danger;
+  }
+
+  .badge-info {
+    @apply bg-info;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green);
+}
+
+/* RTL specific adjustments */
+[dir="rtl"] .flip-rtl {
+  transform: scaleX(-1);
+}
