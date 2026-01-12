@@ -21,5 +21,6 @@ public record UserWithRolesResult(
 public interface IIdentityService
 {
     Task<AuthenticationResult> AuthenticateAsync(string username, string password, CancellationToken cancellationToken = default);
+    Task<AuthenticationResult> RefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
     Task<UserWithRolesResult?> GetUserWithRolesAsync(int userId, CancellationToken cancellationToken = default);
 }
