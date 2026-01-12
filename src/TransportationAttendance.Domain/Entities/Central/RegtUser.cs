@@ -10,6 +10,6 @@ public class RegtUser
     public string? FullNameOfficialEn { get; init; }
     public string? EmailId { get; init; }
     public string? MobileNo { get; init; }
-    public bool IsActive { get; init; }
+    public bool? IsActive { get; init; }
     public string? UserLanguage { get; init; }
 }
