@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="TransportationAttendance.ApiTests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
@@ -18,9 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TransportationAttendance.Application\TransportationAttendance.Application.csproj" />
-    <ProjectReference Include="..\TransportationAttendance.Infrastructure\TransportationAttendance.Infrastructure.csproj" />
-    <ProjectReference Include="..\TransportationAttendance.Shared\TransportationAttendance.Shared.csproj" />
+    <ProjectReference
+      Include="..\TransportationAttendance.Application\TransportationAttendance.Application.csproj" />
+    <ProjectReference
+      Include="..\TransportationAttendance.Infrastructure\TransportationAttendance.Infrastructure.csproj" />
+    <ProjectReference
+      Include="..\TransportationAttendance.Shared\TransportationAttendance.Shared.csproj" />
   </ItemGroup>
 
 </Project>
