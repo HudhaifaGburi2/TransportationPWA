@@ -1,0 +1,7 @@
+{
+  "TransportationAttendance.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\hg\\Desktop\\PWA\\tums\\src\\TransportationAttendance.API",
+  "TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\hg\\Desktop\\PWA\\tums\\src\\TransportationAttendance.Application",
+  "TransportationAttendance.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\hg\\Desktop\\PWA\\tums\\src\\TransportationAttendance.Domain",
+  "TransportationAttendance.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\hg\\Desktop\\PWA\\tums\\src\\TransportationAttendance.Infrastructure",
+  "TransportationAttendance.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\hg\\Desktop\\PWA\\tums\\src\\TransportationAttendance.Shared"
+}
