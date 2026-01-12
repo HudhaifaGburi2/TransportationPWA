@@ -34,6 +34,27 @@ public class AuthService : IAuthService
         };
     }
 
+    public async Task<Result<LoginResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var result = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
+
+        if (!result.Succeeded)
+        {
+            return Result.Failure<LoginResponseDto>(result.ErrorMessage ?? "Token refresh failed.");
+        }
+
+        return new LoginResponseDto
+        {
+            Token = result.Token!,
+            RefreshToken = result.RefreshToken,
+            UserId = result.UserId!,
+            Username = result.Username,
+            FullName = result.FullName,
+            Roles = result.Roles ?? Array.Empty<string>(),
+            ExpiresAt = result.ExpiresAt ?? DateTime.UtcNow.AddHours(24)
+        };
+    }
+
     public async Task<Result<UserInfoDto>> GetCurrentUserAsync(int userId, CancellationToken cancellationToken = default)
     {
         var userResult = await _identityService.GetUserWithRolesAsync(userId, cancellationToken);
