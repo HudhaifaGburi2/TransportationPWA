@@ -25,7 +25,7 @@ public class IdentityService : IIdentityService
             return new AuthenticationResult(false, ErrorMessage: "Invalid username or password.");
         }
 
-        if (!user.IsActive)
+        if (user.IsActive == false)
         {
             return new AuthenticationResult(false, ErrorMessage: "User account is inactive.");
         }
@@ -55,6 +55,60 @@ public class IdentityService : IIdentityService
             Succeeded: true,
             Token: token,
             RefreshToken: refreshToken,
+            UserId: user.UserId.ToString(),
+            Username: user.Username,
+            FullName: user.FullNameOfficialAr ?? user.FullNameOfficialEn,
+            Roles: roleNames,
+            ExpiresAt: expiresAt
+        );
+    }
+
+    public async Task<AuthenticationResult> RefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
+    {
+        // Validate the expired token to get user info (allow expired tokens for refresh)
+        var principal = _jwtTokenService.ValidateTokenIgnoreExpiry(token);
+        if (principal == null)
+        {
+            return new AuthenticationResult(false, ErrorMessage: "Invalid token.");
+        }
+
+        var userIdClaim = principal.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            return new AuthenticationResult(false, ErrorMessage: "Invalid token claims.");
+        }
+
+        // Get user from database
+        var user = await _centralDbRepository.GetUserByUserIdAsync(userId, cancellationToken);
+        if (user == null)
+        {
+            return new AuthenticationResult(false, ErrorMessage: "User not found.");
+        }
+
+        if (user.IsActive == false)
+        {
+            return new AuthenticationResult(false, ErrorMessage: "User account is inactive.");
+        }
+
+        // Resolve roles
+        var roles = await ResolveRolesAsync(user.RoleIdCommaSep, cancellationToken);
+        var roleNames = roles.Select(r => r.RoleName).ToList();
+
+        // Generate new tokens
+        var newToken = _jwtTokenService.GenerateToken(
+            user.UserId.ToString(),
+            user.Username ?? user.UserId.ToString(),
+            roleNames,
+            user.FullNameOfficialAr ?? user.FullNameOfficialEn
+        );
+
+        var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+        var expiresAt = DateTime.UtcNow.AddHours(24);
+
+        return new AuthenticationResult(
+            Succeeded: true,
+            Token: newToken,
+            RefreshToken: newRefreshToken,
             UserId: user.UserId.ToString(),
             Username: user.Username,
             FullName: user.FullNameOfficialAr ?? user.FullNameOfficialEn,
