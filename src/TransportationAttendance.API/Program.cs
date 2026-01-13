@@ -1,7 +1,10 @@
 using Microsoft.OpenApi.Models;
 using Serilog;
+using TransportationAttendance.API.Infrastructure;
 using TransportationAttendance.API.Middleware;
+using TransportationAttendance.API.Services;
 using TransportationAttendance.Application;
+using TransportationAttendance.Application.Interfaces;
 using TransportationAttendance.Infrastructure;
 using TransportationAttendance.Infrastructure.Persistence;
 
@@ -74,8 +77,15 @@ builder.Services.AddApplication();
 // Add Infrastructure layer services (DbContexts, Repositories, JWT, etc.)
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Add Authorization
-builder.Services.AddAuthorization();
+// Configure JWT Authentication (from guide)
+builder.Services.ConfigureJwtAuthentication(builder.Configuration);
+
+// Add Authorization with policies
+builder.Services.AddAuthorization(AuthorizationPolicies.ConfigurePolicies);
+
+// Register Current User service
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUser, CurrentUser>();
 
 var app = builder.Build();
 
