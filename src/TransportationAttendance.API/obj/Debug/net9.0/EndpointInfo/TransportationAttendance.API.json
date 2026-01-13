@@ -11,6 +11,15 @@
         "tags": [
           "Auth"
         ],
+        "parameters": [
+          {
+            "name": "X-Login-Gateway-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
