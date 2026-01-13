@@ -11,6 +11,7 @@ export interface LoginResponse {
     fullName?: string
     roles?: string[]
     expiresAt?: string
+    halaqaLocationId?: number
 }
 
 export interface UserInfo {
@@ -18,6 +19,7 @@ export interface UserInfo {
     username: string
     fullName: string
     roles: string[]
+    halaqaLocationId?: number
 }
 
 export interface ApiResponse<T> {
