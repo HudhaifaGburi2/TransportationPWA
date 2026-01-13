@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TransportationAttendance.API.Infrastructure;
 using TransportationAttendance.Application.DTOs.Common;
 using TransportationAttendance.Application.DTOs.District;
 using TransportationAttendance.Application.Interfaces;
@@ -7,6 +8,7 @@ using TransportationAttendance.Domain.Authorization;
 
 namespace TransportationAttendance.API.Controllers;
 
+[Authorize]
 public class DistrictsController : BaseApiController
 {
     private readonly IDistrictService _districtService;
@@ -17,7 +19,6 @@ public class DistrictsController : BaseApiController
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<DistrictDto>>>> GetAll(CancellationToken cancellationToken)
     {
         var result = await _districtService.GetAllAsync(cancellationToken);
@@ -25,7 +26,6 @@ public class DistrictsController : BaseApiController
     }
 
     [HttpGet("active")]
-    [Authorize]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<DistrictDto>>>> GetActive(CancellationToken cancellationToken)
     {
         var result = await _districtService.GetActiveAsync(cancellationToken);
@@ -33,7 +33,6 @@ public class DistrictsController : BaseApiController
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize]
     public async Task<ActionResult<ApiResponse<DistrictDto>>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _districtService.GetByIdAsync(id, cancellationToken);
@@ -47,7 +46,7 @@ public class DistrictsController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<DistrictDto>>> Create(
         [FromBody] CreateDistrictDto dto,
         CancellationToken cancellationToken)
@@ -64,7 +63,7 @@ public class DistrictsController : BaseApiController
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<DistrictDto>>> Update(
         Guid id,
         [FromBody] CreateDistrictDto dto,
@@ -83,7 +82,7 @@ public class DistrictsController : BaseApiController
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse>> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await _districtService.DeleteAsync(id, cancellationToken);
