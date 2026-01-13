@@ -67,6 +67,32 @@
   },
   {
     "ContainingType": "TransportationAttendance.API.Controllers.AuthController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/v1/Auth/refresh-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TransportationAttendance.Application.DTOs.Auth.RefreshTokenRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.Auth.LoginResponseDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.AuthController",
     "Method": "ValidateToken",
     "RelativePath": "api/v1/Auth/validate-token",
     "HttpMethod": "POST",
