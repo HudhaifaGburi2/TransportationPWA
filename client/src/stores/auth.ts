@@ -3,6 +3,18 @@ import { ref, computed } from 'vue'
 import type { LoginRequest, LoginResponse, UserInfo } from '@/types/auth'
 import { authService } from '@/services/api/auth.service'
 
+// TUMS Role Constants
+export const TUMS_ROLES = {
+    ADMIN: 'Admin_Tums',
+    STAFF: 'Stuff_Tums',
+    DRIVER: 'Driver_Tums',
+    STUDENT: 'STUDENT',
+    SYSTEM_ADMIN: 'SYSTEM_ADMINISTRATOR'
+} as const
+
+// Allowed student locations for TUMS
+export const ALLOWED_STUDENT_LOCATIONS = [1, 2]
+
 export const useAuthStore = defineStore('auth', () => {
     const token = ref<string | null>(localStorage.getItem('token'))
     const refreshToken = ref<string | null>(localStorage.getItem('refreshToken'))
@@ -13,6 +25,25 @@ export const useAuthStore = defineStore('auth', () => {
     const isAuthenticated = computed(() => !!token.value)
     const userRoles = computed(() => user.value?.roles || [])
     const fullName = computed(() => user.value?.fullName || '')
+
+    // Role-based computed properties
+    const isAdmin = computed(() =>
+        hasAnyRole([TUMS_ROLES.ADMIN, TUMS_ROLES.SYSTEM_ADMIN])
+    )
+    const isStaff = computed(() =>
+        hasAnyRole([TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN])
+    )
+    const isDriver = computed(() =>
+        hasAnyRole([TUMS_ROLES.DRIVER, TUMS_ROLES.ADMIN, TUMS_ROLES.SYSTEM_ADMIN])
+    )
+    const isStudent = computed(() => hasRole(TUMS_ROLES.STUDENT))
+
+    // Check if student is from allowed locations
+    const isAllowedStudent = computed(() => {
+        if (!isStudent.value) return false
+        const locationId = user.value?.halaqaLocationId
+        return locationId !== undefined && ALLOWED_STUDENT_LOCATIONS.includes(locationId)
+    })
 
     function hasRole(role: string): boolean {
         return userRoles.value.includes(role)
@@ -35,7 +66,8 @@ export const useAuthStore = defineStore('auth', () => {
                 userId: response.userId,
                 username: response.username || '',
                 fullName: response.fullName || '',
-                roles: response.roles || []
+                roles: response.roles || [],
+                halaqaLocationId: response.halaqaLocationId
             }
 
             localStorage.setItem('token', response.token)
@@ -59,6 +91,8 @@ export const useAuthStore = defineStore('auth', () => {
             // Ignore logout errors
         } finally {
             clearAuth()
+            // Redirect to login page
+            window.location.href = '/login'
         }
     }
 
@@ -96,6 +130,11 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         userRoles,
         fullName,
+        isAdmin,
+        isStaff,
+        isDriver,
+        isStudent,
+        isAllowedStudent,
         hasRole,
         hasAnyRole,
         login,
