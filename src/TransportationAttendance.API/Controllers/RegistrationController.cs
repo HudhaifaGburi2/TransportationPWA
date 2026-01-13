@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TransportationAttendance.API.Infrastructure;
 using TransportationAttendance.Application.DTOs.Common;
 using TransportationAttendance.Application.DTOs.Registration;
 using TransportationAttendance.Application.DTOs.Student;
@@ -8,6 +9,7 @@ using TransportationAttendance.Domain.Authorization;
 
 namespace TransportationAttendance.API.Controllers;
 
+[Authorize]
 public class RegistrationController : BaseApiController
 {
     private readonly IRegistrationService _registrationService;
@@ -20,7 +22,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("student-info")]
-    [Authorize(Roles = Roles.Student)]
+    [Authorize(Policy = AuthorizationPolicies.StudentPolicy)]
     public async Task<ActionResult<ApiResponse<StudentHalaqaInfoDto>>> GetStudentInfoForRegistration(
         CancellationToken cancellationToken)
     {
@@ -41,7 +43,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Roles = Roles.Student)]
+    [Authorize(Policy = AuthorizationPolicies.StudentPolicy)]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> SubmitRegistration(
         [FromBody] CreateRegistrationRequestDto dto,
         CancellationToken cancellationToken)
@@ -68,7 +70,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("my-registration")]
-    [Authorize(Roles = Roles.Student)]
+    [Authorize(Policy = AuthorizationPolicies.StudentPolicy)]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> GetMyRegistration(
         CancellationToken cancellationToken)
     {
@@ -89,7 +91,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> GetById(
         Guid id,
         CancellationToken cancellationToken)
@@ -105,7 +107,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("pending")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<RegistrationRequestDto>>>> GetPendingRegistrations(
         CancellationToken cancellationToken)
     {
@@ -114,7 +116,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("by-district/{districtId:guid}")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<RegistrationRequestDto>>>> GetByDistrict(
         Guid districtId,
         CancellationToken cancellationToken)
@@ -124,7 +126,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpPost("{id:guid}/review")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> ReviewRegistration(
         Guid id,
         [FromBody] ReviewRegistrationRequestDto dto,
