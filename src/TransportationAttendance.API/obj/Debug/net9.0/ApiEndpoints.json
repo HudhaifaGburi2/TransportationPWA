@@ -11,6 +11,11 @@
         "Name": "request",
         "Type": "TransportationAttendance.Application.DTOs.Auth.LoginRequestDto",
         "IsRequired": true
+      },
+      {
+        "Name": "X-Login-Gateway-Token",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": [
