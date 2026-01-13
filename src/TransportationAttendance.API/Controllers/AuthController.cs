@@ -10,19 +10,34 @@ public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
     private readonly ILogger<AuthController> _logger;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IAuthService authService, ILogger<AuthController> logger)
+    public AuthController(
+        IAuthService authService, 
+        ILogger<AuthController> logger,
+        IConfiguration configuration)
     {
         _authService = authService;
         _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<LoginResponseDto>>> Login(
         [FromBody] LoginRequestDto request,
+        [FromHeader(Name = "X-Login-Gateway-Token")] string? gatewayToken,
         CancellationToken cancellationToken)
     {
+        // Validate gateway token (extra security layer)
+        var expectedGatewayToken = _configuration["LoginGateway:BearerToken"];
+        if (!string.IsNullOrWhiteSpace(expectedGatewayToken) && 
+            !string.Equals(expectedGatewayToken, gatewayToken, StringComparison.Ordinal))
+        {
+            _logger.LogWarning("Unauthorized login gateway attempt for user: {Username}", request.Username);
+            return Unauthorized(ApiResponse<LoginResponseDto>.FailureResponse("Unauthorized login gateway."));
+        }
+
         _logger.LogInformation("Login attempt for user: {Username}", request.Username);
 
         var result = await _authService.LoginAsync(request, cancellationToken);
