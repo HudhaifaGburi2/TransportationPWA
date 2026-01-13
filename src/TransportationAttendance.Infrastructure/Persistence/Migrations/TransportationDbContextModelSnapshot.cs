@@ -793,52 +793,68 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("StudentBusAssignmentId");
 
                     b.Property<Guid?>("ArrivalBusId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ArrivalBusId");
 
                     b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("AssignedAt");
 
                     b.Property<Guid?>("AssignedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AssignedBy");
 
                     b.Property<Guid>("BusId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("BusId");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
 
                     b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatedBy");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletedAt");
 
                     b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeletedBy");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("IsActive");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
 
                     b.Property<Guid?>("ReturnBusId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ReturnBusId");
 
                     b.Property<Guid>("StudentId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("StudentId");
 
                     b.Property<int>("TransportType")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("TransportType");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
 
                     b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UpdatedBy");
 
                     b.HasKey("Id");
 
@@ -846,11 +862,19 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("BusId");
 
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("ReturnBusId");
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentBusAssignments");
+                    b.HasIndex("StudentId", "BusId")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("StudentBusAssignments", (string)null);
                 });
 
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.AttendanceRecord", b =>
@@ -933,22 +957,24 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("TransportationAttendance.Domain.Entities.Bus", "ArrivalBus")
                         .WithMany()
-                        .HasForeignKey("ArrivalBusId");
+                        .HasForeignKey("ArrivalBusId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TransportationAttendance.Domain.Entities.Bus", "Bus")
                         .WithMany()
                         .HasForeignKey("BusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TransportationAttendance.Domain.Entities.Bus", "ReturnBus")
                         .WithMany()
-                        .HasForeignKey("ReturnBusId");
+                        .HasForeignKey("ReturnBusId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TransportationAttendance.Domain.Entities.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ArrivalBus");
