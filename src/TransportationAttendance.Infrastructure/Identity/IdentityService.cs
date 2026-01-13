@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using TransportationAttendance.Application.Interfaces;
 using TransportationAttendance.Domain.Entities.Central;
 using TransportationAttendance.Domain.Interfaces;
@@ -8,57 +9,62 @@ public class IdentityService : IIdentityService
 {
     private readonly ICentralDbRepository _centralDbRepository;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly ILoginGatewayService _loginGatewayService;
+    private readonly ILogger<IdentityService> _logger;
 
-    public IdentityService(ICentralDbRepository centralDbRepository, IJwtTokenService jwtTokenService)
+    public IdentityService(
+        ICentralDbRepository centralDbRepository, 
+        IJwtTokenService jwtTokenService,
+        ILoginGatewayService loginGatewayService,
+        ILogger<IdentityService> logger)
     {
         _centralDbRepository = centralDbRepository;
         _jwtTokenService = jwtTokenService;
+        _loginGatewayService = loginGatewayService;
+        _logger = logger;
     }
 
     public async Task<AuthenticationResult> AuthenticateAsync(string username, string password, CancellationToken cancellationToken = default)
     {
-        // Find user by username or user_id
-        var user = await _centralDbRepository.GetUserByUsernameAsync(username, cancellationToken);
+        // Call external LoginGateway API for authentication
+        var gatewayResponse = await _loginGatewayService.AuthenticateAsync(username, password, cancellationToken);
 
-        if (user == null || string.IsNullOrEmpty(user.UserPassword))
+        if (gatewayResponse == null)
         {
-            return new AuthenticationResult(false, ErrorMessage: "Invalid username or password.");
+            _logger.LogError("LoginGateway service returned null response");
+            return new AuthenticationResult(false, ErrorMessage: "Authentication service unavailable.");
         }
 
-        if (user.IsActive == false)
+        if (!gatewayResponse.Success || gatewayResponse.Data == null)
         {
-            return new AuthenticationResult(false, ErrorMessage: "User account is inactive.");
+            var errorMessage = gatewayResponse.Message ?? "Invalid username or password.";
+            _logger.LogWarning("LoginGateway authentication failed: {Message}", errorMessage);
+            return new AuthenticationResult(false, ErrorMessage: errorMessage);
         }
 
-        // Verify password using MD5 hash
-        if (!MD5PasswordHasher.VerifyPassword(password, user.UserPassword))
-        {
-            return new AuthenticationResult(false, ErrorMessage: "Invalid username or password.");
-        }
-
-        // Resolve roles from comma-separated Role_IDs
-        var roles = await ResolveRolesAsync(user.RoleIdCommaSep, cancellationToken);
-        var roleNames = roles.Select(r => r.RoleName).ToList();
-
-        // Generate JWT token
+        var data = gatewayResponse.Data;
+        
+        // Generate our own JWT token for internal use
         var token = _jwtTokenService.GenerateToken(
-            user.UserId.ToString(),
-            user.Username ?? user.UserId.ToString(),
-            roleNames,
-            user.FullNameOfficialAr ?? user.FullNameOfficialEn
+            data.UserId ?? username,
+            data.UserName ?? username,
+            data.Roles ?? new List<string>(),
+            data.FullNameOfficialAr ?? data.FullNameOfficialEn
         );
 
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
-        var expiresAt = DateTime.UtcNow.AddHours(24);
+        var expiresAt = data.ExpiresAt ?? DateTime.UtcNow.AddHours(24);
+
+        _logger.LogInformation("User {Username} authenticated successfully via LoginGateway", username);
 
         return new AuthenticationResult(
             Succeeded: true,
             Token: token,
             RefreshToken: refreshToken,
-            UserId: user.UserId.ToString(),
-            Username: user.Username,
-            FullName: user.FullNameOfficialAr ?? user.FullNameOfficialEn,
-            Roles: roleNames,
+            UserId: data.UserId ?? username,
+            Username: data.UserName ?? username,
+            FullName: data.FullNameOfficialAr ?? data.FullNameOfficialEn,
+            Roles: data.Roles ?? new List<string>(),
             ExpiresAt: expiresAt
         );
     }
