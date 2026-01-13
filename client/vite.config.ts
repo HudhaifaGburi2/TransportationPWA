@@ -56,7 +56,7 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /^https:\/\/localhost:5001\/api\/.*/i,
+            urlPattern: /^https:\/\/localhost:7188\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
@@ -70,6 +70,9 @@ export default defineConfig({
             }
           }
         ]
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ],
@@ -82,7 +85,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://localhost:5001',
+        target: 'https://localhost:7188',
         changeOrigin: true,
         secure: false
       }
