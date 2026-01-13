@@ -1,10 +1,21 @@
 import apiClient from './axios.config'
-import type { LoginRequest, LoginResponse, UserInfo } from '@/types/auth'
+import type { LoginRequest, LoginResponse, UserInfo, ApiResponse } from '@/types/auth'
+
+const LOGIN_GATEWAY_TOKEN = import.meta.env.VITE_LOGIN_GATEWAY_TOKEN || ''
 
 export const authService = {
     async login(credentials: LoginRequest): Promise<LoginResponse> {
-        const response = await apiClient.post<LoginResponse>('/auth/login', credentials)
-        return response.data
+        const response = await apiClient.post<ApiResponse<LoginResponse>>('/auth/login', credentials, {
+            headers: {
+                'X-Login-Gateway-Token': LOGIN_GATEWAY_TOKEN
+            }
+        })
+
+        if (!response.data.success || !response.data.data) {
+            throw new Error(response.data.message || 'Login failed')
+        }
+
+        return response.data.data
     },
 
     async logout(): Promise<void> {
