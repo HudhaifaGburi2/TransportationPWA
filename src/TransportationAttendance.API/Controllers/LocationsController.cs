@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TransportationAttendance.API.Infrastructure;
 using TransportationAttendance.Application.DTOs.Common;
 using TransportationAttendance.Application.DTOs.Location;
 using TransportationAttendance.Application.Interfaces;
@@ -7,6 +8,7 @@ using TransportationAttendance.Domain.Authorization;
 
 namespace TransportationAttendance.API.Controllers;
 
+[Authorize]
 public class LocationsController : BaseApiController
 {
     private readonly ILocationService _locationService;
@@ -17,7 +19,6 @@ public class LocationsController : BaseApiController
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<LocationDto>>>> GetAll(CancellationToken cancellationToken)
     {
         var result = await _locationService.GetAllAsync(cancellationToken);
@@ -25,7 +26,6 @@ public class LocationsController : BaseApiController
     }
 
     [HttpGet("active")]
-    [Authorize]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<LocationDto>>>> GetActive(CancellationToken cancellationToken)
     {
         var result = await _locationService.GetActiveAsync(cancellationToken);
@@ -33,7 +33,6 @@ public class LocationsController : BaseApiController
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize]
     public async Task<ActionResult<ApiResponse<LocationDto>>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _locationService.GetByIdAsync(id, cancellationToken);
@@ -47,7 +46,7 @@ public class LocationsController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<LocationDto>>> Create(
         [FromBody] CreateLocationDto dto,
         CancellationToken cancellationToken)
@@ -64,7 +63,7 @@ public class LocationsController : BaseApiController
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse<LocationDto>>> Update(
         Guid id,
         [FromBody] CreateLocationDto dto,
@@ -83,7 +82,7 @@ public class LocationsController : BaseApiController
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = $"{Roles.Admin},{Roles.SuperAdmin},{Roles.SystemAdministrator}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
     public async Task<ActionResult<ApiResponse>> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await _locationService.DeleteAsync(id, cancellationToken);
