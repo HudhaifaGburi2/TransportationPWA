@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TransportationAttendance.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9324a3b02aff5fb4067d5c92cf5adfb72a4de880")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b91bdeea9737fd12681b2d9b180f1c966e90f5b2")]
 [assembly: System.Reflection.AssemblyProductAttribute("TransportationAttendance.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TransportationAttendance.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
