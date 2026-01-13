@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TransportationAttendance.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b91bdeea9737fd12681b2d9b180f1c966e90f5b2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba2ff917610215dac8e91ebb075349a97a56b188")]
 [assembly: System.Reflection.AssemblyProductAttribute("TransportationAttendance.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TransportationAttendance.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
