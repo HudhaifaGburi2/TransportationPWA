@@ -1,9 +1,6 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using TransportationAttendance.Application.Interfaces;
 using TransportationAttendance.Domain.Interfaces;
 using TransportationAttendance.Infrastructure.Identity;
@@ -32,45 +29,30 @@ public static class DependencyInjection
         services.AddScoped<ICentralDbRepository, CentralDbRepository>();
 
         // JWT Settings
-        var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>() ?? new JwtSettings();
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+
+        // LoginGateway Settings
+        var loginGatewaySettings = configuration.GetSection("LoginGateway").Get<LoginGatewaySettings>() ?? new LoginGatewaySettings();
+        services.Configure<LoginGatewaySettings>(configuration.GetSection("LoginGateway"));
+
+        // LoginGateway HttpClient
+        services.AddHttpClient<ILoginGatewayService, LoginGatewayService>(client =>
+        {
+            if (!string.IsNullOrEmpty(loginGatewaySettings.BaseUrl))
+            {
+                client.BaseAddress = new Uri(loginGatewaySettings.BaseUrl);
+            }
+            if (!string.IsNullOrEmpty(loginGatewaySettings.BearerToken))
+            {
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {loginGatewaySettings.BearerToken}");
+            }
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.Timeout = TimeSpan.FromSeconds(loginGatewaySettings.TimeoutSeconds > 0 ? loginGatewaySettings.TimeoutSeconds : 30);
+        });
 
         // JWT Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IIdentityService, IdentityService>();
-
-        // Authentication
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.SecretKey)),
-                ValidateIssuer = true,
-                ValidIssuer = jwtSettings.Issuer,
-                ValidateAudience = true,
-                ValidAudience = jwtSettings.Audience,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            options.Events = new JwtBearerEvents
-            {
-                OnAuthenticationFailed = context =>
-                {
-                    if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                    {
-                        context.Response.Headers["Token-Expired"] = "true";
-                    }
-                    return Task.CompletedTask;
-                }
-            };
-        });
 
         return services;
     }
