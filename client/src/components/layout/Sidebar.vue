@@ -60,7 +60,9 @@ import {
   Map, 
   Users, 
   ClipboardList,
-  LogOut 
+  LogOut,
+  Bus,
+  Route
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -79,6 +81,18 @@ const menuItems: MenuItem[] = [
     label: 'لوحة التحكم',
     icon: LayoutDashboard,
     roles: [] // All authenticated users
+  },
+  {
+    path: '/buses',
+    label: 'إدارة الباصات',
+    icon: Bus,
+    roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.DRIVER, TUMS_ROLES.SYSTEM_ADMIN]
+  },
+  {
+    path: '/routes',
+    label: 'المسارات',
+    icon: Route,
+    roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
   },
   {
     path: '/districts',

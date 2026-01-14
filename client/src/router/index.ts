@@ -39,6 +39,35 @@ const routes: RouteRecordRaw[] = [
         }
     },
 
+    // Bus Management routes (Phase 2)
+    {
+        path: '/buses',
+        name: 'Buses',
+        component: () => import('@/views/buses/BusListView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.DRIVER, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/buses/:id',
+        name: 'BusDetail',
+        component: () => import('@/views/buses/BusDetailView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.DRIVER, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/routes',
+        name: 'Routes',
+        component: () => import('@/views/buses/RoutesView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+
     // Student routes (STUDENT role + HALAQAT_Location 1 or 2)
     {
         path: '/registration',

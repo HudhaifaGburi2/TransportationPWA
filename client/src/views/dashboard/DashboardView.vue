@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { Bus, Users, MapPin, Calendar } from 'lucide-vue-next'
+import { Bus, Users, MapPin, Calendar, Route, ClipboardList } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 
@@ -66,31 +66,47 @@ const stats = [
         <h3 class="text-lg font-bold text-gray-800 mb-4">الإجراءات السريعة</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <router-link
+            to="/buses"
+            class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
+          >
+            <Bus class="w-8 h-8 text-primary" />
+            <span class="text-sm font-medium">إدارة الباصات</span>
+          </router-link>
+          <router-link
+            to="/routes"
+            class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
+          >
+            <Route class="w-8 h-8 text-info" />
+            <span class="text-sm font-medium">المسارات</span>
+          </router-link>
+          <router-link
             to="/districts"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
-            <MapPin class="w-8 h-8 text-primary" />
-            <span class="text-sm font-medium">إدارة الأحياء</span>
+            <MapPin class="w-8 h-8 text-secondary" />
+            <span class="text-sm font-medium">المناطق</span>
           </router-link>
           <router-link
             to="/locations"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
-            <Calendar class="w-8 h-8 text-secondary" />
-            <span class="text-sm font-medium">المواقف</span>
+            <Calendar class="w-8 h-8 text-accent" />
+            <span class="text-sm font-medium">المواقع</span>
           </router-link>
-          <button
+          <router-link
+            to="/registration"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
-            <Bus class="w-8 h-8 text-info" />
-            <span class="text-sm font-medium">الحافلات</span>
-          </button>
-          <button
+            <ClipboardList class="w-8 h-8 text-success" />
+            <span class="text-sm font-medium">التسجيل</span>
+          </router-link>
+          <router-link
+            to="/my-registration"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
-            <Users class="w-8 h-8 text-success" />
-            <span class="text-sm font-medium">الطلاب</span>
-          </button>
+            <Users class="w-8 h-8 text-warning" />
+            <span class="text-sm font-medium">طلبي</span>
+          </router-link>
         </div>
       </div>
     </main>

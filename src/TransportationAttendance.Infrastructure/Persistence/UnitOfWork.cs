@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     private ILocationRepository? _locations;
     private IRegistrationRequestRepository? _registrationRequests;
     private IBusRepository? _buses;
+    private IRouteRepository? _routes;
     private IAttendanceSessionRepository? _attendanceSessions;
     private IAuditLogRepository? _auditLogs;
 
@@ -28,6 +29,7 @@ public class UnitOfWork : IUnitOfWork
     public ILocationRepository Locations => _locations ??= new LocationRepository(_context);
     public IRegistrationRequestRepository RegistrationRequests => _registrationRequests ??= new RegistrationRequestRepository(_context);
     public IBusRepository Buses => _buses ??= new BusRepository(_context);
+    public IRouteRepository Routes => _routes ??= new RouteRepository(_context);
     public IAttendanceSessionRepository AttendanceSessions => _attendanceSessions ??= new AttendanceSessionRepository(_context);
     public IAuditLogRepository AuditLogs => _auditLogs ??= new AuditLogRepository(_context);
 

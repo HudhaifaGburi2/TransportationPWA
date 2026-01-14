@@ -15,6 +15,7 @@ public class TransportationDbContext : DbContext
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<Route> Routes => Set<Route>();
     public DbSet<Bus> Buses => Set<Bus>();
+    public DbSet<BusDistrict> BusDistricts => Set<BusDistrict>();
     public DbSet<StudentBusAssignment> StudentBusAssignments => Set<StudentBusAssignment>();
     public DbSet<AttendanceSession> AttendanceSessions => Set<AttendanceSession>();
     public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();

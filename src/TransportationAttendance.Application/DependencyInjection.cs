@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TransportationAttendance.Application.Interfaces;
+using TransportationAttendance.Application.Interfaces.Services;
 using TransportationAttendance.Application.Mappings;
 using TransportationAttendance.Application.Services;
 
@@ -18,6 +19,8 @@ public static class DependencyInjection
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<ILookupService, LookupService>();
         services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IBusService, BusService>();
+        services.AddScoped<IRouteService, RouteService>();
 
         return services;
     }

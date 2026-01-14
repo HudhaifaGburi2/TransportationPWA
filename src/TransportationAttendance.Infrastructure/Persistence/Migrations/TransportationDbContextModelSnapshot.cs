@@ -334,6 +334,49 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.ToTable("Buses", (string)null);
                 });
 
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.BusDistrict", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BusId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DistrictId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistrictId");
+
+                    b.HasIndex("BusId", "DistrictId")
+                        .IsUnique();
+
+                    b.ToTable("BusDistricts", (string)null);
+                });
+
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.District", b =>
                 {
                     b.Property<Guid>("Id")
@@ -812,6 +855,9 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("BusId");
 
+                    b.Property<Guid?>("BusId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("CreatedAt");
@@ -861,6 +907,8 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.HasIndex("ArrivalBusId");
 
                     b.HasIndex("BusId");
+
+                    b.HasIndex("BusId1");
 
                     b.HasIndex("IsActive");
 
@@ -931,6 +979,25 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.Navigation("Route");
                 });
 
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.BusDistrict", b =>
+                {
+                    b.HasOne("TransportationAttendance.Domain.Entities.Bus", "Bus")
+                        .WithMany("BusDistricts")
+                        .HasForeignKey("BusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TransportationAttendance.Domain.Entities.District", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Bus");
+
+                    b.Navigation("District");
+                });
+
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.RegistrationRequest", b =>
                 {
                     b.HasOne("TransportationAttendance.Domain.Entities.District", "District")
@@ -966,6 +1033,10 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("TransportationAttendance.Domain.Entities.Bus", null)
+                        .WithMany("StudentAssignments")
+                        .HasForeignKey("BusId1");
+
                     b.HasOne("TransportationAttendance.Domain.Entities.Bus", "ReturnBus")
                         .WithMany()
                         .HasForeignKey("ReturnBusId")
@@ -989,6 +1060,13 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.AttendanceSession", b =>
                 {
                     b.Navigation("AttendanceRecords");
+                });
+
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.Bus", b =>
+                {
+                    b.Navigation("BusDistricts");
+
+                    b.Navigation("StudentAssignments");
                 });
 #pragma warning restore 612, 618
         }

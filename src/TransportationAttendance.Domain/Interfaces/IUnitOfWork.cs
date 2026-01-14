@@ -9,6 +9,7 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     ILocationRepository Locations { get; }
     IRegistrationRequestRepository RegistrationRequests { get; }
     IBusRepository Buses { get; }
+    IRouteRepository Routes { get; }
     IAttendanceSessionRepository AttendanceSessions { get; }
     IAuditLogRepository AuditLogs { get; }
 

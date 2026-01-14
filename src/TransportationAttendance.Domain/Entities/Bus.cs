@@ -15,6 +15,8 @@ public class Bus : BaseEntity
     // Navigation
     public Route? Route { get; private set; }
     public Bus? MergedWithBus { get; private set; }
+    public ICollection<BusDistrict> BusDistricts { get; private set; } = new List<BusDistrict>();
+    public ICollection<StudentBusAssignment> StudentAssignments { get; private set; } = new List<StudentBusAssignment>();
 
     private Bus() { }
 
