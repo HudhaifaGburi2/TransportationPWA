@@ -36,11 +36,11 @@ public static class AuthorizationPolicies
             policy.RequireRole(Roles.SystemAdministrator, Roles.SuperAdmin, Roles.Admin, Roles.Staff, Roles.AdminTums, Roles.StuffTums);
         });
 
-        // Student Only Policy (includes TUMS Student)
+        // Student Only Policy (includes TUMS Student and common variations)
         options.AddPolicy(StudentPolicy, policy =>
         {
             policy.RequireAuthenticatedUser();
-            policy.RequireRole(Roles.Student, Roles.StudentRole);
+            policy.RequireRole(Roles.Student, Roles.StudentRole, "student", "طالب", "Student_Tums");
         });
 
         // Driver Only Policy (includes TUMS Driver)
@@ -121,7 +121,7 @@ public static class AuthorizationPolicies
         options.AddPolicy(TumsStudentPolicy, policy =>
         {
             policy.RequireAuthenticatedUser();
-            policy.RequireRole(Roles.StudentRole);
+            policy.RequireRole(Roles.Student, Roles.StudentRole, "student", "طالب", "Student_Tums");
         });
     }
 }

@@ -22,7 +22,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("student-info")]
-    [Authorize(Policy = AuthorizationPolicies.StudentPolicy)]
+    [Authorize]
     public async Task<ActionResult<ApiResponse<StudentHalaqaInfoDto>>> GetStudentInfoForRegistration(
         CancellationToken cancellationToken)
     {
@@ -31,6 +31,9 @@ public class RegistrationController : BaseApiController
         {
             return Unauthorized(ApiResponse<StudentHalaqaInfoDto>.FailureResponse("User not authenticated."));
         }
+
+        var roles = GetCurrentUserRoles();
+        _logger.LogInformation("User {UserId} accessing student-info with roles: {Roles}", userId, string.Join(", ", roles));
 
         var result = await _registrationService.GetStudentInfoForRegistrationAsync(userId.Value, cancellationToken);
 
@@ -43,7 +46,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Policy = AuthorizationPolicies.StudentPolicy)]
+    [Authorize]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> SubmitRegistration(
         [FromBody] CreateRegistrationRequestDto dto,
         CancellationToken cancellationToken)
@@ -70,7 +73,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("my-registration")]
-    [Authorize(Policy = AuthorizationPolicies.StudentPolicy)]
+    [Authorize]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> GetMyRegistration(
         CancellationToken cancellationToken)
     {
