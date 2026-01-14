@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth'
-import { Bus, Users, MapPin, Calendar, Route, ClipboardList } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { useAuthStore, TUMS_ROLES } from '@/stores/auth'
+import { Bus, Users, MapPin, Calendar, Route, ClipboardList, FileText } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
+
+// Role checks
+const isStudent = computed(() => authStore.hasRole(TUMS_ROLES.STUDENT))
+const isAdminOrStaff = computed(() => authStore.hasAnyRole([TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]))
 
 const stats = [
   { title: 'إجمالي الحافلات', value: '111', icon: Bus, color: 'bg-primary' },
@@ -65,7 +70,9 @@ const stats = [
       <div class="card">
         <h3 class="text-lg font-bold text-gray-800 mb-4">الإجراءات السريعة</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- Admin/Staff Actions -->
           <router-link
+            v-if="isAdminOrStaff"
             to="/buses"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
@@ -73,6 +80,7 @@ const stats = [
             <span class="text-sm font-medium">إدارة الباصات</span>
           </router-link>
           <router-link
+            v-if="isAdminOrStaff"
             to="/routes"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
@@ -80,6 +88,7 @@ const stats = [
             <span class="text-sm font-medium">المسارات</span>
           </router-link>
           <router-link
+            v-if="isAdminOrStaff"
             to="/districts"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
@@ -87,6 +96,7 @@ const stats = [
             <span class="text-sm font-medium">المناطق</span>
           </router-link>
           <router-link
+            v-if="isAdminOrStaff"
             to="/locations"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
@@ -94,17 +104,29 @@ const stats = [
             <span class="text-sm font-medium">المواقع</span>
           </router-link>
           <router-link
+            v-if="isAdminOrStaff"
+            to="/registration-requests"
+            class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
+          >
+            <FileText class="w-8 h-8 text-warning" />
+            <span class="text-sm font-medium">طلبات التسجيل</span>
+          </router-link>
+          
+          <!-- Student Actions -->
+          <router-link
+            v-if="isStudent"
             to="/registration"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
             <ClipboardList class="w-8 h-8 text-success" />
-            <span class="text-sm font-medium">التسجيل</span>
+            <span class="text-sm font-medium">تسجيل جديد</span>
           </router-link>
           <router-link
+            v-if="isStudent"
             to="/my-registration"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
-            <Users class="w-8 h-8 text-warning" />
+            <Users class="w-8 h-8 text-primary" />
             <span class="text-sm font-medium">طلبي</span>
           </router-link>
         </div>

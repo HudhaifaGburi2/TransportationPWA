@@ -1,100 +1,241 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <h1 class="text-2xl font-bold text-base-content">إدارة المسارات</h1>
-      <button @click="showAddModal = true" class="btn btn-primary gap-2">
-        <Plus class="w-5 h-5" />
-        إضافة مسار
-      </button>
-    </div>
-
-    <!-- Routes List -->
-    <div v-if="loading" class="flex justify-center py-12">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
-    </div>
-
-    <div v-else-if="routes.length === 0" class="text-center py-12 text-base-content/60">
-      لا توجد مسارات
-    </div>
-
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="route in routes" :key="route.routeId" class="card bg-base-100 shadow">
-        <div class="card-body">
-          <div class="flex items-start justify-between">
-            <div>
-              <h3 class="card-title">{{ route.routeName }}</h3>
-              <p v-if="route.routeDescription" class="text-sm text-base-content/60 mt-1">
-                {{ route.routeDescription }}
-              </p>
+  <div class="p-6 space-y-6">
+    <!-- Page Header -->
+    <div class="bg-gradient-to-l from-primary/10 to-transparent p-6 rounded-xl">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-base-content flex items-center gap-3">
+            <div class="p-2 bg-primary/20 rounded-lg">
+              <RouteIcon class="w-6 h-6 text-primary" />
             </div>
-            <div class="dropdown dropdown-end">
-              <label tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-                <MoreVertical class="w-4 h-4" />
-              </label>
-              <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
-                <li><a @click="editRoute(route)"><Pencil class="w-4 h-4" /> تعديل</a></li>
-                <li><a @click="confirmDelete(route)" class="text-error"><Trash2 class="w-4 h-4" /> حذف</a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="flex items-center gap-4 mt-3">
-            <span :class="route.isActive ? 'badge badge-success' : 'badge badge-error'" class="badge-sm">
-              {{ route.isActive ? 'نشط' : 'غير نشط' }}
+            إدارة المسارات
+          </h1>
+          <p class="text-base-content/60 mt-1">إضافة وتعديل مسارات الباصات</p>
+        </div>
+        <button @click="showAddModal = true" class="btn btn-primary gap-2 shadow-lg">
+          <Plus class="w-5 h-5" />
+          إضافة مسار جديد
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="stat bg-base-100 rounded-xl shadow-sm border border-base-200">
+        <div class="stat-figure text-primary">
+          <RouteIcon class="w-8 h-8" />
+        </div>
+        <div class="stat-title">إجمالي المسارات</div>
+        <div class="stat-value text-primary">{{ routes.length }}</div>
+      </div>
+      <div class="stat bg-base-100 rounded-xl shadow-sm border border-base-200">
+        <div class="stat-figure text-success">
+          <CheckCircle class="w-8 h-8" />
+        </div>
+        <div class="stat-title">المسارات النشطة</div>
+        <div class="stat-value text-success">{{ activeRoutesCount }}</div>
+      </div>
+      <div class="stat bg-base-100 rounded-xl shadow-sm border border-base-200">
+        <div class="stat-figure text-error">
+          <XCircle class="w-8 h-8" />
+        </div>
+        <div class="stat-title">غير نشطة</div>
+        <div class="stat-value text-error">{{ routes.length - activeRoutesCount }}</div>
+      </div>
+      <div class="stat bg-base-100 rounded-xl shadow-sm border border-base-200">
+        <div class="stat-figure text-info">
+          <Bus class="w-8 h-8" />
+        </div>
+        <div class="stat-title">إجمالي الباصات</div>
+        <div class="stat-value text-info">{{ totalBusCount }}</div>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="bg-base-100 p-4 rounded-xl shadow-sm border border-base-200">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="form-control flex-1">
+          <div class="input-group">
+            <span class="bg-base-200">
+              <Search class="w-5 h-5 text-base-content/60" />
             </span>
-            <span class="text-sm text-base-content/60">
-              <Bus class="w-4 h-4 inline" /> {{ route.busCount }} باص
-            </span>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="بحث باسم المسار..."
+              class="input input-bordered flex-1"
+            />
           </div>
         </div>
+        <select v-model="filterStatus" class="select select-bordered w-full md:w-48">
+          <option value="all">جميع الحالات</option>
+          <option value="active">نشط فقط</option>
+          <option value="inactive">غير نشط فقط</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Routes Table -->
+    <div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
+      <div v-if="loading" class="flex justify-center py-16">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+
+      <div v-else-if="filteredRoutes.length === 0" class="text-center py-16">
+        <div class="text-base-content/30 mb-4">
+          <RouteIcon class="w-16 h-16 mx-auto" />
+        </div>
+        <p class="text-base-content/60 text-lg">لا توجد مسارات</p>
+        <p class="text-base-content/40 text-sm mt-1">ابدأ بإضافة مسار جديد</p>
+      </div>
+
+      <div v-else class="overflow-x-auto">
+        <table class="table table-zebra">
+          <thead class="bg-base-200">
+            <tr>
+              <th class="font-bold">#</th>
+              <th class="font-bold">اسم المسار</th>
+              <th class="font-bold">الوصف</th>
+              <th class="font-bold text-center">عدد الباصات</th>
+              <th class="font-bold text-center">الحالة</th>
+              <th class="font-bold text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(route, index) in filteredRoutes" :key="route.routeId" class="hover">
+              <td class="font-medium">{{ index + 1 }}</td>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-primary/10 rounded-lg">
+                    <RouteIcon class="w-5 h-5 text-primary" />
+                  </div>
+                  <span class="font-semibold">{{ route.routeName }}</span>
+                </div>
+              </td>
+              <td class="text-base-content/70 max-w-xs truncate">
+                {{ route.routeDescription || '-' }}
+              </td>
+              <td class="text-center">
+                <div class="badge badge-info gap-1">
+                  <Bus class="w-3 h-3" />
+                  {{ route.busCount }}
+                </div>
+              </td>
+              <td class="text-center">
+                <span :class="route.isActive ? 'badge badge-success' : 'badge badge-error'">
+                  {{ route.isActive ? 'نشط' : 'غير نشط' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <button @click="editRoute(route)" class="btn btn-ghost btn-sm btn-square tooltip" data-tip="تعديل">
+                    <Pencil class="w-4 h-4 text-info" />
+                  </button>
+                  <button @click="confirmDelete(route)" class="btn btn-ghost btn-sm btn-square tooltip" data-tip="حذف">
+                    <Trash2 class="w-4 h-4 text-error" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
     <!-- Add/Edit Modal -->
     <dialog :open="showAddModal || showEditModal" class="modal modal-open">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">{{ showEditModal ? 'تعديل المسار' : 'إضافة مسار جديد' }}</h3>
-        <form @submit.prevent="saveRoute" class="space-y-4">
+      <div class="modal-box max-w-lg">
+        <button @click="closeModal" class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2">✕</button>
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <RouteIcon class="w-8 h-8 text-primary" />
+          </div>
+          <h3 class="font-bold text-xl">{{ showEditModal ? 'تعديل المسار' : 'إضافة مسار جديد' }}</h3>
+          <p class="text-base-content/60 text-sm mt-1">{{ showEditModal ? 'قم بتعديل بيانات المسار' : 'أدخل بيانات المسار الجديد' }}</p>
+        </div>
+        <form @submit.prevent="saveRoute" class="space-y-5">
           <div class="form-control">
-            <label class="label"><span class="label-text">اسم المسار *</span></label>
-            <input v-model="form.routeName" type="text" class="input input-bordered" required />
+            <label class="label">
+              <span class="label-text font-medium">اسم المسار <span class="text-error">*</span></span>
+            </label>
+            <div class="input-group">
+              <span class="bg-base-200">
+                <RouteIcon class="w-5 h-5 text-base-content/60" />
+              </span>
+              <input 
+                v-model="form.routeName" 
+                type="text" 
+                class="input input-bordered flex-1" 
+                placeholder="مثال: المسار الشمالي"
+                required 
+              />
+            </div>
           </div>
           <div class="form-control">
-            <label class="label"><span class="label-text">الوصف</span></label>
-            <textarea v-model="form.routeDescription" class="textarea textarea-bordered" rows="3"></textarea>
+            <label class="label">
+              <span class="label-text font-medium">الوصف</span>
+              <span class="label-text-alt text-base-content/50">اختياري</span>
+            </label>
+            <textarea 
+              v-model="form.routeDescription" 
+              class="textarea textarea-bordered h-24" 
+              placeholder="وصف المسار والمناطق التي يغطيها..."
+            ></textarea>
           </div>
-          <div v-if="showEditModal" class="form-control">
-            <label class="label cursor-pointer justify-start gap-3">
-              <input v-model="form.isActive" type="checkbox" class="toggle toggle-primary" />
-              <span class="label-text">المسار نشط</span>
+          <div v-if="showEditModal" class="form-control bg-base-200/50 p-4 rounded-lg">
+            <label class="label cursor-pointer justify-between">
+              <div>
+                <span class="label-text font-medium">حالة المسار</span>
+                <p class="text-xs text-base-content/60 mt-0.5">تفعيل أو تعطيل المسار</p>
+              </div>
+              <input v-model="form.isActive" type="checkbox" class="toggle toggle-primary toggle-lg" />
             </label>
           </div>
-          <div class="modal-action">
-            <button type="button" class="btn btn-ghost" @click="closeModal">إلغاء</button>
-            <button type="submit" class="btn btn-primary">{{ showEditModal ? 'حفظ' : 'إضافة' }}</button>
+          <div class="divider"></div>
+          <div class="flex gap-3">
+            <button type="button" class="btn btn-ghost flex-1" @click="closeModal">إلغاء</button>
+            <button type="submit" class="btn btn-primary flex-1 gap-2" :disabled="saving">
+              <span v-if="saving" class="loading loading-spinner loading-sm"></span>
+              <Save v-else class="w-4 h-4" />
+              {{ showEditModal ? 'حفظ التغييرات' : 'إضافة المسار' }}
+            </button>
           </div>
         </form>
       </div>
-      <div class="modal-backdrop" @click="closeModal"></div>
+      <div class="modal-backdrop bg-black/50" @click="closeModal"></div>
     </dialog>
 
     <!-- Delete Confirmation -->
     <dialog :open="showDeleteModal" class="modal modal-open">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg">تأكيد الحذف</h3>
-        <p class="py-4">هل أنت متأكد من حذف المسار "{{ routeToDelete?.routeName }}"؟</p>
-        <div class="modal-action">
-          <button class="btn btn-ghost" @click="showDeleteModal = false">إلغاء</button>
-          <button class="btn btn-error" @click="deleteRouteConfirmed">حذف</button>
+      <div class="modal-box max-w-sm text-center">
+        <div class="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle class="w-8 h-8 text-error" />
+        </div>
+        <h3 class="font-bold text-xl">تأكيد الحذف</h3>
+        <p class="py-4 text-base-content/70">
+          هل أنت متأكد من حذف المسار<br/>
+          <span class="font-bold text-base-content">"{{ routeToDelete?.routeName }}"</span>؟
+        </p>
+        <p class="text-sm text-warning bg-warning/10 p-3 rounded-lg mb-4">
+          ⚠️ لا يمكن التراجع عن هذا الإجراء
+        </p>
+        <div class="flex gap-3">
+          <button class="btn btn-ghost flex-1" @click="showDeleteModal = false">إلغاء</button>
+          <button class="btn btn-error flex-1 gap-2" @click="deleteRouteConfirmed" :disabled="deleting">
+            <span v-if="deleting" class="loading loading-spinner loading-sm"></span>
+            <Trash2 v-else class="w-4 h-4" />
+            حذف
+          </button>
         </div>
       </div>
+      <div class="modal-backdrop bg-black/50" @click="showDeleteModal = false"></div>
     </dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { Plus, MoreVertical, Pencil, Trash2, Bus } from 'lucide-vue-next'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { Plus, Pencil, Trash2, Bus, Search, Save, CheckCircle, XCircle, AlertTriangle, Route as RouteIcon } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface Route {
@@ -107,6 +248,30 @@ interface Route {
 
 const routes = ref<Route[]>([])
 const loading = ref(false)
+const saving = ref(false)
+const deleting = ref(false)
+const searchQuery = ref('')
+const filterStatus = ref('all')
+
+const activeRoutesCount = computed(() => routes.value.filter(r => r.isActive).length)
+const totalBusCount = computed(() => routes.value.reduce((sum, r) => sum + r.busCount, 0))
+
+const filteredRoutes = computed(() => {
+  let result = routes.value
+  
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(r => r.routeName.toLowerCase().includes(query))
+  }
+  
+  if (filterStatus.value === 'active') {
+    result = result.filter(r => r.isActive)
+  } else if (filterStatus.value === 'inactive') {
+    result = result.filter(r => !r.isActive)
+  }
+  
+  return result
+})
 
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -148,6 +313,7 @@ const confirmDelete = (route: Route) => {
 }
 
 const saveRoute = async () => {
+  saving.value = true
   try {
     if (showEditModal.value && selectedRoute.value) {
       await apiClient.put(`/api/v1/routes/${selectedRoute.value.routeId}`, form)
@@ -158,19 +324,24 @@ const saveRoute = async () => {
     closeModal()
   } catch (e) {
     console.error('Error saving route:', e)
+  } finally {
+    saving.value = false
   }
 }
 
 const deleteRouteConfirmed = async () => {
   if (routeToDelete.value) {
+    deleting.value = true
     try {
       await apiClient.delete(`/api/v1/routes/${routeToDelete.value.routeId}`)
       await fetchRoutes()
     } catch (e) {
       console.error('Error deleting route:', e)
+    } finally {
+      deleting.value = false
+      showDeleteModal.value = false
+      routeToDelete.value = null
     }
-    showDeleteModal.value = false
-    routeToDelete.value = null
   }
 }
 

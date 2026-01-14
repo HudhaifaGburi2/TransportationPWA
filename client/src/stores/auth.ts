@@ -15,12 +15,23 @@ export const TUMS_ROLES = {
 // Allowed student locations for TUMS
 export const ALLOWED_STUDENT_LOCATIONS = [1, 2]
 
+// Helper to safely parse JSON from localStorage
+function getStoredUser(): UserInfo | null {
+    try {
+        const stored = localStorage.getItem('user')
+        return stored ? JSON.parse(stored) : null
+    } catch {
+        return null
+    }
+}
+
 export const useAuthStore = defineStore('auth', () => {
     const token = ref<string | null>(localStorage.getItem('token'))
     const refreshToken = ref<string | null>(localStorage.getItem('refreshToken'))
-    const user = ref<UserInfo | null>(null)
+    const user = ref<UserInfo | null>(getStoredUser())
     const isLoading = ref(false)
     const error = ref<string | null>(null)
+    const isInitialized = ref(false)
 
     const isAuthenticated = computed(() => !!token.value)
     const userRoles = computed(() => user.value?.roles || [])
@@ -71,6 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
             }
 
             localStorage.setItem('token', response.token)
+            localStorage.setItem('user', JSON.stringify(user.value))
             if (response.refreshToken) {
                 localStorage.setItem('refreshToken', response.refreshToken)
             }
@@ -102,6 +114,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = null
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
+        localStorage.removeItem('user')
     }
 
     async function fetchCurrentUser(): Promise<void> {
@@ -116,9 +129,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function initializeAuth(): Promise<void> {
-        if (token.value) {
-            await fetchCurrentUser()
+        if (token.value && !user.value) {
+            try {
+                await fetchCurrentUser()
+            } catch {
+                // If fetching user fails but we have stored user, keep it
+                const storedUser = getStoredUser()
+                if (storedUser) {
+                    user.value = storedUser
+                }
+            }
         }
+        isInitialized.value = true
     }
 
     return {
@@ -135,6 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
         isDriver,
         isStudent,
         isAllowedStudent,
+        isInitialized,
         hasRole,
         hasAnyRole,
         login,

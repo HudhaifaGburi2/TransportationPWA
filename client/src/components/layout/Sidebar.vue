@@ -62,7 +62,8 @@ import {
   ClipboardList,
   LogOut,
   Bus,
-  Route
+  Route,
+  FileText
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -92,6 +93,12 @@ const menuItems: MenuItem[] = [
     path: '/routes',
     label: 'المسارات',
     icon: Route,
+    roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+  },
+  {
+    path: '/registration-requests',
+    label: 'طلبات التسجيل',
+    icon: FileText,
     roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
   },
   {

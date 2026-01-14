@@ -67,6 +67,15 @@ const routes: RouteRecordRaw[] = [
             roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
         }
     },
+    {
+        path: '/registration-requests',
+        name: 'RegistrationRequests',
+        component: () => import('@/views/admin/RegistrationRequestsView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
 
     // Student routes (STUDENT role + HALAQAT_Location 1 or 2)
     {
