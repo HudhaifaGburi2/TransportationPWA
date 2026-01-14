@@ -97,10 +97,13 @@ export const useBusStore = defineStore('bus', () => {
     const busesByPeriod = computed(() => {
         const grouped: Record<number, Bus[]> = {}
         buses.value.forEach(bus => {
-            if (!grouped[bus.periodId]) {
-                grouped[bus.periodId] = []
+            const periodId = bus.periodId
+            if (periodId !== undefined) {
+                if (!grouped[periodId]) {
+                    grouped[periodId] = []
+                }
+                grouped[periodId].push(bus)
             }
-            grouped[bus.periodId].push(bus)
         })
         return grouped
     })

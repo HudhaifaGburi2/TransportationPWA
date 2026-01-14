@@ -10,18 +10,18 @@
         <h1 class="text-2xl font-bold text-gray-800 mb-2">غير مصرح</h1>
         <p class="text-gray-600 mb-6">عذراً، ليس لديك صلاحية للوصول إلى هذه الصفحة.</p>
         <div class="space-y-3">
-          <router-link 
-            to="/" 
-            class="block w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors"
-          >
+          <BaseButton to="/" block>
+            <template #icon>
+              <Home />
+            </template>
             العودة للرئيسية
-          </router-link>
-          <button 
-            @click="logout"
-            class="block w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
-          >
+          </BaseButton>
+          <BaseButton @click="logout" variant="outline" block>
+            <template #icon>
+              <LogOut />
+            </template>
             تسجيل الخروج
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>
@@ -30,6 +30,8 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
+import { Home, LogOut } from 'lucide-vue-next'
+import BaseButton from '@/components/ui/BaseButton.vue'
 
 const authStore = useAuthStore()
 

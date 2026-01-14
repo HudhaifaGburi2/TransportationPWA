@@ -2,7 +2,8 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { Eye, EyeOff, Loader2 } from 'lucide-vue-next'
+import { Eye, EyeOff, LogIn } from 'lucide-vue-next'
+import BaseButton from '@/components/ui/BaseButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -126,15 +127,17 @@ function togglePassword() {
           </div>
 
           <!-- Submit Button -->
-          <button
+          <BaseButton
             type="submit"
-            :disabled="!isFormValid || isLoading"
-            class="w-full btn btn-primary flex items-center justify-center gap-2"
-            :class="{ 'opacity-70 cursor-not-allowed': !isFormValid || isLoading }"
+            :disabled="!isFormValid"
+            :loading="isLoading"
+            block
           >
-            <Loader2 v-if="isLoading" class="w-5 h-5 animate-spin" />
-            <span>{{ isLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول' }}</span>
-          </button>
+            <template #icon>
+              <LogIn />
+            </template>
+            {{ isLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول' }}
+          </BaseButton>
         </form>
 
         <!-- Footer -->

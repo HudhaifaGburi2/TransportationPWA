@@ -190,7 +190,7 @@ const editBus = (bus: Bus) => {
   showEditModal.value = true
 }
 
-const viewBus = (bus: Bus) => {
+const viewBus = (_bus: Bus) => {
   // Navigate to bus detail view
 }
 

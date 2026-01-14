@@ -3,10 +3,12 @@
     <div class="container mx-auto px-4 py-8 max-w-4xl">
       <!-- Back Navigation -->
       <div class="mb-6">
-        <router-link to="/" class="btn btn-ghost btn-sm gap-2">
-          <ArrowRight class="w-4 h-4" />
+        <BaseButton to="/" variant="ghost" size="sm">
+          <template #icon>
+            <ArrowRight />
+          </template>
           العودة للرئيسية
-        </router-link>
+        </BaseButton>
       </div>
 
       <!-- Page Header -->
@@ -176,19 +178,23 @@
 
             <!-- Form Actions -->
             <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end">
-              <router-link to="/" class="btn btn-ghost">
-                <X class="w-4 h-4" />
+              <BaseButton to="/" variant="ghost">
+                <template #icon>
+                  <X />
+                </template>
                 إلغاء
-              </router-link>
-              <button 
+              </BaseButton>
+              <BaseButton 
                 type="submit"
-                class="btn btn-primary btn-lg gap-2 shadow-lg"
-                :disabled="isSubmitting || !isFormValid"
+                size="lg"
+                :disabled="!isFormValid"
+                :loading="isSubmitting"
               >
-                <span v-if="isSubmitting" class="loading loading-spinner loading-sm"></span>
-                <Send v-else class="w-5 h-5" />
+                <template #icon>
+                  <Send />
+                </template>
                 تقديم طلب التسجيل
-              </button>
+              </BaseButton>
             </div>
           </div>
         </form>
@@ -211,6 +217,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X, ArrowRight } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
+import BaseButton from '@/components/ui/BaseButton.vue'
 
 interface StudentInfo {
   studentUserId: number

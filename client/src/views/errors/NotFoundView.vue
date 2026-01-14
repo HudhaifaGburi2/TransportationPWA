@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import { Home } from 'lucide-vue-next'
-
-const router = useRouter()
+import BaseButton from '@/components/ui/BaseButton.vue'
 </script>
 
 <template>
@@ -11,13 +9,12 @@ const router = useRouter()
       <h1 class="text-8xl font-bold text-primary mb-4">404</h1>
       <h2 class="text-2xl font-bold text-gray-800 mb-2">الصفحة غير موجودة</h2>
       <p class="text-neutral mb-8">عذراً، الصفحة التي تبحث عنها غير موجودة</p>
-      <button
-        @click="router.push('/')"
-        class="btn btn-primary inline-flex items-center gap-2"
-      >
-        <Home class="w-5 h-5" />
-        <span>العودة للرئيسية</span>
-      </button>
+      <BaseButton to="/">
+        <template #icon>
+          <Home />
+        </template>
+        العودة للرئيسية
+      </BaseButton>
     </div>
   </div>
 </template>

@@ -3,10 +3,12 @@
     <div class="container mx-auto px-4 py-8 max-w-4xl">
       <!-- Back Navigation -->
       <div class="mb-6">
-        <router-link to="/" class="btn btn-ghost btn-sm gap-2">
-          <ArrowRight class="w-4 h-4" />
+        <BaseButton to="/" variant="ghost" size="sm">
+          <template #icon>
+            <ArrowRight />
+          </template>
           العودة للرئيسية
-        </router-link>
+        </BaseButton>
       </div>
 
       <!-- Page Header -->
@@ -52,13 +54,12 @@
           </div>
           <h2 class="text-2xl font-bold text-base-content mb-3">لا يوجد طلب تسجيل</h2>
           <p class="text-base-content/60 mb-8 max-w-md">لم تقم بتقديم طلب للتسجيل في خدمة النقل بعد. سجّل الآن للاستفادة من خدمة النقل المجانية.</p>
-          <router-link 
-            to="/registration" 
-            class="btn btn-primary btn-lg gap-3 px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 font-bold text-lg"
-          >
-            <Plus class="w-6 h-6" />
-            <span>تقديم طلب تسجيل جديد</span>
-          </router-link>
+          <BaseButton to="/registration" size="lg">
+            <template #icon>
+              <Plus />
+            </template>
+            تقديم طلب تسجيل جديد
+          </BaseButton>
         </div>
       </div>
 
@@ -239,6 +240,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { FileSearch, AlertCircle, ClipboardList, Plus, User, MapPin, Calendar, CheckCircle, XCircle, Clock, RefreshCw, Bus, Send, ArrowRight } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
+import BaseButton from '@/components/ui/BaseButton.vue'
 
 interface Registration {
   id: string
@@ -314,15 +316,6 @@ const statusIconColorClass = computed(() => {
     case 'Approved': return 'text-success-content'
     case 'Rejected': return 'text-error-content'
     default: return 'text-base-content'
-  }
-})
-
-const statusIconClass = computed(() => {
-  switch (registration.value?.status) {
-    case 'Pending': return 'bg-warning/20 text-warning'
-    case 'Approved': return 'bg-success/20 text-success'
-    case 'Rejected': return 'bg-error/20 text-error'
-    default: return 'bg-base-200 text-base-content/60'
   }
 })
 
