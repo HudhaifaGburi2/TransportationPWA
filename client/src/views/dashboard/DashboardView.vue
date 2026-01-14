@@ -223,8 +223,11 @@ onMounted(loadStudentData)
             <ClipboardList class="w-12 h-12 text-primary mb-4" />
             <h2 class="card-title">لم تقم بالتسجيل بعد</h2>
             <p class="text-base-content/60 mb-4">سجل الآن للاستفادة من خدمة النقل المجانية</p>
-            <router-link to="/registration" class="btn btn-primary gap-2">
-              <ClipboardList class="w-4 h-4" />
+            <router-link 
+              to="/registration" 
+              class="btn btn-primary btn-lg gap-3 px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 font-bold text-lg"
+            >
+              <ClipboardList class="w-6 h-6" />
               تسجيل جديد
             </router-link>
           </div>

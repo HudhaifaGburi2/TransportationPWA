@@ -43,13 +43,6 @@
 
       <!-- Registration Form -->
       <div v-else class="space-y-6">
-        <!-- Progress Steps -->
-        <ul class="steps steps-horizontal w-full mb-8">
-          <li class="step step-primary" data-content="1">بيانات الطالب</li>
-          <li class="step" :class="{ 'step-primary': form.nationalShortAddress }" data-content="2">العنوان</li>
-          <li class="step" :class="{ 'step-primary': isFormValid }" data-content="3">تأكيد</li>
-        </ul>
-
         <!-- Student Info Card -->
         <div class="card bg-base-100 shadow-xl overflow-hidden">
           <div class="bg-gradient-to-l from-primary/10 via-primary/5 to-transparent">
@@ -106,12 +99,12 @@
         <form @submit.prevent="submitRegistration" class="card bg-base-100 shadow-xl">
           <div class="card-body">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 bg-info/10 rounded-lg flex items-center justify-center">
-                <MapPin class="w-5 h-5 text-info" />
+              <div class="w-12 h-12 bg-gradient-to-br from-info to-info/70 rounded-xl flex items-center justify-center shadow-lg">
+                <MapPin class="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 class="card-title text-lg">بيانات العنوان</h2>
-                <p class="text-sm text-base-content/50">أدخل معلومات عنوانك للتسجيل</p>
+                <h2 class="card-title text-xl">بيانات العنوان</h2>
+                <p class="text-sm text-base-content/60">أدخل عنوانك الوطني لتحديد موقعك</p>
               </div>
             </div>
 
@@ -119,12 +112,12 @@
               <!-- District Selection -->
               <div class="form-control">
                 <label class="label">
-                  <span class="label-text font-semibold">المنطقة <span class="text-error">*</span></span>
+                  <span class="label-text font-semibold">المنطقة</span>
+                  <span class="badge badge-ghost">اختياري</span>
                 </label>
                 <select 
                   v-model="form.districtId" 
                   class="select select-bordered select-lg w-full"
-                  required
                 >
                   <option value="">اختر المنطقة السكنية</option>
                   <option v-for="district in districts" :key="district.id" :value="district.id">

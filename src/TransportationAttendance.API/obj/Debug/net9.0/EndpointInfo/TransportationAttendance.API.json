@@ -2342,14 +2342,14 @@
       },
       "CreateRegistrationRequestDto": {
         "required": [
-          "districtId",
           "nationalShortAddress"
         ],
         "type": "object",
         "properties": {
           "districtId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "nationalShortAddress": {
             "minLength": 1,
@@ -3176,6 +3176,11 @@
             "nullable": true
           },
           "halaqaSectionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "studentHalaqaSecId": {
             "type": "integer",
             "format": "int32",
             "nullable": true
