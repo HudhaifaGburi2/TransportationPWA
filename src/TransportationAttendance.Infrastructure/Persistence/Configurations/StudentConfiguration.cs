@@ -27,6 +27,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
 
         // Transportation-specific fields
         builder.Property(e => e.DistrictId).HasColumnName("DistrictId").IsRequired();
+        builder.Property(e => e.NationalShortAddress).HasColumnName("NationalShortAddress").HasMaxLength(8).IsRequired();
         builder.Property(e => e.HomeAddress).HasColumnName("HomeAddress").HasMaxLength(500);
         builder.Property(e => e.Latitude).HasColumnName("Latitude").HasPrecision(10, 8);
         builder.Property(e => e.Longitude).HasColumnName("Longitude").HasPrecision(11, 8);

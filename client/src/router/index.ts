@@ -77,15 +77,14 @@ const routes: RouteRecordRaw[] = [
         }
     },
 
-    // Student routes (STUDENT role + HALAQAT_Location 1 or 2)
+    // Student routes
     {
         path: '/registration',
         name: 'Registration',
         component: () => import('@/views/student/RegistrationView.vue'),
         meta: {
             requiresAuth: true,
-            roles: [TUMS_ROLES.STUDENT],
-            requiresStudentLocation: true
+            roles: [TUMS_ROLES.STUDENT]
         }
     },
     {
@@ -94,8 +93,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/student/MyRegistrationView.vue'),
         meta: {
             requiresAuth: true,
-            roles: [TUMS_ROLES.STUDENT],
-            requiresStudentLocation: true
+            roles: [TUMS_ROLES.STUDENT]
         }
     },
 

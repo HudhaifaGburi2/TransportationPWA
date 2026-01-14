@@ -18,9 +18,10 @@ public class RegistrationRequest : BaseEntity
     
     // Student-provided fields
     public Guid DistrictId { get; private set; }
+    public string NationalShortAddress { get; private set; } = string.Empty;
     public string? HomeAddress { get; private set; }
-    public decimal Latitude { get; private set; }
-    public decimal Longitude { get; private set; }
+    public decimal? Latitude { get; private set; }
+    public decimal? Longitude { get; private set; }
     
     // Request status
     public RegistrationStatus Status { get; private set; }
@@ -48,8 +49,9 @@ public class RegistrationRequest : BaseEntity
         int? halaqaLocationId,
         string? teacherName,
         Guid districtId,
-        decimal latitude,
-        decimal longitude,
+        string nationalShortAddress,
+        decimal? latitude = null,
+        decimal? longitude = null,
         string? homeAddress = null)
     {
         return new RegistrationRequest
@@ -65,6 +67,7 @@ public class RegistrationRequest : BaseEntity
             HalaqaLocationId = halaqaLocationId,
             TeacherName = teacherName,
             DistrictId = districtId,
+            NationalShortAddress = nationalShortAddress,
             Latitude = latitude,
             Longitude = longitude,
             HomeAddress = homeAddress,

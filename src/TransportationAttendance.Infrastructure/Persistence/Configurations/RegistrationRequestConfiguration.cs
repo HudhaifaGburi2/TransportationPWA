@@ -27,9 +27,10 @@ public class RegistrationRequestConfiguration : IEntityTypeConfiguration<Registr
 
         // Student-provided fields
         builder.Property(e => e.DistrictId).HasColumnName("DistrictId").IsRequired();
+        builder.Property(e => e.NationalShortAddress).HasColumnName("NationalShortAddress").HasMaxLength(8).IsRequired();
         builder.Property(e => e.HomeAddress).HasColumnName("HomeAddress").HasMaxLength(500);
-        builder.Property(e => e.Latitude).HasColumnName("Latitude").HasPrecision(10, 8).IsRequired();
-        builder.Property(e => e.Longitude).HasColumnName("Longitude").HasPrecision(11, 8).IsRequired();
+        builder.Property(e => e.Latitude).HasColumnName("Latitude").HasPrecision(10, 8);
+        builder.Property(e => e.Longitude).HasColumnName("Longitude").HasPrecision(11, 8);
 
         // Status
         builder.Property(e => e.Status).HasColumnName("Status").HasConversion<string>().HasMaxLength(50);

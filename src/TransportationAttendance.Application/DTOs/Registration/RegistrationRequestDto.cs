@@ -20,9 +20,10 @@ public record RegistrationRequestDto
     
     // Student-provided fields
     public Guid DistrictId { get; init; }
+    public string NationalShortAddress { get; init; } = string.Empty;
     public string? HomeAddress { get; init; }
-    public decimal Latitude { get; init; }
-    public decimal Longitude { get; init; }
+    public decimal? Latitude { get; init; }
+    public decimal? Longitude { get; init; }
     
     // Status
     public string Status { get; init; } = string.Empty;

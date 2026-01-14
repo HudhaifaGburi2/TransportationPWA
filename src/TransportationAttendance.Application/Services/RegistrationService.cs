@@ -75,6 +75,7 @@ public class RegistrationService : IRegistrationService
             halaqaLocationId: studentInfo.HalaqaLocationId,
             teacherName: studentInfo.TeacherName,
             districtId: dto.DistrictId,
+            nationalShortAddress: dto.NationalShortAddress,
             latitude: dto.Latitude,
             longitude: dto.Longitude,
             homeAddress: dto.HomeAddress
@@ -90,7 +91,7 @@ public class RegistrationService : IRegistrationService
                 action: "RegistrationRequestSubmitted",
                 entityType: "RegistrationRequest",
                 entityId: registrationRequest.Id,
-                newValues: System.Text.Json.JsonSerializer.Serialize(new { dto.DistrictId, dto.Latitude, dto.Longitude })
+                newValues: System.Text.Json.JsonSerializer.Serialize(new { dto.DistrictId, dto.NationalShortAddress })
             );
             await _unitOfWork.AuditLogs.AddAsync(auditLog, cancellationToken);
 
@@ -172,6 +173,7 @@ public class RegistrationService : IRegistrationService
                     halaqaLocationId: request.HalaqaLocationId,
                     teacherName: request.TeacherName,
                     districtId: request.DistrictId,
+                    nationalShortAddress: request.NationalShortAddress,
                     latitude: request.Latitude,
                     longitude: request.Longitude,
                     homeAddress: request.HomeAddress
