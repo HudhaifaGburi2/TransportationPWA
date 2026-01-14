@@ -32,8 +32,8 @@ public class StudentHalaqaInfo
     public int? PeriodId { get; init; }
     public string? PeriodName { get; init; }
     public string? PeriodCode { get; init; }
-    public TimeSpan? PeriodStartTime { get; init; }
-    public TimeSpan? PeriodEndTime { get; init; }
+    public string? PeriodStartTime { get; init; }
+    public string? PeriodEndTime { get; init; }
 
     // Age Group Information
     public int? AgeGroupId { get; init; }

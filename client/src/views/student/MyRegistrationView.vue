@@ -44,9 +44,12 @@
           </div>
           <h2 class="text-2xl font-bold text-base-content mb-3">لا يوجد طلب تسجيل</h2>
           <p class="text-base-content/60 mb-8 max-w-md">لم تقم بتقديم طلب للتسجيل في خدمة النقل بعد. سجّل الآن للاستفادة من خدمة النقل المجانية.</p>
-          <router-link to="/registration" class="btn btn-primary btn-lg gap-3 shadow-lg">
+          <router-link 
+            to="/registration" 
+            class="btn btn-primary btn-lg gap-3 px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 font-bold text-lg"
+          >
             <Plus class="w-6 h-6" />
-            تقديم طلب تسجيل جديد
+            <span>تقديم طلب تسجيل جديد</span>
           </router-link>
         </div>
       </div>

@@ -51,8 +51,8 @@ const stats = [
         <p class="text-neutral">يمكنك من هنا إدارة الحافلات والأحياء والطلاب وتتبع الحضور والانصراف</p>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Stats Grid (Admin/Staff Only) -->
+      <div v-if="isAdminOrStaff" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div v-for="stat in stats" :key="stat.title" class="card hover:shadow-md transition-shadow">
           <div class="flex items-center gap-4">
             <div :class="[stat.color, 'w-12 h-12 rounded-lg flex items-center justify-center']">
