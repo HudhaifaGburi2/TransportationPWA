@@ -21,12 +21,21 @@ public class RegistrationService : IRegistrationService
         _mapper = mapper;
     }
 
+    // Allowed halaqa locations for transportation registration
+    private static readonly int[] AllowedHalaqaLocations = { 1, 2 };
+
     public async Task<Result<StudentHalaqaInfoDto>> GetStudentInfoForRegistrationAsync(int studentUserId, CancellationToken cancellationToken = default)
     {
         var studentInfo = await _centralDbRepository.GetStudentHalaqaInfoByUserIdAsync(studentUserId, cancellationToken);
         if (studentInfo == null)
         {
-            return Result.Failure<StudentHalaqaInfoDto>("Student not found in Central Database.");
+            return Result.Failure<StudentHalaqaInfoDto>("لم يتم العثور على بيانات الطالب في قاعدة البيانات المركزية.");
+        }
+
+        // Check if student's halaqa location is eligible for transportation
+        if (studentInfo.HalaqaLocationId == null || !AllowedHalaqaLocations.Contains(studentInfo.HalaqaLocationId.Value))
+        {
+            return Result.Failure<StudentHalaqaInfoDto>("عذراً، خدمة النقل متاحة فقط لطلاب مواقع الحلقات المحددة.");
         }
 
         return _mapper.Map<StudentHalaqaInfoDto>(studentInfo);
@@ -59,7 +68,13 @@ public class RegistrationService : IRegistrationService
         var studentInfo = await _centralDbRepository.GetStudentHalaqaInfoByUserIdAsync(studentUserId, cancellationToken);
         if (studentInfo == null)
         {
-            return Result.Failure<RegistrationRequestDto>("Student not found in Central Database.");
+            return Result.Failure<RegistrationRequestDto>("لم يتم العثور على بيانات الطالب في قاعدة البيانات المركزية.");
+        }
+
+        // Check if student's halaqa location is eligible for transportation
+        if (studentInfo.HalaqaLocationId == null || !AllowedHalaqaLocations.Contains(studentInfo.HalaqaLocationId.Value))
+        {
+            return Result.Failure<RegistrationRequestDto>("عذراً، خدمة النقل متاحة فقط لطلاب مواقع الحلقات المحددة.");
         }
 
         // Create registration request with auto-filled Central DB data

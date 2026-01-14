@@ -1,168 +1,223 @@
 <template>
-  <div class="p-6 space-y-6">
-    <!-- Page Header -->
-    <div class="bg-gradient-to-l from-info/10 to-transparent p-6 rounded-xl">
-      <div class="flex items-center gap-4">
-        <div class="p-3 bg-info/20 rounded-xl">
-          <FileText class="w-8 h-8 text-info" />
+  <div class="min-h-screen bg-gradient-to-br from-base-200/50 to-base-100">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Page Header -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-info to-info/70 rounded-2xl shadow-lg mb-4">
+          <FileSearch class="w-10 h-10 text-info-content" />
         </div>
-        <div>
-          <h1 class="text-2xl font-bold text-base-content">طلب التسجيل الخاص بي</h1>
-          <p class="text-base-content/60 mt-1">متابعة حالة طلب التسجيل في خدمة النقل</p>
+        <h1 class="text-3xl font-bold text-base-content mb-2">متابعة طلب التسجيل</h1>
+        <p class="text-base-content/60 max-w-md mx-auto">تتبع حالة طلبك في خدمة النقل</p>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="mt-4 text-base-content/60">جاري تحميل بيانات الطلب...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="card bg-base-100 shadow-xl">
+        <div class="card-body items-center text-center py-12">
+          <div class="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mb-4">
+            <AlertCircle class="w-8 h-8 text-error" />
+          </div>
+          <h2 class="card-title text-error mb-2">تعذر تحميل البيانات</h2>
+          <p class="text-base-content/60 mb-6 max-w-sm">{{ error }}</p>
+          <button @click="loadRegistration" class="btn btn-primary gap-2">
+            <RefreshCw class="w-4 h-4" />
+            إعادة المحاولة
+          </button>
         </div>
       </div>
-    </div>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center py-16">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="alert alert-error">
-      <AlertCircle class="w-6 h-6" />
-      <span>{{ error }}</span>
-      <button @click="loadRegistration" class="btn btn-sm btn-ghost">إعادة المحاولة</button>
-    </div>
-
-    <!-- No Registration Found -->
-    <div v-else-if="!registration" class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
-      <div class="bg-gradient-to-b from-primary/5 to-transparent p-12 text-center">
-        <div class="w-24 h-24 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-          <ClipboardList class="w-12 h-12 text-primary" />
+      <!-- No Registration Found -->
+      <div v-else-if="!registration" class="card bg-base-100 shadow-xl">
+        <div class="card-body items-center text-center py-16">
+          <div class="relative mb-6">
+            <div class="w-32 h-32 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center">
+              <Bus class="w-16 h-16 text-primary" />
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-warning rounded-full flex items-center justify-center shadow-lg">
+              <ClipboardList class="w-6 h-6 text-warning-content" />
+            </div>
+          </div>
+          <h2 class="text-2xl font-bold text-base-content mb-3">لا يوجد طلب تسجيل</h2>
+          <p class="text-base-content/60 mb-8 max-w-md">لم تقم بتقديم طلب للتسجيل في خدمة النقل بعد. سجّل الآن للاستفادة من خدمة النقل المجانية.</p>
+          <router-link to="/registration" class="btn btn-primary btn-lg gap-3 shadow-lg">
+            <Plus class="w-6 h-6" />
+            تقديم طلب تسجيل جديد
+          </router-link>
         </div>
-        <h2 class="text-2xl font-bold text-base-content mb-3">لم يتم العثور على طلب تسجيل</h2>
-        <p class="text-base-content/60 mb-8 max-w-md mx-auto">لم تقم بتقديم طلب تسجيل في خدمة النقل بعد. قم بتقديم طلب جديد للاستفادة من خدمة النقل.</p>
-        <router-link to="/registration" class="btn btn-primary btn-lg gap-3 shadow-lg hover:shadow-xl transition-all">
-          <Plus class="w-6 h-6" />
-          تقديم طلب تسجيل جديد
-        </router-link>
       </div>
-    </div>
 
-    <!-- Registration Details -->
-    <div v-else class="space-y-6">
-      <!-- Status Card -->
-      <div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
-        <div class="p-6">
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div :class="statusIconClass" class="p-3 rounded-xl">
-                <component :is="statusIcon" class="w-8 h-8" />
+      <!-- Registration Details -->
+      <div v-else class="space-y-6">
+        <!-- Main Status Card -->
+        <div class="card bg-base-100 shadow-xl overflow-hidden">
+          <div :class="statusGradientClass">
+            <div class="card-body">
+              <div class="flex flex-col md:flex-row items-center gap-6">
+                <div :class="statusIconBgClass" class="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg">
+                  <component :is="statusIcon" class="w-10 h-10" :class="statusIconColorClass" />
+                </div>
+                <div class="text-center md:text-right flex-1">
+                  <p class="text-sm opacity-70 mb-1">حالة الطلب</p>
+                  <h2 class="text-3xl font-bold mb-2">{{ statusText }}</h2>
+                  <p class="text-sm opacity-70">{{ statusDescription }}</p>
+                </div>
+                <div :class="statusBadgeClass" class="badge badge-lg gap-2 py-4 px-6 shadow">
+                  <component :is="statusIcon" class="w-4 h-4" />
+                  {{ statusText }}
+                </div>
               </div>
-              <div>
-                <p class="text-sm text-base-content/60">حالة الطلب</p>
-                <p class="text-xl font-bold">{{ statusText }}</p>
+            </div>
+          </div>
+          
+          <!-- Progress Steps -->
+          <div class="px-6 py-5 bg-base-200/30">
+            <ul class="steps steps-horizontal w-full">
+              <li class="step step-primary" data-content="✓">
+                <span class="text-xs mt-2">تقديم الطلب</span>
+              </li>
+              <li class="step" :class="{ 'step-primary': registration.status !== 'Pending' }" :data-content="registration.status !== 'Pending' ? '✓' : '2'">
+                <span class="text-xs mt-2">مراجعة الطلب</span>
+              </li>
+              <li class="step" :class="{ 'step-primary': registration.status === 'Approved', 'step-error': registration.status === 'Rejected' }" :data-content="registration.status === 'Approved' ? '✓' : registration.status === 'Rejected' ? '✗' : '3'">
+                <span class="text-xs mt-2">{{ registration.status === 'Rejected' ? 'مرفوض' : 'مقبول' }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Info Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Student Info Card -->
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <User class="w-5 h-5 text-primary" />
+                </div>
+                <h3 class="card-title text-lg">بيانات الطالب</h3>
+              </div>
+              <div class="space-y-4">
+                <div class="flex justify-between items-center py-2 border-b border-base-200">
+                  <span class="text-base-content/60 text-sm">رقم الطالب</span>
+                  <span class="font-bold font-mono" dir="ltr">{{ registration.studentId }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-base-200">
+                  <span class="text-base-content/60 text-sm">الاسم</span>
+                  <span class="font-bold">{{ registration.studentName }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                  <span class="text-base-content/60 text-sm">المعلم</span>
+                  <span class="font-semibold">{{ registration.teacherName || '-' }}</span>
+                </div>
               </div>
             </div>
-            <div :class="statusBadgeClass" class="badge badge-lg gap-2 py-4 px-6">
-              <component :is="statusIcon" class="w-4 h-4" />
-              {{ statusText }}
+          </div>
+
+          <!-- Address Info Card -->
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-info/10 rounded-lg flex items-center justify-center">
+                  <MapPin class="w-5 h-5 text-info" />
+                </div>
+                <h3 class="card-title text-lg">بيانات العنوان</h3>
+              </div>
+              <div class="space-y-4">
+                <div class="flex justify-between items-center py-2 border-b border-base-200">
+                  <span class="text-base-content/60 text-sm">المنطقة</span>
+                  <span class="font-bold">{{ registration.district?.name || '-' }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-base-200">
+                  <span class="text-base-content/60 text-sm">العنوان الوطني</span>
+                  <span class="font-bold font-mono tracking-wider" dir="ltr">{{ registration.nationalShortAddress || '-' }}</span>
+                </div>
+                <div v-if="registration.homeAddress" class="py-2">
+                  <span class="text-base-content/60 text-sm block mb-1">وصف إضافي</span>
+                  <span class="text-sm">{{ registration.homeAddress }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        
-        <!-- Progress Steps -->
-        <div class="bg-base-200/50 px-6 py-4">
-          <ul class="steps steps-horizontal w-full">
-            <li class="step" :class="{ 'step-primary': true }">تقديم الطلب</li>
-            <li class="step" :class="{ 'step-primary': registration.status !== 'Pending' }">مراجعة الطلب</li>
-            <li class="step" :class="{ 'step-primary': registration.status === 'Approved', 'step-error': registration.status === 'Rejected' }">
-              {{ registration.status === 'Rejected' ? 'مرفوض' : 'مقبول' }}
-            </li>
-          </ul>
-        </div>
-      </div>
 
-      <!-- Student Info -->
-      <div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
-        <div class="bg-primary/5 px-6 py-4 border-b border-base-200">
-          <h2 class="font-bold text-lg flex items-center gap-2">
-            <User class="w-5 h-5 text-primary" />
-            بيانات الطالب
-          </h2>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">رقم الطالب</label>
-              <p class="font-semibold" dir="ltr">{{ registration.studentId }}</p>
+        <!-- Timeline Card -->
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                <Calendar class="w-5 h-5 text-secondary" />
+              </div>
+              <h3 class="card-title text-lg">سجل الطلب</h3>
             </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">اسم الطالب</label>
-              <p class="font-semibold">{{ registration.studentName }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">المعلم</label>
-              <p class="font-semibold">{{ registration.teacherName || '-' }}</p>
+            <div class="relative pr-8">
+              <!-- Timeline Line -->
+              <div class="absolute right-3 top-2 bottom-2 w-0.5 bg-base-300"></div>
+              
+              <!-- Submitted -->
+              <div class="relative mb-6">
+                <div class="absolute right-0 w-6 h-6 bg-primary rounded-full flex items-center justify-center -translate-x-1/2">
+                  <Send class="w-3 h-3 text-primary-content" />
+                </div>
+                <div class="mr-8">
+                  <p class="font-bold text-sm">تم تقديم الطلب</p>
+                  <p class="text-xs text-base-content/60">{{ formatDate(registration.requestedAt) }}</p>
+                </div>
+              </div>
+              
+              <!-- Reviewed -->
+              <div v-if="registration.reviewedAt" class="relative">
+                <div class="absolute right-0 w-6 h-6 rounded-full flex items-center justify-center -translate-x-1/2" :class="registration.status === 'Approved' ? 'bg-success' : 'bg-error'">
+                  <component :is="registration.status === 'Approved' ? CheckCircle : XCircle" class="w-3 h-3 text-white" />
+                </div>
+                <div class="mr-8">
+                  <p class="font-bold text-sm">{{ registration.status === 'Approved' ? 'تمت الموافقة' : 'تم الرفض' }}</p>
+                  <p class="text-xs text-base-content/60">{{ formatDate(registration.reviewedAt) }}</p>
+                </div>
+              </div>
+              
+              <!-- Pending Review -->
+              <div v-else class="relative">
+                <div class="absolute right-0 w-6 h-6 bg-warning rounded-full flex items-center justify-center -translate-x-1/2">
+                  <Clock class="w-3 h-3 text-warning-content" />
+                </div>
+                <div class="mr-8">
+                  <p class="font-bold text-sm">في انتظار المراجعة</p>
+                  <p class="text-xs text-base-content/60">سيتم مراجعة طلبك قريباً</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Address Info -->
-      <div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
-        <div class="bg-info/5 px-6 py-4 border-b border-base-200">
-          <h2 class="font-bold text-lg flex items-center gap-2">
-            <MapPin class="w-5 h-5 text-info" />
-            بيانات العنوان
-          </h2>
+        <!-- Status Messages -->
+        <div v-if="registration.status === 'Rejected' && registration.reviewNotes" class="alert alert-error shadow-lg">
+          <XCircle class="w-6 h-6" />
+          <div>
+            <h3 class="font-bold">سبب الرفض</h3>
+            <p class="text-sm">{{ registration.reviewNotes }}</p>
+          </div>
+          <router-link to="/registration" class="btn btn-sm btn-ghost">تقديم طلب جديد</router-link>
         </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">المنطقة</label>
-              <p class="font-semibold">{{ registration.district?.name || '-' }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">العنوان الوطني المختصر</label>
-              <p class="font-semibold font-mono" dir="ltr">{{ registration.nationalShortAddress || '-' }}</p>
-            </div>
-            <div v-if="registration.homeAddress" class="md:col-span-2 space-y-1">
-              <label class="text-sm text-base-content/60">وصف العنوان</label>
-              <p class="font-semibold">{{ registration.homeAddress }}</p>
-            </div>
+
+        <div v-if="registration.status === 'Approved'" class="alert alert-success shadow-lg">
+          <CheckCircle class="w-6 h-6" />
+          <div>
+            <h3 class="font-bold">مبارك! تم قبول طلبك</h3>
+            <p class="text-sm">تم قبول طلب التسجيل في خدمة النقل. سيتم التواصل معك قريباً بتفاصيل الباص والمواعيد.</p>
           </div>
         </div>
-      </div>
 
-      <!-- Dates Info -->
-      <div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
-        <div class="bg-secondary/5 px-6 py-4 border-b border-base-200">
-          <h2 class="font-bold text-lg flex items-center gap-2">
-            <Calendar class="w-5 h-5 text-secondary" />
-            تواريخ الطلب
-          </h2>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">تاريخ التقديم</label>
-              <p class="font-semibold">{{ formatDate(registration.requestedAt) }}</p>
-            </div>
-            <div v-if="registration.reviewedAt" class="space-y-1">
-              <label class="text-sm text-base-content/60">تاريخ المراجعة</label>
-              <p class="font-semibold">{{ formatDate(registration.reviewedAt) }}</p>
-            </div>
+        <div v-if="registration.status === 'Pending'" class="alert shadow-lg">
+          <Clock class="w-6 h-6 text-warning" />
+          <div>
+            <h3 class="font-bold">طلبك قيد المراجعة</h3>
+            <p class="text-sm">سيتم مراجعة طلبك من قبل إدارة النقل وإشعارك بالنتيجة خلال 48 ساعة.</p>
           </div>
-        </div>
-      </div>
-
-      <!-- Review Notes (if rejected) -->
-      <div v-if="registration.status === 'Rejected' && registration.reviewNotes" class="alert alert-error">
-        <AlertCircle class="w-6 h-6" />
-        <div>
-          <h3 class="font-bold">سبب الرفض</h3>
-          <p>{{ registration.reviewNotes }}</p>
-        </div>
-      </div>
-
-      <!-- Approval Message -->
-      <div v-if="registration.status === 'Approved'" class="alert alert-success">
-        <CheckCircle class="w-6 h-6" />
-        <div>
-          <h3 class="font-bold">تم قبول طلبك</h3>
-          <p>تم قبول طلب التسجيل في خدمة النقل. سيتم التواصل معك قريباً بتفاصيل الباص.</p>
         </div>
       </div>
     </div>
@@ -171,7 +226,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FileText, AlertCircle, ClipboardList, Plus, User, MapPin, Calendar, CheckCircle, XCircle, Clock } from 'lucide-vue-next'
+import { FileSearch, AlertCircle, ClipboardList, Plus, User, MapPin, Calendar, CheckCircle, XCircle, Clock, RefreshCw, Bus, Send } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface Registration {
@@ -212,6 +267,42 @@ const statusIcon = computed(() => {
     case 'Approved': return CheckCircle
     case 'Rejected': return XCircle
     default: return Clock
+  }
+})
+
+const statusDescription = computed(() => {
+  switch (registration.value?.status) {
+    case 'Pending': return 'طلبك قيد المراجعة من قبل إدارة النقل'
+    case 'Approved': return 'تم قبول طلبك في خدمة النقل'
+    case 'Rejected': return 'للأسف تم رفض طلبك'
+    default: return ''
+  }
+})
+
+const statusGradientClass = computed(() => {
+  switch (registration.value?.status) {
+    case 'Pending': return 'bg-gradient-to-l from-warning/10 via-warning/5 to-transparent'
+    case 'Approved': return 'bg-gradient-to-l from-success/10 via-success/5 to-transparent'
+    case 'Rejected': return 'bg-gradient-to-l from-error/10 via-error/5 to-transparent'
+    default: return ''
+  }
+})
+
+const statusIconBgClass = computed(() => {
+  switch (registration.value?.status) {
+    case 'Pending': return 'bg-warning'
+    case 'Approved': return 'bg-success'
+    case 'Rejected': return 'bg-error'
+    default: return 'bg-base-300'
+  }
+})
+
+const statusIconColorClass = computed(() => {
+  switch (registration.value?.status) {
+    case 'Pending': return 'text-warning-content'
+    case 'Approved': return 'text-success-content'
+    case 'Rejected': return 'text-error-content'
+    default: return 'text-base-content'
   }
 })
 

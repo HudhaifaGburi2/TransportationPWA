@@ -1,156 +1,198 @@
 <template>
-  <div class="p-6 space-y-6">
-    <!-- Page Header -->
-    <div class="bg-gradient-to-l from-success/10 to-transparent p-6 rounded-xl">
-      <div class="flex items-center gap-4">
-        <div class="p-3 bg-success/20 rounded-xl">
-          <ClipboardList class="w-8 h-8 text-success" />
+  <div class="min-h-screen bg-gradient-to-br from-base-200/50 to-base-100">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Page Header -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/70 rounded-2xl shadow-lg mb-4">
+          <Bus class="w-10 h-10 text-primary-content" />
         </div>
-        <div>
-          <h1 class="text-2xl font-bold text-base-content">التسجيل في خدمة النقل</h1>
-          <p class="text-base-content/60 mt-1">قم بتعبئة بياناتك للتسجيل في نظام النقل الجامعي</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center py-16">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="alert alert-error">
-      <AlertCircle class="w-6 h-6" />
-      <span>{{ error }}</span>
-      <button @click="loadStudentInfo" class="btn btn-sm btn-ghost">إعادة المحاولة</button>
-    </div>
-
-    <!-- Registration Form -->
-    <div v-else class="space-y-6">
-      <!-- Student Info Card (Auto-filled - Read Only) -->
-      <div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
-        <div class="bg-primary/5 px-6 py-4 border-b border-base-200">
-          <h2 class="font-bold text-lg flex items-center gap-2">
-            <User class="w-5 h-5 text-primary" />
-            بيانات الطالب
-          </h2>
-          <p class="text-sm text-base-content/60">معلومات محملة تلقائياً من النظام</p>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">رقم الطالب</label>
-              <p class="font-semibold text-lg" dir="ltr">{{ studentInfo?.studentId || '-' }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">اسم الطالب</label>
-              <p class="font-semibold text-lg">{{ studentInfo?.studentName || '-' }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">الفترة</label>
-              <p class="font-semibold">{{ studentInfo?.periodName || '-' }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">نوع الحلقة</label>
-              <p class="font-semibold">{{ studentInfo?.halaqaTypeName || '-' }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">المعلم</label>
-              <p class="font-semibold">{{ studentInfo?.teacherName || '-' }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm text-base-content/60">الموقع</label>
-              <p class="font-semibold">{{ studentInfo?.halaqaLocationName || '-' }}</p>
-            </div>
-          </div>
-        </div>
+        <h1 class="text-3xl font-bold text-base-content mb-2">التسجيل في خدمة النقل</h1>
+        <p class="text-base-content/60 max-w-md mx-auto">قم بتعبئة بياناتك للاستفادة من خدمة النقل المجانية لطلاب الحلقات</p>
       </div>
 
-      <!-- Registration Form Card -->
-      <form @submit.prevent="submitRegistration" class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
-        <div class="bg-info/5 px-6 py-4 border-b border-base-200">
-          <h2 class="font-bold text-lg flex items-center gap-2">
-            <MapPin class="w-5 h-5 text-info" />
-            بيانات العنوان
-          </h2>
-          <p class="text-sm text-base-content/60">أدخل معلومات عنوانك للتسجيل في خدمة النقل</p>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
+        <div class="relative">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
-        <div class="p-6 space-y-6">
-          <!-- District Selection -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-medium">المنطقة <span class="text-error">*</span></span>
-            </label>
-            <select 
-              v-model="form.districtId" 
-              class="select select-bordered w-full"
-              required
-            >
-              <option value="">اختر المنطقة</option>
-              <option v-for="district in districts" :key="district.id" :value="district.id">
-                {{ district.name }}
-              </option>
-            </select>
-          </div>
+        <p class="mt-4 text-base-content/60">جاري تحميل بياناتك...</p>
+      </div>
 
-          <!-- National Short Address -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-medium">العنوان الوطني المختصر <span class="text-error">*</span></span>
-              <a href="https://splonline.com.sa/ar/national-address-1/" target="_blank" class="label-text-alt link link-primary">
-                كيف أجد عنواني؟
-              </a>
-            </label>
-            <div class="join w-full">
-              <input 
-                v-model="form.nationalShortAddress"
-                type="text"
-                class="input input-bordered join-item flex-1 uppercase"
-                placeholder="ABCD1234"
-                maxlength="8"
-                pattern="[A-Za-z]{4}[0-9]{4}"
-                dir="ltr"
-                required
-              />
-              <span class="btn btn-square join-item btn-disabled">
-                <Home class="w-5 h-5" />
-              </span>
-            </div>
-            <label class="label">
-              <span class="label-text-alt text-base-content/60">4 أحرف + 4 أرقام (مثال: RRRD2929)</span>
-            </label>
+      <!-- Error State -->
+      <div v-else-if="error" class="card bg-base-100 shadow-xl">
+        <div class="card-body items-center text-center py-12">
+          <div class="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mb-4">
+            <AlertCircle class="w-8 h-8 text-error" />
           </div>
-
-          <!-- Home Address (Optional) -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-medium">وصف إضافي للعنوان</span>
-              <span class="label-text-alt text-base-content/50">اختياري</span>
-            </label>
-            <textarea 
-              v-model="form.homeAddress"
-              class="textarea textarea-bordered h-24"
-              placeholder="أضف وصف إضافي للعنوان مثل: بجوار مسجد، قرب مدرسة..."
-            ></textarea>
-          </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="bg-base-200/50 px-6 py-4 flex flex-col sm:flex-row gap-3 justify-end">
-          <router-link to="/" class="btn btn-ghost">
-            إلغاء
-          </router-link>
-          <button 
-            type="submit"
-            class="btn btn-primary gap-2"
-            :disabled="isSubmitting || !isFormValid"
-          >
-            <span v-if="isSubmitting" class="loading loading-spinner loading-sm"></span>
-            <Send v-else class="w-5 h-5" />
-            تقديم طلب التسجيل
+          <h2 class="card-title text-error mb-2">تعذر تحميل البيانات</h2>
+          <p class="text-base-content/60 mb-6 max-w-sm">{{ error }}</p>
+          <button @click="loadStudentInfo" class="btn btn-primary gap-2">
+            <RefreshCw class="w-4 h-4" />
+            إعادة المحاولة
           </button>
         </div>
-      </form>
+      </div>
+
+      <!-- Registration Form -->
+      <div v-else class="space-y-6">
+        <!-- Progress Steps -->
+        <ul class="steps steps-horizontal w-full mb-8">
+          <li class="step step-primary" data-content="1">بيانات الطالب</li>
+          <li class="step" :class="{ 'step-primary': form.districtId }" data-content="2">العنوان</li>
+          <li class="step" :class="{ 'step-primary': isFormValid }" data-content="3">تأكيد</li>
+        </ul>
+
+        <!-- Student Info Card -->
+        <div class="card bg-base-100 shadow-xl overflow-hidden">
+          <div class="bg-gradient-to-l from-primary/10 via-primary/5 to-transparent">
+            <div class="card-body">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <User class="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h2 class="card-title text-lg">بيانات الطالب</h2>
+                  <p class="text-sm text-base-content/50">تم تحميلها تلقائياً من النظام</p>
+                </div>
+                <div class="badge badge-success badge-outline gap-1 mr-auto">
+                  <CheckCircle2 class="w-3 h-3" />
+                  مُتحقق
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-base-200/50 rounded-lg p-3">
+                  <p class="text-xs text-base-content/50 mb-1">رقم الطالب</p>
+                  <p class="font-bold text-base-content" dir="ltr">{{ studentInfo?.studentId || '-' }}</p>
+                </div>
+                <div class="bg-base-200/50 rounded-lg p-3 md:col-span-2">
+                  <p class="text-xs text-base-content/50 mb-1">اسم الطالب</p>
+                  <p class="font-bold text-base-content">{{ studentInfo?.studentName || '-' }}</p>
+                </div>
+                <div class="bg-base-200/50 rounded-lg p-3">
+                  <p class="text-xs text-base-content/50 mb-1">الفترة</p>
+                  <p class="font-semibold text-sm">{{ studentInfo?.periodName || '-' }}</p>
+                </div>
+                <div class="bg-base-200/50 rounded-lg p-3">
+                  <p class="text-xs text-base-content/50 mb-1">نوع الحلقة</p>
+                  <p class="font-semibold text-sm">{{ studentInfo?.halaqaTypeName || '-' }}</p>
+                </div>
+                <div class="bg-base-200/50 rounded-lg p-3">
+                  <p class="text-xs text-base-content/50 mb-1">الموقع</p>
+                  <p class="font-semibold text-sm">{{ studentInfo?.halaqaLocationName || '-' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Form Card -->
+        <form @submit.prevent="submitRegistration" class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 bg-info/10 rounded-lg flex items-center justify-center">
+                <MapPin class="w-5 h-5 text-info" />
+              </div>
+              <div>
+                <h2 class="card-title text-lg">بيانات العنوان</h2>
+                <p class="text-sm text-base-content/50">أدخل معلومات عنوانك للتسجيل</p>
+              </div>
+            </div>
+
+            <div class="space-y-5">
+              <!-- District Selection -->
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-semibold">المنطقة <span class="text-error">*</span></span>
+                </label>
+                <select 
+                  v-model="form.districtId" 
+                  class="select select-bordered select-lg w-full"
+                  required
+                >
+                  <option value="">اختر المنطقة السكنية</option>
+                  <option v-for="district in districts" :key="district.id" :value="district.id">
+                    {{ district.name }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- National Short Address -->
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-semibold">العنوان الوطني المختصر <span class="text-error">*</span></span>
+                </label>
+                <div class="relative">
+                  <input 
+                    v-model="form.nationalShortAddress"
+                    type="text"
+                    class="input input-bordered input-lg w-full uppercase tracking-widest text-center font-mono"
+                    placeholder="XXXX0000"
+                    maxlength="8"
+                    pattern="[A-Za-z]{4}[0-9]{4}"
+                    dir="ltr"
+                    required
+                  />
+                  <div class="absolute left-3 top-1/2 -translate-y-1/2">
+                    <Home class="w-5 h-5 text-base-content/30" />
+                  </div>
+                </div>
+                <label class="label">
+                  <span class="label-text-alt flex items-center gap-1">
+                    <Info class="w-3 h-3" />
+                    4 أحرف إنجليزية + 4 أرقام (مثال: RRRD2929)
+                  </span>
+                  <a href="https://splonline.com.sa/ar/national-address-1/" target="_blank" class="label-text-alt link link-primary flex items-center gap-1">
+                    <ExternalLink class="w-3 h-3" />
+                    كيف أجد عنواني؟
+                  </a>
+                </label>
+              </div>
+
+              <!-- Home Address (Optional) -->
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-semibold">وصف إضافي للعنوان</span>
+                  <span class="badge badge-ghost">اختياري</span>
+                </label>
+                <textarea 
+                  v-model="form.homeAddress"
+                  class="textarea textarea-bordered h-24 leading-relaxed"
+                  placeholder="أضف وصف إضافي للعنوان مثل: بجوار مسجد الرحمة، قرب مدرسة الفاروق..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Form Actions -->
+            <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end">
+              <router-link to="/" class="btn btn-ghost">
+                <X class="w-4 h-4" />
+                إلغاء
+              </router-link>
+              <button 
+                type="submit"
+                class="btn btn-primary btn-lg gap-2 shadow-lg"
+                :disabled="isSubmitting || !isFormValid"
+              >
+                <span v-if="isSubmitting" class="loading loading-spinner loading-sm"></span>
+                <Send v-else class="w-5 h-5" />
+                تقديم طلب التسجيل
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Info Alert -->
+        <div class="alert shadow-lg">
+          <Info class="w-5 h-5 text-info" />
+          <div>
+            <h3 class="font-bold text-sm">ملاحظة هامة</h3>
+            <p class="text-xs">سيتم مراجعة طلبك من قبل إدارة النقل وإشعارك بالنتيجة خلال 48 ساعة.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -158,7 +200,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ClipboardList, User, MapPin, Home, Send, AlertCircle } from 'lucide-vue-next'
+import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface StudentInfo {
