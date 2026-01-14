@@ -4,8 +4,7 @@ namespace TransportationAttendance.Application.DTOs.Registration;
 
 public record CreateRegistrationRequestDto
 {
-    [Required(ErrorMessage = "District is required")]
-    public Guid DistrictId { get; init; }
+    public Guid? DistrictId { get; init; }
 
     [Required(ErrorMessage = "National short address is required")]
     [RegularExpression(@"^[A-Za-z]{4}\d{4}$", ErrorMessage = "National short address must be 4 letters followed by 4 digits (e.g., ABCD1234)")]

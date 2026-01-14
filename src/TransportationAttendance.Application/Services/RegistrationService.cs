@@ -57,11 +57,14 @@ public class RegistrationService : IRegistrationService
             return Result.Failure<RegistrationRequestDto>("You are already registered for transportation.");
         }
 
-        // Verify district exists
-        var district = await _unitOfWork.Districts.GetByIdAsync(dto.DistrictId, cancellationToken);
-        if (district == null)
+        // Verify district exists if provided
+        if (dto.DistrictId.HasValue)
         {
-            return Result.Failure<RegistrationRequestDto>("Selected district not found.");
+            var district = await _unitOfWork.Districts.GetByIdAsync(dto.DistrictId.Value, cancellationToken);
+            if (district == null)
+            {
+                return Result.Failure<RegistrationRequestDto>("Selected district not found.");
+            }
         }
 
         // Get student info from Central DB (auto-fill read-only fields)
@@ -90,7 +93,7 @@ public class RegistrationService : IRegistrationService
             ageGroupId: studentInfo.AgeGroupId,
             halaqaLocationId: studentInfo.HalaqaLocationId,
             teacherName: studentInfo.TeacherName,
-            districtId: dto.DistrictId,
+            districtId: dto.DistrictId ?? Guid.Empty,
             nationalShortAddress: dto.NationalShortAddress,
             latitude: dto.Latitude,
             longitude: dto.Longitude,

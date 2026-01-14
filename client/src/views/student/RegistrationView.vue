@@ -1,6 +1,14 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-base-200/50 to-base-100">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Back Navigation -->
+      <div class="mb-6">
+        <router-link to="/" class="btn btn-ghost btn-sm gap-2">
+          <ArrowRight class="w-4 h-4" />
+          العودة للرئيسية
+        </router-link>
+      </div>
+
       <!-- Page Header -->
       <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/70 rounded-2xl shadow-lg mb-4">
@@ -38,7 +46,7 @@
         <!-- Progress Steps -->
         <ul class="steps steps-horizontal w-full mb-8">
           <li class="step step-primary" data-content="1">بيانات الطالب</li>
-          <li class="step" :class="{ 'step-primary': form.districtId }" data-content="2">العنوان</li>
+          <li class="step" :class="{ 'step-primary': form.nationalShortAddress }" data-content="2">العنوان</li>
           <li class="step" :class="{ 'step-primary': isFormValid }" data-content="3">تأكيد</li>
         </ul>
 
@@ -60,7 +68,7 @@
                 </div>
               </div>
               
-              <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-base-200/50 rounded-lg p-3">
                   <p class="text-xs text-base-content/50 mb-1">رقم الطالب</p>
                   <p class="font-bold text-base-content" dir="ltr">{{ studentInfo?.studentId || '-' }}</p>
@@ -68,6 +76,14 @@
                 <div class="bg-base-200/50 rounded-lg p-3 md:col-span-2">
                   <p class="text-xs text-base-content/50 mb-1">اسم الطالب</p>
                   <p class="font-bold text-base-content">{{ studentInfo?.studentName || '-' }}</p>
+                </div>
+                <div class="bg-base-200/50 rounded-lg p-3">
+                  <p class="text-xs text-base-content/50 mb-1">رقم التسجيل</p>
+                  <p class="font-bold text-sm" dir="ltr">{{ studentInfo?.studentHalaqaSecId || '-' }}</p>
+                </div>
+                <div class="bg-base-200/50 rounded-lg p-3 md:col-span-2">
+                  <p class="text-xs text-base-content/50 mb-1">المعلم</p>
+                  <p class="font-semibold text-sm">{{ studentInfo?.teacherName || '-' }}</p>
                 </div>
                 <div class="bg-base-200/50 rounded-lg p-3">
                   <p class="text-xs text-base-content/50 mb-1">الفترة</p>
@@ -200,7 +216,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X } from 'lucide-vue-next'
+import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X, ArrowRight } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface StudentInfo {
@@ -209,7 +225,9 @@ interface StudentInfo {
   studentName: string
   halaqaTypeCode?: string
   halaqaTypeName?: string
-  halaqaSectionId?: string
+  halaqaSectionId?: number
+  studentHalaqaSecId?: number
+  halaqaGender?: string
   periodId?: number
   periodName?: string
   periodCode?: string
@@ -244,12 +262,30 @@ const form = ref({
 
 const isFormValid = computed(() => {
   const addressPattern = /^[A-Za-z]{4}\d{4}$/
-  return form.value.districtId && addressPattern.test(form.value.nationalShortAddress)
+  return addressPattern.test(form.value.nationalShortAddress)
 })
+
+const checkExistingRegistration = async () => {
+  try {
+    const response = await apiClient.get('/registration/my-registration')
+    if (response.data.success && response.data.data) {
+      router.push('/my-registration')
+      return true
+    }
+  } catch {
+    // No existing registration - continue
+  }
+  return false
+}
 
 const loadStudentInfo = async () => {
   isLoading.value = true
   error.value = null
+  
+  // Check if student already has a registration
+  const hasExisting = await checkExistingRegistration()
+  if (hasExisting) return
+  
   try {
     const [studentResponse, districtsResponse] = await Promise.all([
       apiClient.get('/registration/student-info'),
@@ -278,7 +314,7 @@ const submitRegistration = async () => {
   
   try {
     const response = await apiClient.post('/registration', {
-      districtId: form.value.districtId,
+      districtId: form.value.districtId || null,
       nationalShortAddress: form.value.nationalShortAddress.toUpperCase(),
       homeAddress: form.value.homeAddress || null
     })

@@ -1,6 +1,14 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-base-200/50 to-base-100">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Back Navigation -->
+      <div class="mb-6">
+        <router-link to="/" class="btn btn-ghost btn-sm gap-2">
+          <ArrowRight class="w-4 h-4" />
+          العودة للرئيسية
+        </router-link>
+      </div>
+
       <!-- Page Header -->
       <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-info to-info/70 rounded-2xl shadow-lg mb-4">
@@ -229,7 +237,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FileSearch, AlertCircle, ClipboardList, Plus, User, MapPin, Calendar, CheckCircle, XCircle, Clock, RefreshCw, Bus, Send } from 'lucide-vue-next'
+import { FileSearch, AlertCircle, ClipboardList, Plus, User, MapPin, Calendar, CheckCircle, XCircle, Clock, RefreshCw, Bus, Send, ArrowRight } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface Registration {

@@ -13,6 +13,7 @@ public record StudentHalaqaInfoDto
     
     // Halaqa Section
     public int? HalaqaSectionId { get; init; }
+    public int? StudentHalaqaSecId { get; init; }
     public string? HalaqaGender { get; init; }
     
     // Period Information
