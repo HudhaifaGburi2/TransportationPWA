@@ -112,7 +112,7 @@
                 >
                   <option value="">اختر المنطقة السكنية</option>
                   <option v-for="district in districts" :key="district.id" :value="district.id">
-                    {{ district.name }}
+                    {{ district.districtNameAr }}
                   </option>
                 </select>
               </div>
@@ -222,7 +222,9 @@ interface StudentInfo {
 
 interface District {
   id: string
-  name: string
+  districtNameAr: string
+  districtNameEn?: string
+  isActive: boolean
 }
 
 const router = useRouter()
