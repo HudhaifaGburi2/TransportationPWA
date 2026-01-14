@@ -51,12 +51,12 @@ public class StudentHalaqaInfo
     public int? MapStatus { get; init; }
 
     // Halaqa Section Information
-    public Guid? HalaqaSectionId { get; init; }
+    public int? HalaqaSectionId { get; init; }
     public int? HalaqaSectionStatus { get; init; }
 
     // Teacher-Halaqa Mapping
-    public Guid? TeacherHalaqaSecId { get; init; }
+    public int? TeacherHalaqaSecId { get; init; }
 
     // Student-Halaqa Mapping
-    public Guid? StudentHalaqaSecId { get; init; }
+    public int? StudentHalaqaSecId { get; init; }
 }

@@ -26,16 +26,18 @@
     </div>
 
     <!-- No Registration Found -->
-    <div v-else-if="!registration" class="bg-base-100 rounded-xl shadow-sm border border-base-200 p-12 text-center">
-      <div class="w-20 h-20 mx-auto mb-6 bg-base-200 rounded-full flex items-center justify-center">
-        <ClipboardList class="w-10 h-10 text-base-content/30" />
+    <div v-else-if="!registration" class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
+      <div class="bg-gradient-to-b from-primary/5 to-transparent p-12 text-center">
+        <div class="w-24 h-24 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
+          <ClipboardList class="w-12 h-12 text-primary" />
+        </div>
+        <h2 class="text-2xl font-bold text-base-content mb-3">لم يتم العثور على طلب تسجيل</h2>
+        <p class="text-base-content/60 mb-8 max-w-md mx-auto">لم تقم بتقديم طلب تسجيل في خدمة النقل بعد. قم بتقديم طلب جديد للاستفادة من خدمة النقل.</p>
+        <router-link to="/registration" class="btn btn-primary btn-lg gap-3 shadow-lg hover:shadow-xl transition-all">
+          <Plus class="w-6 h-6" />
+          تقديم طلب تسجيل جديد
+        </router-link>
       </div>
-      <h2 class="text-xl font-bold text-base-content mb-2">لم يتم العثور على طلب تسجيل</h2>
-      <p class="text-base-content/60 mb-6">لم تقم بتقديم طلب تسجيل في خدمة النقل بعد</p>
-      <router-link to="/registration" class="btn btn-primary gap-2">
-        <Plus class="w-5 h-5" />
-        تقديم طلب جديد
-      </router-link>
     </div>
 
     <!-- Registration Details -->

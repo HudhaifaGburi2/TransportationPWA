@@ -2343,8 +2343,7 @@
       "CreateRegistrationRequestDto": {
         "required": [
           "districtId",
-          "latitude",
-          "longitude"
+          "nationalShortAddress"
         ],
         "type": "object",
         "properties": {
@@ -2352,17 +2351,24 @@
             "type": "string",
             "format": "uuid"
           },
+          "nationalShortAddress": {
+            "minLength": 1,
+            "pattern": "^[A-Za-z]{4}\\d{4}$",
+            "type": "string"
+          },
           "latitude": {
             "maximum": 90,
             "minimum": -90,
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "longitude": {
             "maximum": 180,
             "minimum": -180,
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "homeAddress": {
             "maxLength": 500,
@@ -2946,17 +2952,23 @@
             "type": "string",
             "format": "uuid"
           },
+          "nationalShortAddress": {
+            "type": "string",
+            "nullable": true
+          },
           "homeAddress": {
             "type": "string",
             "nullable": true
           },
           "latitude": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "longitude": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "status": {
             "type": "string",

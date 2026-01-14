@@ -63,12 +63,13 @@ public class RegistrationService : IRegistrationService
         }
 
         // Create registration request with auto-filled Central DB data
+        // Note: HalaqaSectionId is int in CentralDB but stored as Guid in TumsDB - we skip this field
         var registrationRequest = RegistrationRequest.CreateFromCentralDb(
             studentUserId: studentInfo.StudentUserId,
             studentId: studentInfo.StudentId,
             studentName: studentInfo.StudentName,
             halaqaTypeCode: studentInfo.HalaqaTypeCode,
-            halaqaSectionId: studentInfo.HalaqaSectionId,
+            halaqaSectionId: null,
             halaqaGender: studentInfo.HalaqaGender,
             periodId: studentInfo.PeriodId,
             ageGroupId: studentInfo.AgeGroupId,
@@ -166,7 +167,7 @@ public class RegistrationService : IRegistrationService
                     studentId: request.StudentId,
                     studentName: request.StudentName,
                     halaqaTypeCode: request.HalaqaTypeCode,
-                    halaqaSectionId: request.HalaqaSectionId,
+                    halaqaSectionId: null,
                     halaqaGender: request.HalaqaGender,
                     periodId: request.PeriodId,
                     ageGroupId: request.AgeGroupId,
