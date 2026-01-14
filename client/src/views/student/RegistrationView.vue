@@ -208,8 +208,8 @@ const loadStudentInfo = async () => {
   error.value = null
   try {
     const [studentResponse, districtsResponse] = await Promise.all([
-      apiClient.get('/api/v1/registration/student-info'),
-      apiClient.get('/api/v1/districts')
+      apiClient.get('/registration/student-info'),
+      apiClient.get('/districts')
     ])
     
     if (studentResponse.data.success) {
@@ -233,7 +233,7 @@ const submitRegistration = async () => {
   error.value = null
   
   try {
-    const response = await apiClient.post('/api/v1/registration', {
+    const response = await apiClient.post('/registration', {
       districtId: form.value.districtId,
       nationalShortAddress: form.value.nationalShortAddress.toUpperCase(),
       homeAddress: form.value.homeAddress || null

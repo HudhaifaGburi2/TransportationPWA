@@ -288,7 +288,7 @@ const form = reactive({
 const fetchRoutes = async () => {
   loading.value = true
   try {
-    const response = await apiClient.get('/api/v1/routes')
+    const response = await apiClient.get('/routes')
     if (response.data.success) {
       routes.value = response.data.data
     }
@@ -316,9 +316,9 @@ const saveRoute = async () => {
   saving.value = true
   try {
     if (showEditModal.value && selectedRoute.value) {
-      await apiClient.put(`/api/v1/routes/${selectedRoute.value.routeId}`, form)
+      await apiClient.put(`/routes/${selectedRoute.value.routeId}`, form)
     } else {
-      await apiClient.post('/api/v1/routes', form)
+      await apiClient.post('/routes', form)
     }
     await fetchRoutes()
     closeModal()
@@ -333,7 +333,7 @@ const deleteRouteConfirmed = async () => {
   if (routeToDelete.value) {
     deleting.value = true
     try {
-      await apiClient.delete(`/api/v1/routes/${routeToDelete.value.routeId}`)
+      await apiClient.delete(`/routes/${routeToDelete.value.routeId}`)
       await fetchRoutes()
     } catch (e) {
       console.error('Error deleting route:', e)

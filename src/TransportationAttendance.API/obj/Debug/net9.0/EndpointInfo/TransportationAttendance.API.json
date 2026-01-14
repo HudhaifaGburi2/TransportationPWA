@@ -3176,8 +3176,8 @@
             "nullable": true
           },
           "halaqaSectionId": {
-            "type": "string",
-            "format": "uuid",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "halaqaGender": {

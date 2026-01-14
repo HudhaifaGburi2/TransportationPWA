@@ -247,7 +247,7 @@ const loadRegistration = async () => {
   isLoading.value = true
   error.value = null
   try {
-    const response = await apiClient.get('/api/v1/registration/my-registration')
+    const response = await apiClient.get('/registration/my-registration')
     if (response.data.success) {
       registration.value = response.data.data
     }

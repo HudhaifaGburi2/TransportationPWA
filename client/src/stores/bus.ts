@@ -119,7 +119,7 @@ export const useBusStore = defineStore('bus', () => {
             if (query?.isActive !== undefined) params.append('isActive', query.isActive.toString())
             if (query?.search) params.append('search', query.search)
 
-            const response = await apiClient.get(`/api/v1/buses?${params}`)
+            const response = await apiClient.get(`/buses?${params}`)
             if (response.data.success) {
                 buses.value = response.data.data
             } else {
@@ -136,7 +136,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get(`/api/v1/buses/by-period/${periodId}`)
+            const response = await apiClient.get(`/buses/by-period/${periodId}`)
             if (response.data.success) {
                 buses.value = response.data.data
             } else {
@@ -153,7 +153,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get(`/api/v1/buses/${id}`)
+            const response = await apiClient.get(`/buses/${id}`)
             if (response.data.success) {
                 currentBus.value = response.data.data
                 return response.data.data
@@ -172,7 +172,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.post('/api/v1/buses', dto)
+            const response = await apiClient.post('/buses', dto)
             if (response.data.success) {
                 buses.value.push(response.data.data)
                 return response.data.data
@@ -191,7 +191,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.put(`/api/v1/buses/${id}`, dto)
+            const response = await apiClient.put(`/buses/${id}`, dto)
             if (response.data.success) {
                 const index = buses.value.findIndex(b => b.busId === id)
                 if (index !== -1) {
@@ -213,7 +213,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.delete(`/api/v1/buses/${id}`)
+            const response = await apiClient.delete(`/buses/${id}`)
             if (response.data.success) {
                 buses.value = buses.value.filter(b => b.busId !== id)
                 return true
@@ -232,7 +232,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get(`/api/v1/buses/${busId}/statistics`)
+            const response = await apiClient.get(`/buses/${busId}/statistics`)
             if (response.data.success) {
                 statistics.value = response.data.data
                 return response.data.data
@@ -251,7 +251,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get('/api/v1/buses/summary')
+            const response = await apiClient.get('/buses/summary')
             if (response.data.success) {
                 summary.value = response.data.data
                 return response.data.data
