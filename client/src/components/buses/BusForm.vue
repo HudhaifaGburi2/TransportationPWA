@@ -55,8 +55,29 @@
         <label class="label"><span class="label-text">المسار</span></label>
         <select v-model="form.routeId" class="select select-bordered">
           <option :value="undefined">بدون مسار</option>
-          <!-- Routes would be loaded from API -->
+          <option v-for="r in routes" :key="r.routeId" :value="r.routeId">{{ r.routeName }}</option>
         </select>
+      </div>
+    </div>
+
+    <!-- Districts Selection -->
+    <div class="form-control">
+      <label class="label"><span class="label-text">المناطق المخدومة</span></label>
+      <div class="flex flex-wrap gap-2 p-3 border border-base-300 rounded-lg min-h-12 bg-base-100">
+        <span v-if="!districts.length" class="text-base-content/50 text-sm">جاري تحميل المناطق...</span>
+        <label 
+          v-for="d in districts" 
+          :key="d.districtId" 
+          class="flex items-center gap-2 cursor-pointer"
+        >
+          <input 
+            type="checkbox" 
+            :value="d.districtId" 
+            v-model="form.districtIds" 
+            class="checkbox checkbox-sm checkbox-primary" 
+          />
+          <span class="text-sm">{{ d.districtNameAr }}</span>
+        </label>
       </div>
     </div>
 
@@ -80,18 +101,61 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import type { Bus, CreateBusDto, UpdateBusDto } from '@/stores/bus'
+import apiClient from '@/services/api/axios.config'
 
 interface Period {
   id: number
   name: string
 }
 
+interface RouteItem {
+  routeId: string
+  routeName: string
+  isActive: boolean
+}
+
+interface DistrictItem {
+  districtId: string
+  districtNameAr: string
+  districtNameEn?: string
+}
+
 const props = defineProps<{
   bus?: Bus | null
   periods: Period[]
 }>()
+
+const routes = ref<RouteItem[]>([])
+const districts = ref<DistrictItem[]>([])
+
+const fetchRoutes = async () => {
+  try {
+    const response = await apiClient.get('/routes')
+    if (response.data.success) {
+      routes.value = response.data.data.filter((r: RouteItem) => r.isActive)
+    }
+  } catch (e) {
+    console.error('Error fetching routes:', e)
+  }
+}
+
+const fetchDistricts = async () => {
+  try {
+    const response = await apiClient.get('/districts')
+    if (response.data.success) {
+      districts.value = response.data.data
+    }
+  } catch (e) {
+    console.error('Error fetching districts:', e)
+  }
+}
+
+onMounted(() => {
+  fetchRoutes()
+  fetchDistricts()
+})
 
 const emit = defineEmits<{
   (e: 'submit', data: CreateBusDto | UpdateBusDto): void

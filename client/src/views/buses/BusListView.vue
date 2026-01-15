@@ -116,11 +116,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Plus } from 'lucide-vue-next'
 import { useBusStore, type Bus } from '@/stores/bus'
 import BusCard from '@/components/buses/BusCard.vue'
 import BusForm from '@/components/buses/BusForm.vue'
 
+const router = useRouter()
 const busStore = useBusStore()
 
 const searchQuery = ref('')
@@ -190,8 +192,8 @@ const editBus = (bus: Bus) => {
   showEditModal.value = true
 }
 
-const viewBus = (_bus: Bus) => {
-  // Navigate to bus detail view
+const viewBus = (bus: Bus) => {
+  router.push({ name: 'BusDetail', params: { id: bus.busId } })
 }
 
 const confirmDelete = (bus: Bus) => {
