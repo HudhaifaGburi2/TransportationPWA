@@ -3,7 +3,11 @@ namespace TransportationAttendance.Application.DTOs.Bus;
 public record BusDto
 {
     public Guid BusId { get; init; }
-    public string BusNumber { get; init; } = string.Empty;
+    /// <summary>
+    /// PlateNumber is the authoritative identifier from official CSV.
+    /// Unique within (PlateNumber + PeriodId) - same plate can exist in different periods.
+    /// </summary>
+    public string PlateNumber { get; init; } = string.Empty;
     public int PeriodId { get; init; }
     public string? PeriodName { get; init; }
     public Guid? RouteId { get; init; }
@@ -29,7 +33,7 @@ public record DistrictInfoDto
 public record BusStatisticsDto
 {
     public Guid BusId { get; init; }
-    public string BusNumber { get; init; } = string.Empty;
+    public string PlateNumber { get; init; } = string.Empty;
     public int TotalStudents { get; init; }
     public int ActiveStudents { get; init; }
     public int SuspendedStudents { get; init; }

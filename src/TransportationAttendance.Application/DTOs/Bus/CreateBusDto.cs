@@ -4,9 +4,13 @@ namespace TransportationAttendance.Application.DTOs.Bus;
 
 public record CreateBusDto
 {
-    [Required(ErrorMessage = "رقم الباص مطلوب")]
+    /// <summary>
+    /// PlateNumber is the authoritative identifier from official CSV.
+    /// Unique within (PlateNumber + PeriodId) - same plate can exist in different periods.
+    /// </summary>
+    [Required(ErrorMessage = "رقم اللوحة مطلوب")]
     [MaxLength(20)]
-    public string BusNumber { get; init; } = string.Empty;
+    public string PlateNumber { get; init; } = string.Empty;
 
     [Required(ErrorMessage = "الفترة مطلوبة")]
     public int PeriodId { get; init; }
@@ -27,9 +31,13 @@ public record CreateBusDto
 
 public record UpdateBusDto
 {
-    [Required(ErrorMessage = "رقم الباص مطلوب")]
+    /// <summary>
+    /// PlateNumber is the authoritative identifier from official CSV.
+    /// Unique within (PlateNumber + PeriodId) - same plate can exist in different periods.
+    /// </summary>
+    [Required(ErrorMessage = "رقم اللوحة مطلوب")]
     [MaxLength(20)]
-    public string BusNumber { get; init; } = string.Empty;
+    public string PlateNumber { get; init; } = string.Empty;
 
     [Required(ErrorMessage = "الفترة مطلوبة")]
     public int PeriodId { get; init; }

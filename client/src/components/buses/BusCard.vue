@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex items-start justify-between">
         <div>
-          <h3 class="card-title text-lg">{{ bus.busNumber }}</h3>
+          <h3 class="card-title text-lg">{{ bus.plateNumber }}</h3>
           <p class="text-sm text-base-content/60">{{ bus.periodName }}</p>
         </div>
         <div class="dropdown dropdown-end">

@@ -13,7 +13,8 @@ public class BusConfiguration : IEntityTypeConfiguration<Bus>
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id).HasColumnName("BusId");
 
-        builder.Property(e => e.BusNumber).HasColumnName("BusNumber").HasMaxLength(20).IsRequired();
+        // PlateNumber is the authoritative identifier from official CSV
+        builder.Property(e => e.PlateNumber).HasColumnName("PlateNumber").HasMaxLength(20).IsRequired();
         builder.Property(e => e.PeriodId).HasColumnName("PeriodId").IsRequired();
         builder.Property(e => e.RouteId).HasColumnName("RouteId");
         builder.Property(e => e.DriverName).HasColumnName("DriverName").HasMaxLength(200);
@@ -45,7 +46,7 @@ public class BusConfiguration : IEntityTypeConfiguration<Bus>
 
         // Indexes
         builder.HasIndex(e => e.PeriodId);
-        builder.HasIndex(e => e.BusNumber);
+        builder.HasIndex(e => e.PlateNumber);
         builder.HasIndex(e => e.IsActive);
         builder.HasIndex(e => e.IsDeleted);
 

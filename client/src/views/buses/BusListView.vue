@@ -104,7 +104,7 @@
     <dialog :open="showDeleteModal" class="modal modal-open">
       <div class="modal-box">
         <h3 class="font-bold text-lg">تأكيد الحذف</h3>
-        <p class="py-4">هل أنت متأكد من حذف الباص رقم {{ busToDelete?.busNumber }}؟</p>
+        <p class="py-4">هل أنت متأكد من حذف الباص رقم {{ busToDelete?.plateNumber }}؟</p>
         <div class="modal-action">
           <button class="btn btn-ghost" @click="showDeleteModal = false">إلغاء</button>
           <button class="btn btn-error" @click="deleteBusConfirmed">حذف</button>
@@ -157,7 +157,7 @@ const filteredBuses = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(b =>
-      b.busNumber.toLowerCase().includes(query) ||
+      b.plateNumber.toLowerCase().includes(query) ||
       b.driverName?.toLowerCase().includes(query)
     )
   }

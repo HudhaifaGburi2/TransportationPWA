@@ -37,7 +37,7 @@ public class BusService : IBusService
             
             if (!string.IsNullOrWhiteSpace(query.Search))
                 filtered = filtered.Where(b => 
-                    b.BusNumber.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
+                    b.PlateNumber.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
                     (b.DriverName?.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ?? false));
             
             buses = filtered.ToList();
@@ -65,12 +65,13 @@ public class BusService : IBusService
 
     public async Task<Result<BusDto>> CreateAsync(CreateBusDto dto, CancellationToken cancellationToken = default)
     {
-        var existing = await _unitOfWork.Buses.GetByBusNumberAsync(dto.BusNumber, dto.PeriodId, cancellationToken);
+        // Validate (PlateNumber + PeriodId) uniqueness - same plate can exist in different periods
+        var existing = await _unitOfWork.Buses.GetByPlateNumberAsync(dto.PlateNumber, dto.PeriodId, cancellationToken);
         if (existing != null)
-            return Result.Failure<BusDto>("رقم الباص موجود مسبقاً في هذه الفترة");
+            return Result.Failure<BusDto>("رقم اللوحة موجود مسبقاً في هذه الفترة");
 
         var bus = Bus.Create(
-            dto.BusNumber,
+            dto.PlateNumber,
             dto.PeriodId,
             dto.Capacity,
             dto.RouteId,
@@ -89,9 +90,10 @@ public class BusService : IBusService
         if (bus == null)
             return Result.Failure<BusDto>("الباص غير موجود");
 
-        var existing = await _unitOfWork.Buses.GetByBusNumberAsync(dto.BusNumber, dto.PeriodId, cancellationToken);
+        // Validate (PlateNumber + PeriodId) uniqueness - same plate can exist in different periods
+        var existing = await _unitOfWork.Buses.GetByPlateNumberAsync(dto.PlateNumber, dto.PeriodId, cancellationToken);
         if (existing != null && existing.Id != id)
-            return Result.Failure<BusDto>("رقم الباص موجود مسبقاً في هذه الفترة");
+            return Result.Failure<BusDto>("رقم اللوحة موجود مسبقاً في هذه الفترة");
 
         // Capacity validation - cannot reduce below current student count
         var currentStudentCount = bus.StudentAssignments?.Count(s => s.IsActive) ?? 0;
@@ -99,7 +101,7 @@ public class BusService : IBusService
             return Result.Failure<BusDto>($"لا يمكن تقليل السعة إلى {dto.Capacity}. يوجد حالياً {currentStudentCount} طالب مسجل");
 
         bus.Update(
-            dto.BusNumber,
+            dto.PlateNumber,
             dto.PeriodId,
             dto.Capacity,
             dto.RouteId,
@@ -145,7 +147,7 @@ public class BusService : IBusService
         var stats = new BusStatisticsDto
         {
             BusId = bus.Id,
-            BusNumber = bus.BusNumber,
+            PlateNumber = bus.PlateNumber,
             TotalStudents = bus.StudentAssignments?.Count ?? 0,
             ActiveStudents = studentCount,
             SuspendedStudents = bus.StudentAssignments?.Count(s => !s.IsActive) ?? 0,
@@ -210,7 +212,7 @@ public class BusService : IBusService
         return new BusDto
         {
             BusId = bus.Id,
-            BusNumber = bus.BusNumber,
+            PlateNumber = bus.PlateNumber,
             PeriodId = bus.PeriodId,
             PeriodName = $"الفترة {bus.PeriodId}",
             RouteId = bus.RouteId,

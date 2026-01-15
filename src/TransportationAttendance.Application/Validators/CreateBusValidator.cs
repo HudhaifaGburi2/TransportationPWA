@@ -7,9 +7,11 @@ public class CreateBusValidator : AbstractValidator<CreateBusDto>
 {
     public CreateBusValidator()
     {
-        RuleFor(x => x.BusNumber)
-            .NotEmpty().WithMessage("رقم الباص مطلوب")
-            .MaximumLength(20).WithMessage("رقم الباص يجب ألا يتجاوز 20 حرف");
+        // PlateNumber is the authoritative identifier from official CSV
+        // Uniqueness enforced on (PlateNumber + PeriodId) - same plate can exist in different periods
+        RuleFor(x => x.PlateNumber)
+            .NotEmpty().WithMessage("رقم اللوحة مطلوب")
+            .MaximumLength(20).WithMessage("رقم اللوحة يجب ألا يتجاوز 20 حرف");
 
         RuleFor(x => x.PeriodId)
             .GreaterThan(0).WithMessage("الفترة مطلوبة");
@@ -32,9 +34,11 @@ public class UpdateBusValidator : AbstractValidator<UpdateBusDto>
 {
     public UpdateBusValidator()
     {
-        RuleFor(x => x.BusNumber)
-            .NotEmpty().WithMessage("رقم الباص مطلوب")
-            .MaximumLength(20).WithMessage("رقم الباص يجب ألا يتجاوز 20 حرف");
+        // PlateNumber is the authoritative identifier from official CSV
+        // Uniqueness enforced on (PlateNumber + PeriodId) - same plate can exist in different periods
+        RuleFor(x => x.PlateNumber)
+            .NotEmpty().WithMessage("رقم اللوحة مطلوب")
+            .MaximumLength(20).WithMessage("رقم اللوحة يجب ألا يتجاوز 20 حرف");
 
         RuleFor(x => x.PeriodId)
             .GreaterThan(0).WithMessage("الفترة مطلوبة");

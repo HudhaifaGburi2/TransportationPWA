@@ -6,7 +6,7 @@
         <ArrowRight class="w-6 h-6" />
       </button>
       <div>
-        <h1 class="text-2xl font-bold">باص {{ bus?.busNumber }}</h1>
+        <h1 class="text-2xl font-bold">باص {{ bus?.plateNumber }}</h1>
         <p class="text-base-content/60">{{ bus?.periodName }}</p>
       </div>
     </div>

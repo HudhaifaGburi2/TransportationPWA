@@ -4,7 +4,9 @@ import apiClient from '@/services/api/axios.config'
 
 export interface Bus {
     busId: string
-    busNumber: string
+    // PlateNumber is the authoritative identifier from official CSV
+    // Unique within (PlateNumber + PeriodId) - same plate can exist in different periods
+    plateNumber: string
     periodId: number
     periodName?: string
     routeId?: string
@@ -28,7 +30,7 @@ export interface DistrictInfo {
 
 export interface BusStatistics {
     busId: string
-    busNumber: string
+    plateNumber: string
     totalStudents: number
     activeStudents: number
     suspendedStudents: number
@@ -63,7 +65,8 @@ export interface PeriodBusSummary {
 }
 
 export interface CreateBusDto {
-    busNumber: string
+    // PlateNumber is the authoritative identifier from official CSV
+    plateNumber: string
     periodId: number
     routeId?: string
     driverName?: string

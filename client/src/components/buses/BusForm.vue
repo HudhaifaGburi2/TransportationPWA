@@ -1,18 +1,18 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Bus Number -->
+      <!-- Plate Number -->
       <div class="form-control">
-        <label class="label"><span class="label-text">رقم الباص *</span></label>
+        <label class="label"><span class="label-text">رقم اللوحة *</span></label>
         <input
-          v-model="form.busNumber"
+          v-model="form.plateNumber"
           type="text"
           class="input input-bordered"
-          :class="{ 'input-error': errors.busNumber }"
+          :class="{ 'input-error': errors.plateNumber }"
           required
         />
-        <label v-if="errors.busNumber" class="label">
-          <span class="label-text-alt text-error">{{ errors.busNumber }}</span>
+        <label v-if="errors.plateNumber" class="label">
+          <span class="label-text-alt text-error">{{ errors.plateNumber }}</span>
         </label>
       </div>
 
@@ -102,7 +102,7 @@ const submitting = ref(false)
 const errors = reactive<Record<string, string>>({})
 
 const form = reactive({
-  busNumber: '',
+  plateNumber: '',
   periodId: 0,
   driverName: '',
   driverPhoneNumber: '',
@@ -114,7 +114,7 @@ const form = reactive({
 
 watch(() => props.bus, (newBus) => {
   if (newBus) {
-    form.busNumber = newBus.busNumber
+    form.plateNumber = newBus.plateNumber
     form.periodId = newBus.periodId
     form.driverName = newBus.driverName || ''
     form.driverPhoneNumber = newBus.driverPhoneNumber || ''
@@ -128,7 +128,7 @@ watch(() => props.bus, (newBus) => {
 }, { immediate: true })
 
 const resetForm = () => {
-  form.busNumber = ''
+  form.plateNumber = ''
   form.periodId = 0
   form.driverName = ''
   form.driverPhoneNumber = ''
@@ -141,8 +141,8 @@ const resetForm = () => {
 const validate = (): boolean => {
   Object.keys(errors).forEach(key => delete errors[key])
 
-  if (!form.busNumber.trim()) {
-    errors.busNumber = 'رقم الباص مطلوب'
+  if (!form.plateNumber.trim()) {
+    errors.plateNumber = 'رقم اللوحة مطلوب'
   }
 
   if (!form.periodId || form.periodId === 0) {
@@ -162,7 +162,7 @@ const handleSubmit = () => {
   submitting.value = true
 
   const data: CreateBusDto | UpdateBusDto = {
-    busNumber: form.busNumber,
+    plateNumber: form.plateNumber,
     periodId: form.periodId,
     driverName: form.driverName || undefined,
     driverPhoneNumber: form.driverPhoneNumber || undefined,
