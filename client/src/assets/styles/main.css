@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TUMS Design System - CSS Variables */
 :root {
   --primary-green: #3d5a4f;
   --primary-green-light: #4d6f62;
@@ -20,6 +21,25 @@
   --border: #dee2e6;
   --text-primary: #212529;
   --text-secondary: #6c757d;
+
+  /* Force DaisyUI base colors for light theme */
+  --b1: 255 255 255;
+  /* base-100 = #ffffff */
+  --b2: 248 249 250;
+  /* base-200 = #f8f9fa */
+  --b3: 222 226 230;
+  /* base-300 = #dee2e6 */
+  --bc: 33 37 41;
+  /* base-content = #212529 */
+}
+
+/* Ensure no dark mode interference */
+[data-theme="tums"] {
+  color-scheme: light;
+  --b1: 255 255 255;
+  --b2: 248 249 250;
+  --b3: 222 226 230;
+  --bc: 33 37 41;
 }
 
 html {

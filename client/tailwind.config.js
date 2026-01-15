@@ -4,7 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
+  // Dark mode disabled - TUMS uses light theme only (data-theme="tums")
   theme: {
     extend: {
       colors: {
@@ -67,7 +67,7 @@ export default {
           "base-100": "#ffffff",
           "base-200": "#f8f9fa",
           "base-300": "#dee2e6",
-          "base-content": "#1f2937",
+          "base-content": "#212529", // TUMS text-primary
           "info": "#17a2b8",
           "info-content": "#ffffff",
           "success": "#28a745",
@@ -79,10 +79,11 @@ export default {
         },
       },
     ],
-    darkTheme: "dark",
+    darkTheme: false, // Disable dark theme
     base: true,
     styled: true,
     utils: true,
     rtl: true,
+    logs: false,
   },
 }
