@@ -76,7 +76,13 @@ interface MenuItem {
   roles: string[]
 }
 
-const menuItems: MenuItem[] = [
+// Menu items with role-based visibility
+// Note: Student routes use 'studentOnly' flag since student is determined dynamically
+interface ExtendedMenuItem extends MenuItem {
+  studentOnly?: boolean
+}
+
+const menuItems: ExtendedMenuItem[] = [
   {
     path: '/',
     label: 'لوحة التحكم',
@@ -117,19 +123,27 @@ const menuItems: MenuItem[] = [
     path: '/registration',
     label: 'التسجيل',
     icon: ClipboardList,
-    roles: [TUMS_ROLES.STUDENT]
+    roles: [],
+    studentOnly: true
   },
   {
     path: '/my-registration',
     label: 'طلبي',
     icon: Users,
-    roles: [TUMS_ROLES.STUDENT]
+    roles: [],
+    studentOnly: true
   }
 ]
 
 const visibleMenuItems = computed(() => {
   return menuItems.filter(item => {
+    // Student-only items: show if user is verified student from CentralDB
+    if (item.studentOnly) {
+      return authStore.isStudent && authStore.isAllowedStudent
+    }
+    // Items with no role restriction: show to all
     if (item.roles.length === 0) return true
+    // Role-based items: check if user has required role
     return item.roles.some(role => authStore.hasRole(role))
   })
 })
@@ -142,11 +156,12 @@ const userInitials = computed(() => {
 })
 
 const roleName = computed(() => {
+  if (authStore.hasRole(TUMS_ROLES.SYSTEM_ADMIN)) return 'مدير عام'
   if (authStore.hasRole(TUMS_ROLES.ADMIN)) return 'مدير النظام'
   if (authStore.hasRole(TUMS_ROLES.STAFF)) return 'موظف'
   if (authStore.hasRole(TUMS_ROLES.DRIVER)) return 'سائق'
-  if (authStore.hasRole(TUMS_ROLES.STUDENT)) return 'طالب'
-  if (authStore.hasRole(TUMS_ROLES.SYSTEM_ADMIN)) return 'مدير عام'
+  // Student is determined dynamically via CentralDB view
+  if (authStore.isStudent) return 'طالب'
   return 'مستخدم'
 })
 

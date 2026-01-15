@@ -94,7 +94,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> GetById(
         Guid id,
         CancellationToken cancellationToken)
@@ -110,7 +110,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("pending")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<RegistrationRequestDto>>>> GetPendingRegistrations(
         CancellationToken cancellationToken)
     {
@@ -119,7 +119,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpGet("by-district/{districtId:guid}")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<RegistrationRequestDto>>>> GetByDistrict(
         Guid districtId,
         CancellationToken cancellationToken)
@@ -129,7 +129,7 @@ public class RegistrationController : BaseApiController
     }
 
     [HttpPost("{id:guid}/review")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> ReviewRegistration(
         Guid id,
         [FromBody] ReviewRegistrationRequestDto dto,

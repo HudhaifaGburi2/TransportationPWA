@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TransportationAttendance.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+48b4dec2a57d6e046aaf34ab9b39c474a68f96a7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a76d523b436ab2ede7cf32e857d391f89160fd8a")]
 [assembly: System.Reflection.AssemblyProductAttribute("TransportationAttendance.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TransportationAttendance.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

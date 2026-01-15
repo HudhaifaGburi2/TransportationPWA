@@ -7,40 +7,57 @@ import BaseButton from '@/components/ui/BaseButton.vue'
 
 const authStore = useAuthStore()
 
-// Role checks
-const isStudent = computed(() => authStore.hasRole(TUMS_ROLES.STUDENT))
+// Role checks - Admin_Tums, Stuff_Tums, Driver_Tums, SYSTEM_ADMINISTRATOR
 const isAdminOrStaff = computed(() => authStore.hasAnyRole([TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]))
+const isDriver = computed(() => authStore.hasAnyRole([TUMS_ROLES.DRIVER, TUMS_ROLES.ADMIN, TUMS_ROLES.SYSTEM_ADMIN]))
+
+// Student is determined dynamically via CentralDB view check
+const isStudentVerified = computed(() => authStore.isStudent)
+const isAllowedStudent = computed(() => authStore.isAllowedStudent)
 
 // Student data
 const studentInfo = ref<any>(null)
 const registration = ref<any>(null)
 const isLoadingStudent = ref(false)
+const studentCheckComplete = ref(false)
 
-const loadStudentData = async () => {
-  if (!isStudent.value) return
+// Check if user is a student by calling the CentralDB view endpoint
+const checkAndLoadStudentData = async () => {
+  // Skip if user has admin/staff/driver role - they're not students
+  if (isAdminOrStaff.value || isDriver.value) {
+    studentCheckComplete.value = true
+    return
+  }
   
   isLoadingStudent.value = true
   try {
-    // Load student info
+    // Try to load student info from CentralDB view
+    // If successful, user exists in vw_Student_Halaqa_Teacher_information_Transportation_Dep
     const infoResponse = await apiClient.get('/registration/student-info')
-    if (infoResponse.data.success) {
+    if (infoResponse.data.success && infoResponse.data.data) {
       studentInfo.value = infoResponse.data.data
+      // Mark user as verified student with their halaqa location
+      authStore.setStudentStatus(true, infoResponse.data.data.halaqaLocationId)
     }
   } catch {
-    // Student info not available
+    // User is not a student (not in CentralDB view)
+    authStore.setStudentStatus(false, null)
   }
   
-  try {
-    // Load registration status
-    const regResponse = await apiClient.get('/registration/my-registration')
-    if (regResponse.data.success) {
-      registration.value = regResponse.data.data
+  // Load registration status if student is verified
+  if (authStore.isStudent) {
+    try {
+      const regResponse = await apiClient.get('/registration/my-registration')
+      if (regResponse.data.success) {
+        registration.value = regResponse.data.data
+      }
+    } catch {
+      // No registration found - that's ok
     }
-  } catch {
-    // No registration found
   }
   
   isLoadingStudent.value = false
+  studentCheckComplete.value = true
 }
 
 const registrationStatusText = computed(() => {
@@ -70,7 +87,7 @@ const stats = [
   { title: 'الطلاب المسجلين', value: '0', icon: Users, color: 'bg-success' },
 ]
 
-onMounted(loadStudentData)
+onMounted(checkAndLoadStudentData)
 </script>
 
 <template>
@@ -107,8 +124,8 @@ onMounted(loadStudentData)
         <p class="text-neutral">يمكنك من هنا إدارة الحافلات والأحياء والطلاب وتتبع الحضور والانصراف</p>
       </div>
 
-      <!-- Student Dashboard -->
-      <div v-if="isStudent" class="space-y-6 mb-8">
+      <!-- Student Dashboard - Only show for verified students from CentralDB -->
+      <div v-if="isStudentVerified && isAllowedStudent" class="space-y-6 mb-8">
         <!-- Loading -->
         <div v-if="isLoadingStudent" class="flex justify-center py-8">
           <span class="loading loading-spinner loading-lg text-primary"></span>
@@ -295,9 +312,9 @@ onMounted(loadStudentData)
             <span class="text-sm font-medium">طلبات التسجيل</span>
           </router-link>
           
-          <!-- Student Actions -->
+          <!-- Student Actions - Only for verified students -->
           <router-link
-            v-if="isStudent"
+            v-if="isStudentVerified && isAllowedStudent"
             to="/registration"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >
@@ -305,7 +322,7 @@ onMounted(loadStudentData)
             <span class="text-sm font-medium">تسجيل جديد</span>
           </router-link>
           <router-link
-            v-if="isStudent"
+            v-if="isStudentVerified && isAllowedStudent"
             to="/my-registration"
             class="flex flex-col items-center gap-2 p-4 bg-background rounded-lg hover:bg-primary/5 transition-colors"
           >

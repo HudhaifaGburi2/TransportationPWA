@@ -3,12 +3,11 @@ import { ref, computed } from 'vue'
 import type { LoginRequest, LoginResponse, UserInfo } from '@/types/auth'
 import { authService } from '@/services/api/auth.service'
 
-// TUMS Role Constants
+// TUMS Role Constants - Based on Regt_User_Role table
 export const TUMS_ROLES = {
     ADMIN: 'Admin_Tums',
     STAFF: 'Stuff_Tums',
     DRIVER: 'Driver_Tums',
-    STUDENT: 'STUDENT',
     SYSTEM_ADMIN: 'SYSTEM_ADMINISTRATOR'
 } as const
 
@@ -47,14 +46,32 @@ export const useAuthStore = defineStore('auth', () => {
     const isDriver = computed(() =>
         hasAnyRole([TUMS_ROLES.DRIVER, TUMS_ROLES.ADMIN, TUMS_ROLES.SYSTEM_ADMIN])
     )
-    const isStudent = computed(() => hasRole(TUMS_ROLES.STUDENT))
 
-    // Check if student is from allowed locations
+    // Student is determined dynamically - user exists in CentralDB view
+    // isStudentVerified is set after checking against vw_Student_Halaqa_Teacher_information_Transportation_Dep
+    const isStudentVerified = ref(false)
+    const studentHalaqaLocationId = ref<number | null>(null)
+
+    // Check if user is a student (verified via CentralDB)
+    const isStudent = computed(() => isStudentVerified.value)
+
+    // Check if student is from allowed locations (1 or 2)
     const isAllowedStudent = computed(() => {
-        if (!isStudent.value) return false
-        const locationId = user.value?.halaqaLocationId
-        return locationId !== undefined && ALLOWED_STUDENT_LOCATIONS.includes(locationId)
+        if (!isStudentVerified.value) return false
+        const locationId = studentHalaqaLocationId.value
+        return locationId !== null && ALLOWED_STUDENT_LOCATIONS.includes(locationId)
     })
+
+    // Check if user has any TUMS admin/staff/driver role
+    const hasTumsRole = computed(() =>
+        hasAnyRole([TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.DRIVER, TUMS_ROLES.SYSTEM_ADMIN])
+    )
+
+    // Set student verification status (called after checking CentralDB)
+    function setStudentStatus(verified: boolean, halaqaLocationId: number | null = null) {
+        isStudentVerified.value = verified
+        studentHalaqaLocationId.value = halaqaLocationId
+    }
 
     function hasRole(role: string): boolean {
         return userRoles.value.includes(role)
@@ -157,9 +174,11 @@ export const useAuthStore = defineStore('auth', () => {
         isDriver,
         isStudent,
         isAllowedStudent,
+        hasTumsRole,
         isInitialized,
         hasRole,
         hasAnyRole,
+        setStudentStatus,
         login,
         logout,
         clearAuth,

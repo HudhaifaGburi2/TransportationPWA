@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { useAuthStore, TUMS_ROLES, ALLOWED_STUDENT_LOCATIONS } from '@/stores/auth'
+import { useAuthStore, TUMS_ROLES } from '@/stores/auth'
 
 const routes: RouteRecordRaw[] = [
     // Auth routes
@@ -77,14 +77,14 @@ const routes: RouteRecordRaw[] = [
         }
     },
 
-    // Student routes
+    // Student routes - accessible to verified students (dynamic check via CentralDB)
     {
         path: '/registration',
         name: 'Registration',
         component: () => import('@/views/student/RegistrationView.vue'),
         meta: {
             requiresAuth: true,
-            roles: [TUMS_ROLES.STUDENT]
+            requiresStudent: true
         }
     },
     {
@@ -93,7 +93,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/student/MyRegistrationView.vue'),
         meta: {
             requiresAuth: true,
-            roles: [TUMS_ROLES.STUDENT]
+            requiresStudent: true
         }
     },
 
@@ -121,7 +121,7 @@ router.beforeEach(async (to, _from, next) => {
     const authStore = useAuthStore()
     const requiresAuth = to.meta.requiresAuth !== false
     const requiredRoles = to.meta.roles as string[] | undefined
-    const requiresStudentLocation = to.meta.requiresStudentLocation as boolean | undefined
+    const requiresStudent = to.meta.requiresStudent as boolean | undefined
 
     // Check authentication
     if (requiresAuth && !authStore.isAuthenticated) {
@@ -129,7 +129,7 @@ router.beforeEach(async (to, _from, next) => {
         return
     }
 
-    // Check role-based access
+    // Check role-based access for admin/staff/driver routes
     if (requiredRoles && requiredRoles.length > 0) {
         const hasRequiredRole = requiredRoles.some(role => authStore.hasRole(role))
         if (!hasRequiredRole) {
@@ -138,10 +138,11 @@ router.beforeEach(async (to, _from, next) => {
         }
     }
 
-    // Check student location requirement (HALAQAT_Location 1 or 2)
-    if (requiresStudentLocation) {
-        const locationId = authStore.user?.halaqaLocationId
-        if (!locationId || !ALLOWED_STUDENT_LOCATIONS.includes(locationId)) {
+    // Check student access - verified via CentralDB view
+    if (requiresStudent) {
+        // Student status is verified dynamically via API call in DashboardView
+        // If not verified yet or not a student, redirect to unauthorized
+        if (!authStore.isStudent && !authStore.hasTumsRole) {
             next({ name: 'Unauthorized' })
             return
         }
