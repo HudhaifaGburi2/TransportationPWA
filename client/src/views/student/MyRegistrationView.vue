@@ -148,11 +148,36 @@
                   <span class="text-base-content/60 text-sm">العنوان الوطني</span>
                   <span class="font-bold font-mono tracking-wider" dir="ltr">{{ registration.nationalShortAddress || '-' }}</span>
                 </div>
+                <div v-if="registration.fullNationalAddress" class="py-2 border-b border-base-200">
+                  <span class="text-base-content/60 text-sm block mb-1">العنوان الكامل</span>
+                  <span class="text-sm font-medium">{{ registration.fullNationalAddress }}</span>
+                </div>
                 <div v-if="registration.homeAddress" class="py-2">
                   <span class="text-base-content/60 text-sm block mb-1">وصف إضافي</span>
                   <span class="text-sm">{{ registration.homeAddress }}</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Periods Card -->
+        <div v-if="registration.periods && registration.periods.length > 0" class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                <Clock class="w-5 h-5 text-secondary" />
+              </div>
+              <h3 class="card-title text-lg">الفترات المسجلة</h3>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                v-for="period in registration.periods" 
+                :key="period" 
+                class="badge badge-primary badge-lg gap-2 py-3"
+              >
+                {{ periodNames[period] || `فترة ${period}` }}
+              </span>
             </div>
           </div>
         </div>
@@ -248,9 +273,12 @@ interface Registration {
   studentId: string
   studentName: string
   teacherName?: string
+  periodId?: number
   districtId: string
   nationalShortAddress: string
+  fullNationalAddress?: string
   homeAddress?: string
+  periods?: string[]
   status: 'Pending' | 'Approved' | 'Rejected'
   requestedAt: string
   reviewedAt?: string
@@ -259,6 +287,15 @@ interface Registration {
     id: string
     name: string
   }
+}
+
+// Period names mapping
+const periodNames: Record<string, string> = {
+  '1': 'الفترة الأولى',
+  '2': 'الفترة الثانية',
+  '3': 'الفترة الثالثة',
+  '4': 'الفترة الرابعة',
+  '5': 'الفترة الخامسة'
 }
 
 const isLoading = ref(false)

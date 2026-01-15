@@ -1651,6 +1651,45 @@
         }
       }
     },
+    "/api/v1/Registration/lookup-address/{shortAddress}": {
+      "get": {
+        "tags": [
+          "Registration"
+        ],
+        "parameters": [
+          {
+            "name": "shortAddress",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/NationalAddressDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NationalAddressDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NationalAddressDtoApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Routes": {
       "get": {
         "tags": [
@@ -2000,7 +2039,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "busNumber": {
+          "plateNumber": {
             "type": "string",
             "nullable": true
           },
@@ -2125,7 +2164,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "busNumber": {
+          "plateNumber": {
             "type": "string",
             "nullable": true
           },
@@ -2250,12 +2289,12 @@
       },
       "CreateBusDto": {
         "required": [
-          "busNumber",
-          "periodId"
+          "periodId",
+          "plateNumber"
         ],
         "type": "object",
         "properties": {
-          "busNumber": {
+          "plateNumber": {
             "maxLength": 20,
             "minLength": 1,
             "type": "string"
@@ -2355,6 +2394,18 @@
             "minLength": 1,
             "pattern": "^[A-Za-z]{4}\\d{4}$",
             "type": "string"
+          },
+          "fullNationalAddress": {
+            "maxLength": 500,
+            "type": "string",
+            "nullable": true
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           },
           "latitude": {
             "maximum": 90,
@@ -2741,6 +2792,87 @@
         },
         "additionalProperties": false
       },
+      "NationalAddressDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "shortAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "fullAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "district": {
+            "type": "string",
+            "nullable": true
+          },
+          "street": {
+            "type": "string",
+            "nullable": true
+          },
+          "buildingNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "additionalNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NationalAddressDtoApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/NationalAddressDto"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "ObjectApiResponse": {
         "type": "object",
         "properties": {
@@ -2956,6 +3088,10 @@
             "type": "string",
             "nullable": true
           },
+          "fullNationalAddress": {
+            "type": "string",
+            "nullable": true
+          },
           "homeAddress": {
             "type": "string",
             "nullable": true
@@ -2968,6 +3104,13 @@
           "longitude": {
             "type": "number",
             "format": "double",
+            "nullable": true
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           },
           "status": {
@@ -3255,12 +3398,12 @@
       },
       "UpdateBusDto": {
         "required": [
-          "busNumber",
-          "periodId"
+          "periodId",
+          "plateNumber"
         ],
         "type": "object",
         "properties": {
-          "busNumber": {
+          "plateNumber": {
             "maxLength": 20,
             "minLength": 1,
             "type": "string"

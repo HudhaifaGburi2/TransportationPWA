@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TransportationAttendance.Application.Interfaces;
 using TransportationAttendance.Domain.Interfaces;
+using TransportationAttendance.Infrastructure.ExternalServices;
 using TransportationAttendance.Infrastructure.Identity;
 using TransportationAttendance.Infrastructure.Persistence;
 using TransportationAttendance.Infrastructure.Persistence.Repositories;
@@ -53,6 +54,13 @@ public static class DependencyInjection
         // JWT Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IIdentityService, IdentityService>();
+
+        // National Address API Service
+        services.AddHttpClient<INationalAddressService, NationalAddressService>(client =>
+        {
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
         return services;
     }

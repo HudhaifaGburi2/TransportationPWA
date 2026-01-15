@@ -80,6 +80,11 @@ public class RegistrationService : IRegistrationService
             return Result.Failure<RegistrationRequestDto>("عذراً، خدمة النقل متاحة فقط لطلاب مواقع الحلقات المحددة.");
         }
 
+        // Serialize periods array to JSON if provided
+        string? periodsJson = dto.Periods?.Count > 0 
+            ? System.Text.Json.JsonSerializer.Serialize(dto.Periods) 
+            : null;
+
         // Create registration request with auto-filled Central DB data
         // Note: HalaqaSectionId is int in CentralDB but stored as Guid in TumsDB - we skip this field
         var registrationRequest = RegistrationRequest.CreateFromCentralDb(
@@ -95,6 +100,8 @@ public class RegistrationService : IRegistrationService
             teacherName: studentInfo.TeacherName,
             districtId: dto.DistrictId ?? Guid.Empty,
             nationalShortAddress: dto.NationalShortAddress,
+            fullNationalAddress: dto.FullNationalAddress,
+            periods: periodsJson,
             latitude: dto.Latitude,
             longitude: dto.Longitude,
             homeAddress: dto.HomeAddress

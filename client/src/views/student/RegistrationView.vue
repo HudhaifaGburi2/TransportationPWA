@@ -111,6 +111,27 @@
             </div>
 
             <div class="space-y-5">
+              <!-- Period Selection (Multi-Select) -->
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-semibold">الفترات المطلوبة <span class="text-error">*</span></span>
+                </label>
+                <div class="flex flex-wrap gap-3 p-4 bg-base-200/50 rounded-lg">
+                  <label v-for="period in availablePeriods" :key="period.id" class="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      :value="period.id.toString()" 
+                      v-model="form.periods" 
+                      class="checkbox checkbox-primary" 
+                    />
+                    <span class="text-sm font-medium">{{ period.name }}</span>
+                  </label>
+                </div>
+                <label v-if="form.periods.length === 0" class="label">
+                  <span class="label-text-alt text-error">يرجى اختيار فترة واحدة على الأقل</span>
+                </label>
+              </div>
+
               <!-- District Selection -->
               <div class="form-control">
                 <label class="label">
@@ -133,20 +154,34 @@
                 <label class="label">
                   <span class="label-text font-semibold">العنوان الوطني المختصر <span class="text-error">*</span></span>
                 </label>
-                <div class="relative">
-                  <input 
-                    v-model="form.nationalShortAddress"
-                    type="text"
-                    class="input input-bordered input-lg w-full uppercase tracking-widest text-center font-mono"
-                    placeholder="XXXX0000"
-                    maxlength="8"
-                    pattern="[A-Za-z]{4}[0-9]{4}"
-                    dir="ltr"
-                    required
-                  />
-                  <div class="absolute left-3 top-1/2 -translate-y-1/2">
-                    <Home class="w-5 h-5 text-base-content/30" />
+                <div class="flex gap-2">
+                  <div class="relative flex-1">
+                    <input 
+                      v-model="form.nationalShortAddress"
+                      type="text"
+                      class="input input-bordered input-lg w-full uppercase tracking-widest text-center font-mono"
+                      :class="{ 'input-success': addressConfirmed, 'input-error': addressError }"
+                      placeholder="XXXX0000"
+                      maxlength="8"
+                      pattern="[A-Za-z]{4}[0-9]{4}"
+                      dir="ltr"
+                      required
+                      @input="onAddressInput"
+                    />
+                    <div class="absolute left-3 top-1/2 -translate-y-1/2">
+                      <Home class="w-5 h-5 text-base-content/30" />
+                    </div>
                   </div>
+                  <button 
+                    type="button" 
+                    class="btn btn-primary btn-lg" 
+                    :disabled="!isAddressValid || isLookingUp"
+                    @click="lookupAddress"
+                  >
+                    <span v-if="isLookingUp" class="loading loading-spinner loading-sm"></span>
+                    <Search v-else class="w-5 h-5" />
+                    بحث
+                  </button>
                 </div>
                 <label class="label">
                   <span class="label-text-alt flex items-center gap-1">
@@ -158,6 +193,38 @@
                     كيف أجد عنواني؟
                   </a>
                 </label>
+              </div>
+
+              <!-- Full Address Display -->
+              <div v-if="fullAddress" class="form-control">
+                <label class="label">
+                  <span class="label-text font-semibold">العنوان الكامل</span>
+                </label>
+                <div class="bg-success/10 border border-success/30 rounded-lg p-4">
+                  <div class="flex items-start gap-3">
+                    <MapPin class="w-5 h-5 text-success mt-0.5" />
+                    <div class="flex-1">
+                      <p class="font-medium text-base-content">{{ fullAddress }}</p>
+                      <p v-if="addressDetails" class="text-sm text-base-content/60 mt-1">
+                        {{ addressDetails }}
+                      </p>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        v-model="addressConfirmed" 
+                        class="checkbox checkbox-success" 
+                      />
+                      <span class="text-sm font-medium text-success">تأكيد</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address Error -->
+              <div v-if="addressError" class="alert alert-error shadow-sm">
+                <AlertCircle class="w-5 h-5" />
+                <span>{{ addressError }}</span>
               </div>
 
               <!-- Home Address (Optional) -->
@@ -215,7 +282,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X, ArrowRight } from 'lucide-vue-next'
+import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X, ArrowRight, Search } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 import BaseButton from '@/components/ui/BaseButton.vue'
 
@@ -257,12 +324,36 @@ const districts = ref<District[]>([])
 const form = ref({
   districtId: '',
   nationalShortAddress: '',
-  homeAddress: ''
+  fullNationalAddress: '',
+  homeAddress: '',
+  periods: [] as string[]
+})
+
+// Available periods for multi-select
+const availablePeriods = [
+  { id: 1, name: 'الفترة الأولى' },
+  { id: 2, name: 'الفترة الثانية' },
+  { id: 3, name: 'الفترة الثالثة' },
+  { id: 4, name: 'الفترة الرابعة' },
+  { id: 5, name: 'الفترة الخامسة' }
+]
+
+// Address lookup state
+const isLookingUp = ref(false)
+const fullAddress = ref('')
+const addressDetails = ref('')
+const addressError = ref('')
+const addressConfirmed = ref(false)
+
+const isAddressValid = computed(() => {
+  const addressPattern = /^[A-Za-z]{4}\d{4}$/
+  return addressPattern.test(form.value.nationalShortAddress)
 })
 
 const isFormValid = computed(() => {
-  const addressPattern = /^[A-Za-z]{4}\d{4}$/
-  return addressPattern.test(form.value.nationalShortAddress)
+  return isAddressValid.value && 
+         form.value.periods.length > 0 && 
+         addressConfirmed.value
 })
 
 const checkExistingRegistration = async () => {
@@ -306,6 +397,48 @@ const loadStudentInfo = async () => {
   }
 }
 
+// Reset address state when input changes
+const onAddressInput = () => {
+  fullAddress.value = ''
+  addressDetails.value = ''
+  addressError.value = ''
+  addressConfirmed.value = false
+  form.value.fullNationalAddress = ''
+}
+
+// Lookup address from National Address API
+const lookupAddress = async () => {
+  if (!isAddressValid.value) return
+  
+  isLookingUp.value = true
+  addressError.value = ''
+  fullAddress.value = ''
+  addressDetails.value = ''
+  addressConfirmed.value = false
+  
+  try {
+    const response = await apiClient.get(`/registration/lookup-address/${form.value.nationalShortAddress.toUpperCase()}`)
+    
+    if (response.data.success && response.data.data) {
+      const data = response.data.data
+      fullAddress.value = data.fullAddress || ''
+      form.value.fullNationalAddress = data.fullAddress || ''
+      
+      // Build additional details
+      const details = []
+      if (data.city) details.push(`المدينة: ${data.city}`)
+      if (data.postalCode) details.push(`الرمز البريدي: ${data.postalCode}`)
+      addressDetails.value = details.join(' | ')
+    } else {
+      addressError.value = response.data.message || 'لم يتم العثور على العنوان'
+    }
+  } catch (err: any) {
+    addressError.value = err.response?.data?.message || 'حدث خطأ أثناء البحث عن العنوان'
+  } finally {
+    isLookingUp.value = false
+  }
+}
+
 const submitRegistration = async () => {
   if (!isFormValid.value) return
   
@@ -316,6 +449,8 @@ const submitRegistration = async () => {
     const response = await apiClient.post('/registration', {
       districtId: form.value.districtId || null,
       nationalShortAddress: form.value.nationalShortAddress.toUpperCase(),
+      fullNationalAddress: form.value.fullNationalAddress || null,
+      periods: form.value.periods,
       homeAddress: form.value.homeAddress || null
     })
     

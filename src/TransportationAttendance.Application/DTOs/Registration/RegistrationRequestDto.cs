@@ -21,9 +21,15 @@ public record RegistrationRequestDto
     // Student-provided fields
     public Guid DistrictId { get; init; }
     public string NationalShortAddress { get; init; } = string.Empty;
+    public string? FullNationalAddress { get; init; }
     public string? HomeAddress { get; init; }
     public decimal? Latitude { get; init; }
     public decimal? Longitude { get; init; }
+    
+    /// <summary>
+    /// JSON array of period IDs the student registered for
+    /// </summary>
+    public List<string>? Periods { get; init; }
     
     // Status
     public string Status { get; init; } = string.Empty;

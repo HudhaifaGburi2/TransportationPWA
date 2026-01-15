@@ -19,9 +19,15 @@ public class RegistrationRequest : BaseEntity
     // Student-provided fields
     public Guid DistrictId { get; private set; }
     public string NationalShortAddress { get; private set; } = string.Empty;
+    public string? FullNationalAddress { get; private set; }
     public string? HomeAddress { get; private set; }
     public decimal? Latitude { get; private set; }
     public decimal? Longitude { get; private set; }
+    
+    /// <summary>
+    /// JSON array of period IDs the student is registering for (e.g., ["1","3","5"])
+    /// </summary>
+    public string? Periods { get; private set; }
     
     // Request status
     public RegistrationStatus Status { get; private set; }
@@ -50,6 +56,8 @@ public class RegistrationRequest : BaseEntity
         string? teacherName,
         Guid districtId,
         string nationalShortAddress,
+        string? fullNationalAddress = null,
+        string? periods = null,
         decimal? latitude = null,
         decimal? longitude = null,
         string? homeAddress = null)
@@ -68,6 +76,8 @@ public class RegistrationRequest : BaseEntity
             TeacherName = teacherName,
             DistrictId = districtId,
             NationalShortAddress = nationalShortAddress,
+            FullNationalAddress = fullNationalAddress,
+            Periods = periods,
             Latitude = latitude,
             Longitude = longitude,
             HomeAddress = homeAddress,

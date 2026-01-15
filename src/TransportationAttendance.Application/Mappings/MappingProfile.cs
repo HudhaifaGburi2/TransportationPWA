@@ -29,7 +29,8 @@ public class MappingProfile : Profile
 
         // Registration Request mappings
         CreateMap<RegistrationRequest, RegistrationRequestDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.Periods, opt => opt.MapFrom(src => DeserializePeriods(src.Periods)));
 
         // Central DB Lookups mappings
         CreateMap<SetPeriod, PeriodDto>()
@@ -44,5 +45,20 @@ public class MappingProfile : Profile
 
         // Student Halaqa Info mapping
         CreateMap<StudentHalaqaInfo, StudentHalaqaInfoDto>();
+    }
+
+    private static List<string>? DeserializePeriods(string? periodsJson)
+    {
+        if (string.IsNullOrEmpty(periodsJson))
+            return null;
+        
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<List<string>>(periodsJson);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
