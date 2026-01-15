@@ -93,6 +93,11 @@ public class BusService : IBusService
         if (existing != null && existing.Id != id)
             return Result.Failure<BusDto>("رقم الباص موجود مسبقاً في هذه الفترة");
 
+        // Capacity validation - cannot reduce below current student count
+        var currentStudentCount = bus.StudentAssignments?.Count(s => s.IsActive) ?? 0;
+        if (dto.Capacity < currentStudentCount)
+            return Result.Failure<BusDto>($"لا يمكن تقليل السعة إلى {dto.Capacity}. يوجد حالياً {currentStudentCount} طالب مسجل");
+
         bus.Update(
             dto.BusNumber,
             dto.PeriodId,
@@ -117,6 +122,11 @@ public class BusService : IBusService
         var bus = await _unitOfWork.Buses.GetByIdAsync(id, cancellationToken);
         if (bus == null)
             return Result.Failure<bool>("الباص غير موجود");
+
+        // Prevent deletion if bus has active students
+        var activeStudentCount = bus.StudentAssignments?.Count(s => s.IsActive) ?? 0;
+        if (activeStudentCount > 0)
+            return Result.Failure<bool>($"لا يمكن حذف الباص. يوجد {activeStudentCount} طالب مسجل حالياً");
 
         _unitOfWork.Buses.Remove(bus);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

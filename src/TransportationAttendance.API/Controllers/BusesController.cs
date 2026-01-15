@@ -57,7 +57,7 @@ public class BusesController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<BusDto>>> Create(
         [FromBody] CreateBusDto dto,
         CancellationToken cancellationToken)
@@ -74,7 +74,7 @@ public class BusesController : BaseApiController
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<BusDto>>> Update(
         Guid id,
         [FromBody] UpdateBusDto dto,
@@ -89,7 +89,7 @@ public class BusesController : BaseApiController
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(
         Guid id,
         CancellationToken cancellationToken)
@@ -128,7 +128,7 @@ public class BusesController : BaseApiController
     }
 
     [HttpPost("{id:guid}/districts")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<bool>>> AssignDistricts(
         Guid id,
         [FromBody] List<Guid> districtIds,

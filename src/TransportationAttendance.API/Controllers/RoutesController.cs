@@ -43,7 +43,7 @@ public class RoutesController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<RouteDto>>> Create(
         [FromBody] CreateRouteDto dto,
         CancellationToken cancellationToken)
@@ -60,7 +60,7 @@ public class RoutesController : BaseApiController
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<RouteDto>>> Update(
         Guid id,
         [FromBody] UpdateRouteDto dto,
@@ -75,7 +75,7 @@ public class RoutesController : BaseApiController
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = AuthorizationPolicies.AdminPolicy)]
+    [Authorize(Policy = AuthorizationPolicies.TumsAdminPolicy)]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(
         Guid id,
         CancellationToken cancellationToken)
