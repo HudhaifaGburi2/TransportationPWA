@@ -55,6 +55,7 @@ export default {
   daisyui: {
     themes: [
       {
+        // TUMS Light Theme (default)
         tums: {
           "primary": "#3d5a4f",
           "primary-content": "#ffffff",
@@ -67,7 +68,7 @@ export default {
           "base-100": "#ffffff",
           "base-200": "#f8f9fa",
           "base-300": "#dee2e6",
-          "base-content": "#212529", // TUMS text-primary
+          "base-content": "#212529",
           "info": "#17a2b8",
           "info-content": "#ffffff",
           "success": "#28a745",
@@ -78,8 +79,33 @@ export default {
           "error-content": "#ffffff",
         },
       },
+      {
+        // TUMS Dark Theme
+        "tums-dark": {
+          "primary": "#4d6f62",
+          "primary-content": "#ffffff",
+          "secondary": "#c9a570",
+          "secondary-content": "#1a1a1a",
+          "accent": "#3d5a4f",
+          "accent-content": "#ffffff",
+          "neutral": "#9ca3af",
+          "neutral-content": "#1a1a1a",
+          "base-100": "#1a1a2e",
+          "base-200": "#16162a",
+          "base-300": "#0f0f1a",
+          "base-content": "#e5e7eb",
+          "info": "#3abff8",
+          "info-content": "#002b3d",
+          "success": "#36d399",
+          "success-content": "#003320",
+          "warning": "#fbbd23",
+          "warning-content": "#382800",
+          "error": "#f87272",
+          "error-content": "#470000",
+        },
+      },
     ],
-    darkTheme: false, // Disable dark theme
+    darkTheme: "tums-dark",
     base: true,
     styled: true,
     utils: true,

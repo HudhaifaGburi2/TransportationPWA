@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useUiStore } from '@/stores/ui'
+import { useThemeStore } from '@/stores/theme'
 
 const uiStore = useUiStore()
+const themeStore = useThemeStore()
+
+// Initialize theme on app mount
+onMounted(() => {
+  themeStore.initializeTheme()
+})
 </script>
 
 <template>

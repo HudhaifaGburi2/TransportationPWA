@@ -4,6 +4,7 @@ import { useAuthStore, TUMS_ROLES } from '@/stores/auth'
 import { Bus, Users, MapPin, Calendar, Route, ClipboardList, FileText, User, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 import BaseButton from '@/components/ui/BaseButton.vue'
+import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 
 const authStore = useAuthStore()
 
@@ -104,8 +105,9 @@ onMounted(checkAndLoadStudentData)
             <p class="text-sm text-white/80">لوحة التحكم</p>
           </div>
         </div>
-        <div class="flex items-center gap-4">
-          <span class="text-sm">مرحباً، {{ authStore.fullName || 'مستخدم' }}</span>
+        <div class="flex items-center gap-3">
+          <span class="text-sm hidden sm:inline">مرحباً، {{ authStore.fullName || 'مستخدم' }}</span>
+          <ThemeToggle />
           <button
             @click="authStore.logout()"
             class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors"
