@@ -12,16 +12,15 @@ public record CreateBusDto
     [MaxLength(20)]
     public string PlateNumber { get; init; } = string.Empty;
 
+    [MaxLength(10)]
+    public string? BusNumber { get; init; }
+
     [Required(ErrorMessage = "الفترة مطلوبة")]
     public int PeriodId { get; init; }
 
     public Guid? RouteId { get; init; }
-
-    [MaxLength(200)]
-    public string? DriverName { get; init; }
-
-    [MaxLength(20)]
-    public string? DriverPhoneNumber { get; init; }
+    public Guid? DriverId { get; init; }
+    public Guid? DepartmentId { get; init; }
 
     [Range(1, 100, ErrorMessage = "السعة يجب أن تكون بين 1 و 100")]
     public int Capacity { get; init; } = 30;
@@ -39,16 +38,15 @@ public record UpdateBusDto
     [MaxLength(20)]
     public string PlateNumber { get; init; } = string.Empty;
 
+    [MaxLength(10)]
+    public string? BusNumber { get; init; }
+
     [Required(ErrorMessage = "الفترة مطلوبة")]
     public int PeriodId { get; init; }
 
     public Guid? RouteId { get; init; }
-
-    [MaxLength(200)]
-    public string? DriverName { get; init; }
-
-    [MaxLength(20)]
-    public string? DriverPhoneNumber { get; init; }
+    public Guid? DriverId { get; init; }
+    public Guid? DepartmentId { get; init; }
 
     [Range(1, 100, ErrorMessage = "السعة يجب أن تكون بين 1 و 100")]
     public int Capacity { get; init; } = 30;
