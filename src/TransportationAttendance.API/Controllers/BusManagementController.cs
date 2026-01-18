@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TransportationAttendance.API.Infrastructure;
 using TransportationAttendance.Application.DTOs.BusManagement;
 using TransportationAttendance.Application.DTOs.Common;
 using TransportationAttendance.Application.Interfaces.Services;
 
 namespace TransportationAttendance.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 [Authorize]
-public class BusManagementController : ControllerBase
+public class BusManagementController : BaseApiController
 {
     private readonly IBusManagementService _busManagementService;
     private readonly ILogger<BusManagementController> _logger;
