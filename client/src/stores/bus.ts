@@ -5,22 +5,22 @@ import apiClient from '@/services/api/axios.config'
 export interface Bus {
     id: string
     busNumber: string
-    licensePlate: string
+    periodId: number
+    routeId?: string
+    driverName?: string
+    driverPhoneNumber?: string
     capacity: number
     isActive: boolean
+    isMerged: boolean
     createdAt: string
     // Legacy fields for backward compatibility
     busId?: string
     plateNumber?: string
-    periodId?: number
+    licensePlate?: string
     periodName?: string
-    routeId?: string
     routeName?: string
-    driverName?: string
-    driverPhoneNumber?: string
     currentStudentCount?: number
     utilizationPercentage?: number
-    isMerged?: boolean
     mergedWithBusId?: string
     districts?: DistrictInfo[]
 }
@@ -60,14 +60,12 @@ export interface BusSummary {
 }
 
 export interface CreateBusDto {
-    // PlateNumber is the authoritative identifier from official CSV
-    plateNumber: string
+    busNumber: string
     periodId: number
     routeId?: string
     driverName?: string
     driverPhoneNumber?: string
     capacity: number
-    districtIds: string[]
 }
 
 export interface UpdateBusDto extends CreateBusDto {
