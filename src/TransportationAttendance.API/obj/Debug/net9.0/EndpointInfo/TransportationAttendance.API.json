@@ -1959,45 +1959,6 @@
           }
         }
       }
-    },
-    "/api/v1/Registration/lookup-address/{shortAddress}": {
-      "get": {
-        "tags": [
-          "Registration"
-        ],
-        "parameters": [
-          {
-            "name": "shortAddress",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/NationalAddressDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NationalAddressDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NationalAddressDtoApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -2854,87 +2815,6 @@
           },
           "data": {
             "$ref": "#/components/schemas/LoginResponseDto"
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "NationalAddressDto": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "shortAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "fullAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "city": {
-            "type": "string",
-            "nullable": true
-          },
-          "district": {
-            "type": "string",
-            "nullable": true
-          },
-          "street": {
-            "type": "string",
-            "nullable": true
-          },
-          "buildingNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "postalCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "additionalNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "latitude": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "longitude": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "errorMessage": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "NationalAddressDtoApiResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "data": {
-            "$ref": "#/components/schemas/NationalAddressDto"
           },
           "message": {
             "type": "string",
