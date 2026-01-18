@@ -8,12 +8,16 @@ public record BusDto
     /// Unique within (PlateNumber + PeriodId) - same plate can exist in different periods.
     /// </summary>
     public string PlateNumber { get; init; } = string.Empty;
+    public string? BusNumber { get; init; }
     public int PeriodId { get; init; }
     public string? PeriodName { get; init; }
     public Guid? RouteId { get; init; }
     public string? RouteName { get; init; }
+    public Guid? DriverId { get; init; }
     public string? DriverName { get; init; }
     public string? DriverPhoneNumber { get; init; }
+    public Guid? DepartmentId { get; init; }
+    public string? DepartmentName { get; init; }
     public int Capacity { get; init; }
     public int CurrentStudentCount { get; init; }
     public decimal UtilizationPercentage { get; init; }
