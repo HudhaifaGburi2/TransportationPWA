@@ -3,23 +3,26 @@ import { ref, computed } from 'vue'
 import apiClient from '@/services/api/axios.config'
 
 export interface Bus {
-    busId: string
-    // PlateNumber is the authoritative identifier from official CSV
-    // Unique within (PlateNumber + PeriodId) - same plate can exist in different periods
-    plateNumber: string
-    periodId: number
+    id: string
+    busNumber: string
+    licensePlate: string
+    capacity: number
+    isActive: boolean
+    createdAt: string
+    // Legacy fields for backward compatibility
+    busId?: string
+    plateNumber?: string
+    periodId?: number
     periodName?: string
     routeId?: string
     routeName?: string
     driverName?: string
     driverPhoneNumber?: string
-    capacity: number
-    currentStudentCount: number
-    utilizationPercentage: number
-    isActive: boolean
-    isMerged: boolean
+    currentStudentCount?: number
+    utilizationPercentage?: number
+    isMerged?: boolean
     mergedWithBusId?: string
-    districts: DistrictInfo[]
+    districts?: DistrictInfo[]
 }
 
 export interface DistrictInfo {
@@ -50,18 +53,10 @@ export interface BusSummary {
     activeBuses: number
     inactiveBuses: number
     totalCapacity: number
-    totalStudentsAssigned: number
-    overallUtilization: number
-    byPeriod: PeriodBusSummary[]
-}
-
-export interface PeriodBusSummary {
-    periodId: number
-    periodName: string
-    busCount: number
-    studentCount: number
-    totalCapacity: number
-    utilization: number
+    totalDrivers: number
+    activeDrivers: number
+    totalRoutes: number
+    activeRoutes: number
 }
 
 export interface CreateBusDto {
@@ -113,7 +108,7 @@ export const useBusStore = defineStore('bus', () => {
 
     const activeBuses = computed(() => buses.value.filter(b => b.isActive))
     const totalCapacity = computed(() => activeBuses.value.reduce((sum, b) => sum + b.capacity, 0))
-    const totalStudents = computed(() => activeBuses.value.reduce((sum, b) => sum + b.currentStudentCount, 0))
+    const totalStudents = computed(() => activeBuses.value.reduce((sum, b) => sum + (b.currentStudentCount || 0), 0))
 
     async function fetchBuses(query?: BusQuery) {
         loading.value = true
@@ -125,7 +120,7 @@ export const useBusStore = defineStore('bus', () => {
             if (query?.isActive !== undefined) params.append('isActive', query.isActive.toString())
             if (query?.search) params.append('search', query.search)
 
-            const response = await apiClient.get(`/buses?${params}`)
+            const response = await apiClient.get(`/busmanagement/buses?${params}`)
             if (response.data.success) {
                 buses.value = response.data.data
             } else {
@@ -142,7 +137,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get(`/buses/by-period/${periodId}`)
+            const response = await apiClient.get(`/busmanagement/buses/by-period/${periodId}`)
             if (response.data.success) {
                 buses.value = response.data.data
             } else {
@@ -159,7 +154,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get(`/buses/${id}`)
+            const response = await apiClient.get(`/busmanagement/buses/${id}`)
             if (response.data.success) {
                 currentBus.value = response.data.data
                 return response.data.data
@@ -178,7 +173,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.post('/buses', dto)
+            const response = await apiClient.post('/busmanagement/buses', dto)
             if (response.data.success) {
                 buses.value.push(response.data.data)
                 return response.data.data
@@ -197,9 +192,9 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.put(`/buses/${id}`, dto)
+            const response = await apiClient.put(`/busmanagement/buses/${id}`, dto)
             if (response.data.success) {
-                const index = buses.value.findIndex(b => b.busId === id)
+                const index = buses.value.findIndex(b => b.id === id)
                 if (index !== -1) {
                     buses.value[index] = response.data.data
                 }
@@ -219,9 +214,9 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.delete(`/buses/${id}`)
+            const response = await apiClient.delete(`/busmanagement/buses/${id}`)
             if (response.data.success) {
-                buses.value = buses.value.filter(b => b.busId !== id)
+                buses.value = buses.value.filter(b => b.id !== id)
                 return true
             } else {
                 error.value = response.data.message
@@ -238,7 +233,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get(`/buses/${busId}/statistics`)
+            const response = await apiClient.get(`/busmanagement/buses/${busId}/statistics`)
             if (response.data.success) {
                 statistics.value = response.data.data
                 return response.data.data
@@ -257,7 +252,7 @@ export const useBusStore = defineStore('bus', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get('/buses/summary')
+            const response = await apiClient.get('/busmanagement/statistics')
             if (response.data.success) {
                 summary.value = response.data.data
                 return response.data.data
