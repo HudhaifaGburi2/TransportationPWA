@@ -7,9 +7,16 @@ public class Bus : BaseEntity
     public string PlateNumber { get; private set; } = string.Empty;
     public int PeriodId { get; private set; }
     public Guid? RouteId { get; private set; }
+    public Guid? DriverId { get; private set; }
+    public Guid? DepartmentId { get; private set; }
     
-    // Driver data imported from CSV and mapped to PlateNumber
+    // Bus number for display (e.g., "1", "2", etc.)
+    public string? BusNumber { get; private set; }
+    
+    // Legacy fields - kept for backward compatibility, will be phased out
+    [Obsolete("Use Driver entity instead. This field is kept for legacy data migration.")]
     public string? DriverName { get; private set; }
+    [Obsolete("Use Driver entity instead. This field is kept for legacy data migration.")]
     public string? DriverPhoneNumber { get; private set; }
     
     public int Capacity { get; private set; }
@@ -17,8 +24,10 @@ public class Bus : BaseEntity
     public bool IsMerged { get; private set; }
     public Guid? MergedWithBusId { get; private set; }
 
-    // Navigation
+    // Navigation properties
     public Route? Route { get; private set; }
+    public Driver? Driver { get; private set; }
+    public Department? Department { get; private set; }
     public Bus? MergedWithBus { get; private set; }
     public ICollection<BusDistrict> BusDistricts { get; private set; } = new List<BusDistrict>();
     public ICollection<StudentBusAssignment> StudentAssignments { get; private set; } = new List<StudentBusAssignment>();
@@ -30,17 +39,22 @@ public class Bus : BaseEntity
         int periodId,
         int capacity = 30,
         Guid? routeId = null,
-        string? driverName = null,
-        string? driverPhoneNumber = null)
+        Guid? driverId = null,
+        Guid? departmentId = null,
+        string? busNumber = null)
     {
+        if (string.IsNullOrWhiteSpace(plateNumber))
+            throw new ArgumentException("Plate number is required.", nameof(plateNumber));
+
         return new Bus
         {
-            PlateNumber = plateNumber,
+            PlateNumber = NormalizePlateNumber(plateNumber),
             PeriodId = periodId,
             Capacity = capacity,
             RouteId = routeId,
-            DriverName = driverName,
-            DriverPhoneNumber = driverPhoneNumber,
+            DriverId = driverId,
+            DepartmentId = departmentId,
+            BusNumber = busNumber,
             IsActive = true,
             IsMerged = false
         };
@@ -51,21 +65,44 @@ public class Bus : BaseEntity
         int periodId,
         int capacity,
         Guid? routeId,
-        string? driverName,
-        string? driverPhoneNumber)
+        Guid? driverId,
+        Guid? departmentId,
+        string? busNumber)
     {
-        PlateNumber = plateNumber;
+        PlateNumber = NormalizePlateNumber(plateNumber);
         PeriodId = periodId;
         Capacity = capacity;
         RouteId = routeId;
-        DriverName = driverName;
-        DriverPhoneNumber = driverPhoneNumber;
+        DriverId = driverId;
+        DepartmentId = departmentId;
+        BusNumber = busNumber;
     }
 
-    public void AssignDriver(string driverName, string driverPhoneNumber)
+    public void AssignDriver(Guid driverId)
     {
-        DriverName = driverName;
-        DriverPhoneNumber = driverPhoneNumber;
+        DriverId = driverId;
+    }
+
+    public void UnassignDriver()
+    {
+        DriverId = null;
+    }
+
+    public void AssignDepartment(Guid departmentId)
+    {
+        DepartmentId = departmentId;
+    }
+
+    /// <summary>
+    /// Normalizes plate number by removing extra spaces and standardizing format.
+    /// </summary>
+    private static string NormalizePlateNumber(string plateNumber)
+    {
+        if (string.IsNullOrWhiteSpace(plateNumber))
+            return string.Empty;
+
+        // Normalize Arabic/English spaces and trim
+        return plateNumber.Trim();
     }
 
     public void MergeWith(Guid targetBusId)
