@@ -127,8 +127,7 @@ public class BusManagementService : IBusManagementService
 
             if (!string.IsNullOrWhiteSpace(query.Search))
                 filtered = filtered.Where(r => r.Name.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
-                                               r.Code.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
-                                               r.District.Contains(query.Search, StringComparison.OrdinalIgnoreCase));
+                                               (r.Description != null && r.Description.Contains(query.Search, StringComparison.OrdinalIgnoreCase)));
 
             if (query.IsActive.HasValue)
                 filtered = filtered.Where(r => r.IsActive == query.IsActive.Value);
@@ -151,21 +150,7 @@ public class BusManagementService : IBusManagementService
 
     public async Task<Result<RouteManagementDto>> CreateRouteAsync(CreateRouteManagementDto dto, CancellationToken cancellationToken = default)
     {
-        var existingByCode = await _routeRepository.GetByCodeAsync(dto.Code, cancellationToken);
-        if (existingByCode != null)
-            return Result.Failure<RouteManagementDto>("رمز المسار مسجل مسبقاً");
-
-        var route = Route.Create(
-            dto.Name,
-            dto.Code,
-            dto.District,
-            dto.MeetingPoint,
-            dto.PickupTime,
-            dto.DropoffTime,
-            dto.Capacity);
-
-        if (dto.MeetingPointLatitude.HasValue && dto.MeetingPointLongitude.HasValue)
-            route.SetLocation(dto.MeetingPointLatitude.Value, dto.MeetingPointLongitude.Value);
+        var route = Route.Create(dto.Name, dto.Description);
 
         await _routeRepository.AddAsync(route, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -179,14 +164,7 @@ public class BusManagementService : IBusManagementService
         if (route == null)
             return Result.Failure<RouteManagementDto>("المسار غير موجود");
 
-        var existingByCode = await _routeRepository.GetByCodeAsync(dto.Code, cancellationToken);
-        if (existingByCode != null && existingByCode.Id != id)
-            return Result.Failure<RouteManagementDto>("رمز المسار مسجل مسبقاً");
-
-        route.Update(dto.Name, dto.Code, dto.District, dto.MeetingPoint, dto.PickupTime, dto.DropoffTime, dto.Capacity);
-
-        if (dto.MeetingPointLatitude.HasValue && dto.MeetingPointLongitude.HasValue)
-            route.SetLocation(dto.MeetingPointLatitude.Value, dto.MeetingPointLongitude.Value);
+        route.Update(dto.Name, dto.Description);
 
         if (dto.IsActive)
             route.Activate();
@@ -225,7 +203,7 @@ public class BusManagementService : IBusManagementService
 
             if (!string.IsNullOrWhiteSpace(query.Search))
                 filtered = filtered.Where(b => b.BusNumber.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
-                                               b.LicensePlate.Contains(query.Search, StringComparison.OrdinalIgnoreCase));
+                                               (b.DriverName != null && b.DriverName.Contains(query.Search, StringComparison.OrdinalIgnoreCase)));
 
             if (query.IsActive.HasValue)
                 filtered = filtered.Where(b => b.IsActive == query.IsActive.Value);
@@ -248,16 +226,19 @@ public class BusManagementService : IBusManagementService
 
     public async Task<Result<BusManagementDto>> CreateBusAsync(CreateBusManagementDto dto, CancellationToken cancellationToken = default)
     {
-        var existingByPlate = await _busRepository.GetByLicensePlateAsync(dto.LicensePlate, cancellationToken);
-        if (existingByPlate != null)
-            return Result.Failure<BusManagementDto>("رقم اللوحة مسجل مسبقاً");
+        var existingByNumber = await _busRepository.GetByBusNumberAsync(dto.BusNumber, cancellationToken);
+        if (existingByNumber != null)
+            return Result.Failure<BusManagementDto>("رقم الباص مسجل مسبقاً");
 
         var bus = Bus.Create(
             dto.BusNumber,
-            dto.LicensePlate,
+            dto.PeriodId,
             dto.Capacity,
-            null,
-            null);
+            dto.DriverName,
+            dto.DriverPhoneNumber);
+
+        if (dto.RouteId.HasValue)
+            bus.AssignRoute(dto.RouteId);
 
         await _busRepository.AddAsync(bus, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -271,11 +252,12 @@ public class BusManagementService : IBusManagementService
         if (bus == null)
             return Result.Failure<BusManagementDto>("الباص غير موجود");
 
-        var existingByPlate = await _busRepository.GetByLicensePlateAsync(dto.LicensePlate, cancellationToken);
-        if (existingByPlate != null && existingByPlate.Id != id)
-            return Result.Failure<BusManagementDto>("رقم اللوحة مسجل مسبقاً");
+        var existingByNumber = await _busRepository.GetByBusNumberAsync(dto.BusNumber, cancellationToken);
+        if (existingByNumber != null && existingByNumber.Id != id)
+            return Result.Failure<BusManagementDto>("رقم الباص مسجل مسبقاً");
 
-        bus.Update(dto.BusNumber, dto.LicensePlate, dto.Capacity, bus.Model, bus.Year);
+        bus.Update(dto.BusNumber, dto.PeriodId, dto.Capacity, dto.DriverName, dto.DriverPhoneNumber);
+        bus.AssignRoute(dto.RouteId);
 
         if (dto.IsActive)
             bus.Activate();
@@ -342,14 +324,7 @@ public class BusManagementService : IBusManagementService
     {
         Id = route.Id,
         Name = route.Name,
-        Code = route.Code,
-        District = route.District,
-        MeetingPoint = route.MeetingPoint,
-        MeetingPointLatitude = route.MeetingPointLatitude,
-        MeetingPointLongitude = route.MeetingPointLongitude,
-        PickupTime = route.PickupTime,
-        DropoffTime = route.DropoffTime,
-        Capacity = route.Capacity,
+        Description = route.Description,
         IsActive = route.IsActive,
         CreatedAt = route.CreatedAt
     };
@@ -358,9 +333,13 @@ public class BusManagementService : IBusManagementService
     {
         Id = bus.Id,
         BusNumber = bus.BusNumber,
-        LicensePlate = bus.LicensePlate,
+        PeriodId = bus.PeriodId,
+        RouteId = bus.RouteId,
+        DriverName = bus.DriverName,
+        DriverPhoneNumber = bus.DriverPhoneNumber,
         Capacity = bus.Capacity,
         IsActive = bus.IsActive,
+        IsMerged = bus.IsMerged,
         CreatedAt = bus.CreatedAt
     };
 
