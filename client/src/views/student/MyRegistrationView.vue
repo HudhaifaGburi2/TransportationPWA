@@ -176,7 +176,7 @@
                 :key="period" 
                 class="badge badge-primary badge-lg gap-2 py-3"
               >
-                {{ periodNames[period] || `فترة ${period}` }}
+                {{ getPeriodName(period) }}
               </span>
             </div>
           </div>
@@ -289,13 +289,48 @@ interface Registration {
   }
 }
 
-// Period names mapping
-const periodNames: Record<string, string> = {
-  '1': 'الفترة الأولى',
-  '2': 'الفترة الثانية',
-  '3': 'الفترة الثالثة',
-  '4': 'الفترة الرابعة',
-  '5': 'الفترة الخامسة'
+// Period names mapping (fetched from API and cached)
+interface Period {
+  id: number
+  periodName: string
+}
+const periodsList = ref<Period[]>([])
+const PERIODS_CACHE_KEY = 'tums_periods_cache'
+const PERIODS_CACHE_EXPIRY = 1000 * 60 * 30 // 30 minutes
+
+const loadPeriods = async () => {
+  // Check cache first
+  const cached = sessionStorage.getItem(PERIODS_CACHE_KEY)
+  if (cached) {
+    try {
+      const { data, timestamp } = JSON.parse(cached)
+      if (Date.now() - timestamp < PERIODS_CACHE_EXPIRY) {
+        periodsList.value = data
+        return
+      }
+    } catch {
+      sessionStorage.removeItem(PERIODS_CACHE_KEY)
+    }
+  }
+
+  try {
+    const response = await apiClient.get('/lookups/periods')
+    if (response.data.success && response.data.data) {
+      periodsList.value = response.data.data
+      // Cache the result
+      sessionStorage.setItem(PERIODS_CACHE_KEY, JSON.stringify({
+        data: response.data.data,
+        timestamp: Date.now()
+      }))
+    }
+  } catch (err) {
+    console.error('Failed to load periods:', err)
+  }
+}
+
+const getPeriodName = (periodId: string) => {
+  const period = periodsList.value.find(p => p.id.toString() === periodId)
+  return period?.periodName || `فترة ${periodId}`
 }
 
 const isLoading = ref(false)
@@ -378,6 +413,10 @@ const formatDate = (dateStr: string) => {
 const loadRegistration = async () => {
   isLoading.value = true
   error.value = null
+  
+  // Load periods from cache or API
+  await loadPeriods()
+  
   try {
     const response = await apiClient.get('/registration/my-registration')
     if (response.data.success) {
