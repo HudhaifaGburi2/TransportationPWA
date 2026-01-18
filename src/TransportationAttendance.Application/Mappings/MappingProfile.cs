@@ -48,9 +48,8 @@ public class MappingProfile : Profile
         // Student Halaqa Info mapping
         CreateMap<StudentHalaqaInfo, StudentHalaqaInfoDto>();
 
-        // Driver mappings
-        CreateMap<Driver, DriverDto>()
-            .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department != null ? src.Department.NameAr : null));
+        // Driver mappings - simplified (Driver no longer has Department navigation)
+        CreateMap<Driver, DriverDto>();
 
         // Department mappings
         CreateMap<Department, DepartmentDto>()
