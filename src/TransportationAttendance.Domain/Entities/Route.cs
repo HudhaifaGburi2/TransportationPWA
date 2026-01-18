@@ -1,100 +1,85 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TransportationAttendance.Domain.Entities;
 
 /// <summary>
 /// Route entity for transportation management.
+/// Matches actual database schema from 001_CreatePhase1Schema_v2.sql
 /// </summary>
+[Table("Routes")]
 public class Route
 {
+    [Key]
+    [Column("RouteId")]
     public Guid Id { get; private set; }
+    
+    [Column("RouteName")]
     public string Name { get; private set; } = string.Empty;
-    public string Code { get; private set; } = string.Empty;
-    public string District { get; private set; } = string.Empty;
-    public string MeetingPoint { get; private set; } = string.Empty;
-    public decimal? MeetingPointLatitude { get; private set; }
-    public decimal? MeetingPointLongitude { get; private set; }
-    public TimeSpan PickupTime { get; private set; }
-    public TimeSpan DropoffTime { get; private set; }
-    public int Capacity { get; private set; }
-    public int Status { get; private set; }
-    public int? FloorAssignment { get; private set; }
-    public string? EntranceAssignment { get; private set; }
+    
+    [Column("RouteDescription")]
+    public string? Description { get; private set; }
+    
+    [Column("IsActive")]
+    public bool IsActive { get; private set; }
+    
+    [Column("CreatedAt")]
     public DateTime CreatedAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
+    
+    [Column("CreatedBy")]
     public Guid? CreatedBy { get; private set; }
+    
+    [Column("UpdatedAt")]
+    public DateTime? UpdatedAt { get; private set; }
+    
+    [Column("UpdatedBy")]
     public Guid? UpdatedBy { get; private set; }
-    public Guid? DistrictId { get; private set; }
+    
+    [Column("IsDeleted")]
+    public bool IsDeleted { get; private set; }
+    
+    [Column("DeletedAt")]
+    public DateTime? DeletedAt { get; private set; }
+    
+    [Column("DeletedBy")]
+    public Guid? DeletedBy { get; private set; }
 
     private Route() 
     {
         Id = Guid.NewGuid();
         CreatedAt = DateTime.UtcNow;
+        IsActive = true;
     }
 
-    public static Route Create(
-        string name,
-        string code,
-        string district,
-        string meetingPoint,
-        TimeSpan pickupTime,
-        TimeSpan dropoffTime,
-        int capacity = 30)
+    public static Route Create(string name, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Route name is required.", nameof(name));
 
-        if (string.IsNullOrWhiteSpace(code))
-            throw new ArgumentException("Route code is required.", nameof(code));
-
         return new Route
         {
             Name = name.Trim(),
-            Code = code.Trim(),
-            District = district?.Trim() ?? string.Empty,
-            MeetingPoint = meetingPoint?.Trim() ?? string.Empty,
-            PickupTime = pickupTime,
-            DropoffTime = dropoffTime,
-            Capacity = capacity,
-            Status = 1 // Active
+            Description = description?.Trim(),
+            IsActive = true
         };
     }
 
-    public void Update(
-        string name,
-        string code,
-        string district,
-        string meetingPoint,
-        TimeSpan pickupTime,
-        TimeSpan dropoffTime,
-        int capacity)
+    public void Update(string name, string? description)
     {
         Name = name.Trim();
-        Code = code.Trim();
-        District = district?.Trim() ?? string.Empty;
-        MeetingPoint = meetingPoint?.Trim() ?? string.Empty;
-        PickupTime = pickupTime;
-        DropoffTime = dropoffTime;
-        Capacity = capacity;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void SetLocation(decimal latitude, decimal longitude)
-    {
-        MeetingPointLatitude = latitude;
-        MeetingPointLongitude = longitude;
+        Description = description?.Trim();
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void Activate() 
     { 
-        Status = 1; 
+        IsActive = true; 
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void Deactivate() 
     { 
-        Status = 0; 
+        IsActive = false; 
         UpdatedAt = DateTime.UtcNow;
     }
-
-    public bool IsActive => Status == 1;
 }
