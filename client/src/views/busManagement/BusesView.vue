@@ -1,0 +1,346 @@
+<template>
+  <div class="container mx-auto p-4 max-w-7xl">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-base-content">إدارة الباصات</h1>
+        <p class="text-base-content/60 mt-1">إدارة أسطول الباصات والصيانة</p>
+      </div>
+      <button @click="openAddModal" class="btn btn-primary gap-2">
+        <BusFront class="w-5 h-5" />
+        إضافة باص
+      </button>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="card bg-base-100 shadow-sm mb-6">
+      <div class="card-body p-4">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1">
+            <div class="relative">
+              <Search class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="البحث برقم الباص أو اللوحة..."
+                class="input input-bordered w-full pr-10"
+                @input="debouncedSearch"
+              />
+            </div>
+          </div>
+          <select v-model="statusFilter" class="select select-bordered w-full sm:w-48" @change="loadBuses">
+            <option value="">جميع الحالات</option>
+            <option value="true">نشط</option>
+            <option value="false">غير نشط</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+      <div class="stat bg-base-100 rounded-box shadow-sm">
+        <div class="stat-figure text-primary">
+          <Bus class="w-8 h-8" />
+        </div>
+        <div class="stat-title">إجمالي الباصات</div>
+        <div class="stat-value text-primary">{{ buses.length }}</div>
+      </div>
+      <div class="stat bg-base-100 rounded-box shadow-sm">
+        <div class="stat-figure text-success">
+          <CheckCircle class="w-8 h-8" />
+        </div>
+        <div class="stat-title">الباصات النشطة</div>
+        <div class="stat-value text-success">{{ activeBuses.length }}</div>
+      </div>
+      <div class="stat bg-base-100 rounded-box shadow-sm">
+        <div class="stat-figure text-info">
+          <Users class="w-8 h-8" />
+        </div>
+        <div class="stat-title">إجمالي السعة</div>
+        <div class="stat-value text-info">{{ totalCapacity }}</div>
+      </div>
+      <div class="stat bg-base-100 rounded-box shadow-sm">
+        <div class="stat-figure text-warning">
+          <Wrench class="w-8 h-8" />
+        </div>
+        <div class="stat-title">تحتاج صيانة</div>
+        <div class="stat-value text-warning">{{ busesNeedingMaintenance.length }}</div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="flex justify-center py-12">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="alert alert-error mb-6">
+      <AlertCircle class="w-5 h-5" />
+      <span>{{ error }}</span>
+      <button @click="loadBuses" class="btn btn-sm btn-ghost">إعادة المحاولة</button>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="buses.length === 0" class="card bg-base-100 shadow-sm">
+      <div class="card-body items-center text-center py-12">
+        <Bus class="w-16 h-16 text-base-content/20 mb-4" />
+        <h3 class="text-lg font-semibold">لا يوجد باصات</h3>
+        <p class="text-base-content/60">ابدأ بإضافة الباصات للنظام</p>
+        <button @click="openAddModal" class="btn btn-primary mt-4">
+          <BusFront class="w-5 h-5" />
+          إضافة باص
+        </button>
+      </div>
+    </div>
+
+    <!-- Buses Table -->
+    <div v-else class="card bg-base-100 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="table table-zebra">
+          <thead>
+            <tr>
+              <th>رقم الباص</th>
+              <th>رقم اللوحة</th>
+              <th>السعة</th>
+              <th>الموديل</th>
+              <th>السنة</th>
+              <th>الصيانة القادمة</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="bus in buses" :key="bus.id">
+              <td class="font-bold">{{ bus.busNumber }}</td>
+              <td>{{ bus.licensePlate }}</td>
+              <td>{{ bus.capacity }}</td>
+              <td>{{ bus.model || '-' }}</td>
+              <td>{{ bus.year || '-' }}</td>
+              <td>
+                <span 
+                  v-if="bus.nextMaintenanceDate"
+                  :class="[
+                    'badge',
+                    bus.needsMaintenance ? 'badge-error' : 'badge-ghost'
+                  ]"
+                >
+                  {{ formatDate(bus.nextMaintenanceDate) }}
+                </span>
+                <span v-else class="text-base-content/40">-</span>
+              </td>
+              <td>
+                <span :class="['badge', bus.isActive ? 'badge-success' : 'badge-ghost']">
+                  {{ bus.isActive ? 'نشط' : 'غير نشط' }}
+                </span>
+              </td>
+              <td>
+                <div class="flex gap-1">
+                  <button @click="openEditModal(bus)" class="btn btn-ghost btn-xs">
+                    <Pencil class="w-4 h-4" />
+                  </button>
+                  <button @click="confirmDelete(bus)" class="btn btn-ghost btn-xs text-error">
+                    <Trash2 class="w-4 h-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <dialog ref="formModal" class="modal">
+      <div class="modal-box w-11/12 max-w-2xl">
+        <h3 class="font-bold text-lg mb-4">{{ isEditing ? 'تعديل بيانات الباص' : 'إضافة باص جديد' }}</h3>
+        <form @submit.prevent="submitForm">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label"><span class="label-text">رقم الباص *</span></label>
+              <input v-model="form.busNumber" type="text" class="input input-bordered" required />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">رقم اللوحة *</span></label>
+              <input v-model="form.licensePlate" type="text" class="input input-bordered" required />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">السعة *</span></label>
+              <input v-model.number="form.capacity" type="number" min="1" max="100" class="input input-bordered" required />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">الموديل</span></label>
+              <input v-model="form.model" type="text" class="input input-bordered" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">السنة</span></label>
+              <input v-model.number="form.year" type="number" min="2000" max="2030" class="input input-bordered" />
+            </div>
+            <template v-if="isEditing">
+              <div class="form-control">
+                <label class="label"><span class="label-text">آخر صيانة</span></label>
+                <input v-model="form.lastMaintenanceDate" type="date" class="input input-bordered" />
+              </div>
+              <div class="form-control">
+                <label class="label"><span class="label-text">الصيانة القادمة</span></label>
+                <input v-model="form.nextMaintenanceDate" type="date" class="input input-bordered" />
+              </div>
+              <div class="form-control">
+                <label class="label"><span class="label-text">الحالة</span></label>
+                <label class="label cursor-pointer justify-start gap-3">
+                  <input v-model="form.isActive" type="checkbox" class="toggle toggle-success" />
+                  <span class="label-text">نشط</span>
+                </label>
+              </div>
+            </template>
+          </div>
+          <div class="modal-action">
+            <button type="button" class="btn btn-ghost" @click="closeModal">إلغاء</button>
+            <button type="submit" class="btn btn-primary" :disabled="loading">
+              <span v-if="loading" class="loading loading-spinner loading-sm"></span>
+              {{ isEditing ? 'حفظ التعديلات' : 'إضافة' }}
+            </button>
+          </div>
+        </form>
+      </div>
+      <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
+
+    <!-- Delete Confirmation Modal -->
+    <dialog ref="deleteModal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg text-error">تأكيد الحذف</h3>
+        <p class="py-4">هل أنت متأكد من حذف الباص <strong>{{ busToDelete?.busNumber }}</strong>؟</p>
+        <div class="modal-action">
+          <button class="btn btn-ghost" @click="deleteModal?.close()">إلغاء</button>
+          <button class="btn btn-error" @click="handleDelete" :disabled="loading">
+            <span v-if="loading" class="loading loading-spinner loading-sm"></span>
+            حذف
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import { useBusManagementStore, type Bus, type CreateBusDto, type UpdateBusDto } from '@/stores/busManagement'
+import { storeToRefs } from 'pinia'
+import { 
+  Search, Bus as BusIcon, BusFront, CheckCircle, Users, Wrench, AlertCircle,
+  Pencil, Trash2 
+} from 'lucide-vue-next'
+
+const Bus = BusIcon
+
+const store = useBusManagementStore()
+const { buses, loading, error } = storeToRefs(store)
+
+const searchQuery = ref('')
+const statusFilter = ref('')
+const formModal = ref<HTMLDialogElement>()
+const deleteModal = ref<HTMLDialogElement>()
+const isEditing = ref(false)
+const editingId = ref<string | null>(null)
+const busToDelete = ref<Bus | null>(null)
+
+const form = ref<CreateBusDto & { isActive?: boolean; lastMaintenanceDate?: string; nextMaintenanceDate?: string }>({
+  busNumber: '',
+  licensePlate: '',
+  capacity: 30,
+  model: '',
+  year: undefined,
+  isActive: true,
+  lastMaintenanceDate: '',
+  nextMaintenanceDate: ''
+})
+
+const activeBuses = computed(() => buses.value.filter(b => b.isActive))
+const totalCapacity = computed(() => activeBuses.value.reduce((sum, b) => sum + b.capacity, 0))
+const busesNeedingMaintenance = computed(() => buses.value.filter(b => b.needsMaintenance))
+
+let searchTimeout: ReturnType<typeof setTimeout>
+function debouncedSearch() {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => loadBuses(), 300)
+}
+
+async function loadBuses() {
+  await store.fetchBuses({
+    search: searchQuery.value || undefined,
+    isActive: statusFilter.value ? statusFilter.value === 'true' : undefined
+  })
+}
+
+function formatDate(dateStr: string) {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleDateString('ar-SA')
+}
+
+function openAddModal() {
+  isEditing.value = false
+  editingId.value = null
+  form.value = {
+    busNumber: '',
+    licensePlate: '',
+    capacity: 30,
+    model: '',
+    year: undefined,
+    isActive: true,
+    lastMaintenanceDate: '',
+    nextMaintenanceDate: ''
+  }
+  formModal.value?.showModal()
+}
+
+function openEditModal(bus: Bus) {
+  isEditing.value = true
+  editingId.value = bus.id
+  form.value = {
+    busNumber: bus.busNumber,
+    licensePlate: bus.licensePlate,
+    capacity: bus.capacity,
+    model: bus.model || '',
+    year: bus.year,
+    isActive: bus.isActive,
+    lastMaintenanceDate: bus.lastMaintenanceDate?.split('T')[0] || '',
+    nextMaintenanceDate: bus.nextMaintenanceDate?.split('T')[0] || ''
+  }
+  formModal.value?.showModal()
+}
+
+function closeModal() {
+  formModal.value?.close()
+}
+
+async function submitForm() {
+  if (isEditing.value && editingId.value) {
+    const result = await store.updateBus(editingId.value, form.value as UpdateBusDto)
+    if (result) closeModal()
+  } else {
+    const result = await store.createBus(form.value)
+    if (result) closeModal()
+  }
+}
+
+function confirmDelete(bus: Bus) {
+  busToDelete.value = bus
+  deleteModal.value?.showModal()
+}
+
+async function handleDelete() {
+  if (busToDelete.value) {
+    const success = await store.deleteBus(busToDelete.value.id)
+    if (success) {
+      deleteModal.value?.close()
+      busToDelete.value = null
+    }
+  }
+}
+
+onMounted(() => {
+  loadBuses()
+})
+</script>
