@@ -38,7 +38,7 @@ public class NationalAddressService : INationalAddressService
 
         try
         {
-            var url = $"{BaseUrl}?shortaddress={shortAddress.ToUpper()}&format=json&language=ar";
+            var url = $"{BaseUrl}?format=json&language=ar&shortaddress={shortAddress.ToUpper()}";
             _logger.LogInformation("Looking up national address: {ShortAddress}", shortAddress);
 
             var response = await _httpClient.GetAsync(url, cancellationToken);
