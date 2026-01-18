@@ -11,20 +11,17 @@ public class BusConfiguration : IEntityTypeConfiguration<Bus>
         builder.ToTable("Buses");
 
         builder.HasKey(b => b.Id);
+        builder.Property(b => b.Id).HasColumnName("BusId");
 
         builder.Property(b => b.BusNumber)
             .HasMaxLength(20)
             .IsRequired();
 
-        builder.Property(b => b.LicensePlate)
-            .HasMaxLength(20)
-            .IsRequired();
+        builder.Property(b => b.DriverName)
+            .HasMaxLength(200);
 
-        builder.Property(b => b.Model)
-            .HasMaxLength(100);
-
-        builder.HasIndex(b => b.LicensePlate)
-            .IsUnique();
+        builder.Property(b => b.DriverPhoneNumber)
+            .HasMaxLength(20);
 
         builder.HasIndex(b => b.BusNumber);
     }
