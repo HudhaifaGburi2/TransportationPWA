@@ -38,7 +38,7 @@ public class BusService : IBusService
             if (!string.IsNullOrWhiteSpace(query.Search))
                 filtered = filtered.Where(b => 
                     b.PlateNumber.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
-                    (b.DriverName?.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ?? false));
+                    (b.Driver?.FullName?.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ?? false));
             
             buses = filtered.ToList();
         }
@@ -75,8 +75,9 @@ public class BusService : IBusService
             dto.PeriodId,
             dto.Capacity,
             dto.RouteId,
-            dto.DriverName,
-            dto.DriverPhoneNumber);
+            dto.DriverId,
+            dto.DepartmentId,
+            dto.BusNumber);
 
         await _unitOfWork.Buses.AddAsync(bus, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -105,8 +106,9 @@ public class BusService : IBusService
             dto.PeriodId,
             dto.Capacity,
             dto.RouteId,
-            dto.DriverName,
-            dto.DriverPhoneNumber);
+            dto.DriverId,
+            dto.DepartmentId,
+            dto.BusNumber);
 
         if (dto.IsActive)
             bus.Activate();
@@ -217,8 +219,12 @@ public class BusService : IBusService
             PeriodName = $"الفترة {bus.PeriodId}",
             RouteId = bus.RouteId,
             RouteName = bus.Route?.RouteName,
-            DriverName = bus.DriverName,
-            DriverPhoneNumber = bus.DriverPhoneNumber,
+            BusNumber = bus.BusNumber,
+            DriverId = bus.DriverId,
+            DriverName = bus.Driver?.FullName,
+            DriverPhoneNumber = bus.Driver?.PhoneNumber,
+            DepartmentId = bus.DepartmentId,
+            DepartmentName = bus.Department?.NameAr,
             Capacity = bus.Capacity,
             CurrentStudentCount = studentCount,
             UtilizationPercentage = bus.Capacity > 0 ? Math.Round((decimal)studentCount / bus.Capacity * 100, 2) : 0,
