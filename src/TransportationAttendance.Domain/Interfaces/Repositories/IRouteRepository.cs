@@ -6,7 +6,6 @@ public interface IRouteRepository
 {
     Task<Route?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Route>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<Route?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
     Task<Route?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Route>> GetActiveRoutesAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Route>> SearchAsync(string searchTerm, CancellationToken cancellationToken = default);
