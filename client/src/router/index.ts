@@ -67,6 +67,45 @@ const routes: RouteRecordRaw[] = [
             roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
         }
     },
+
+    // Bus Management Module (Phase 2 - Full CRUD)
+    {
+        path: '/bus-management',
+        name: 'BusManagementDashboard',
+        component: () => import('@/views/busManagement/DashboardView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/bus-management/drivers',
+        name: 'DriversManagement',
+        component: () => import('@/views/busManagement/DriversView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/bus-management/routes',
+        name: 'RoutesManagement',
+        component: () => import('@/views/busManagement/RoutesView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/bus-management/buses',
+        name: 'BusesManagement',
+        component: () => import('@/views/busManagement/BusesView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+
     {
         path: '/registration-requests',
         name: 'RegistrationRequests',
