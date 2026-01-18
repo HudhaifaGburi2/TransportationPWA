@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TransportationAttendance.Application.Interfaces;
 using TransportationAttendance.Domain.Interfaces;
+using TransportationAttendance.Domain.Interfaces.Repositories;
 using TransportationAttendance.Infrastructure.ExternalServices;
 using TransportationAttendance.Infrastructure.Identity;
 using TransportationAttendance.Infrastructure.Persistence;
@@ -28,6 +29,11 @@ public static class DependencyInjection
 
         // Central DB Repository
         services.AddScoped<ICentralDbRepository, CentralDbRepository>();
+
+        // Actual Schema Repositories (Phase 2 Bus Management)
+        services.AddScoped<IActualDriverRepository, ActualDriverRepository>();
+        services.AddScoped<IActualRouteRepository, ActualRouteRepository>();
+        services.AddScoped<IActualBusRepository, ActualBusRepository>();
 
         // JWT Settings
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
