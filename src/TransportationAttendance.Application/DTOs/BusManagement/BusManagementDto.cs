@@ -6,9 +6,13 @@ public record BusManagementDto
 {
     public Guid Id { get; init; }
     public string BusNumber { get; init; } = string.Empty;
-    public string LicensePlate { get; init; } = string.Empty;
+    public int PeriodId { get; init; }
+    public Guid? RouteId { get; init; }
+    public string? DriverName { get; init; }
+    public string? DriverPhoneNumber { get; init; }
     public int Capacity { get; init; }
     public bool IsActive { get; init; }
+    public bool IsMerged { get; init; }
     public DateTime CreatedAt { get; init; }
 }
 
@@ -18,9 +22,16 @@ public record CreateBusManagementDto
     [MaxLength(20)]
     public string BusNumber { get; init; } = string.Empty;
 
-    [Required(ErrorMessage = "رقم اللوحة مطلوب")]
+    [Required(ErrorMessage = "الفترة مطلوبة")]
+    public int PeriodId { get; init; } = 1;
+
+    public Guid? RouteId { get; init; }
+
+    [MaxLength(200)]
+    public string? DriverName { get; init; }
+
     [MaxLength(20)]
-    public string LicensePlate { get; init; } = string.Empty;
+    public string? DriverPhoneNumber { get; init; }
 
     [Range(1, 100, ErrorMessage = "السعة يجب أن تكون بين 1 و 100")]
     public int Capacity { get; init; } = 30;
@@ -32,9 +43,16 @@ public record UpdateBusManagementDto
     [MaxLength(20)]
     public string BusNumber { get; init; } = string.Empty;
 
-    [Required(ErrorMessage = "رقم اللوحة مطلوب")]
+    [Required(ErrorMessage = "الفترة مطلوبة")]
+    public int PeriodId { get; init; } = 1;
+
+    public Guid? RouteId { get; init; }
+
+    [MaxLength(200)]
+    public string? DriverName { get; init; }
+
     [MaxLength(20)]
-    public string LicensePlate { get; init; } = string.Empty;
+    public string? DriverPhoneNumber { get; init; }
 
     [Range(1, 100, ErrorMessage = "السعة يجب أن تكون بين 1 و 100")]
     public int Capacity { get; init; } = 30;
