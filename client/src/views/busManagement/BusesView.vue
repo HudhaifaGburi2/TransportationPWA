@@ -94,7 +94,7 @@
           <thead>
             <tr>
               <th>رقم الباص</th>
-              <th>رقم اللوحة</th>
+              <th>السائق</th>
               <th>السعة</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
@@ -103,7 +103,7 @@
           <tbody>
             <tr v-for="bus in buses" :key="bus.id">
               <td class="font-bold">{{ bus.busNumber }}</td>
-              <td>{{ bus.licensePlate }}</td>
+              <td>{{ bus.driverName || '-' }}</td>
               <td>{{ bus.capacity }}</td>
               <td>
                 <span :class="['badge', bus.isActive ? 'badge-success' : 'badge-ghost']">
@@ -137,8 +137,12 @@
               <input v-model="form.busNumber" type="text" class="input input-bordered" required />
             </div>
             <div class="form-control">
-              <label class="label"><span class="label-text">رقم اللوحة *</span></label>
-              <input v-model="form.licensePlate" type="text" class="input input-bordered" required />
+              <label class="label"><span class="label-text">اسم السائق</span></label>
+              <input v-model="form.driverName" type="text" class="input input-bordered" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">رقم هاتف السائق</span></label>
+              <input v-model="form.driverPhoneNumber" type="text" class="input input-bordered" />
             </div>
             <div class="form-control">
               <label class="label"><span class="label-text">السعة *</span></label>
@@ -206,8 +210,10 @@ const busToDelete = ref<Bus | null>(null)
 
 const form = ref<CreateBusDto & { isActive?: boolean }>({
   busNumber: '',
-  licensePlate: '',
+  periodId: 1,
   capacity: 30,
+  driverName: '',
+  driverPhoneNumber: '',
   isActive: true
 })
 
@@ -232,8 +238,10 @@ function openAddModal() {
   editingId.value = null
   form.value = {
     busNumber: '',
-    licensePlate: '',
+    periodId: 1,
     capacity: 30,
+    driverName: '',
+    driverPhoneNumber: '',
     isActive: true
   }
   formModal.value?.showModal()
@@ -244,7 +252,10 @@ function openEditModal(bus: Bus) {
   editingId.value = bus.id
   form.value = {
     busNumber: bus.busNumber,
-    licensePlate: bus.licensePlate,
+    periodId: bus.periodId,
+    routeId: bus.routeId,
+    driverName: bus.driverName || '',
+    driverPhoneNumber: bus.driverPhoneNumber || '',
     capacity: bus.capacity,
     isActive: bus.isActive
   }
