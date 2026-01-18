@@ -1,87 +1,132 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TransportationAttendance.Domain.Entities;
 
 /// <summary>
 /// Bus entity for transportation management.
+/// Matches actual database schema from 001_CreatePhase1Schema_v2.sql
 /// </summary>
+[Table("Buses")]
 public class Bus
 {
+    [Key]
+    [Column("BusId")]
     public Guid Id { get; private set; }
+    
+    [Column("BusNumber")]
     public string BusNumber { get; private set; } = string.Empty;
-    public string LicensePlate { get; private set; } = string.Empty;
+    
+    [Column("PeriodId")]
+    public int PeriodId { get; private set; }
+    
+    [Column("RouteId")]
+    public Guid? RouteId { get; private set; }
+    
+    [Column("DriverName")]
+    public string? DriverName { get; private set; }
+    
+    [Column("DriverPhoneNumber")]
+    public string? DriverPhoneNumber { get; private set; }
+    
+    [Column("Capacity")]
     public int Capacity { get; private set; }
-    public string? Model { get; private set; }
-    public int? Year { get; private set; }
-    public int Status { get; private set; }
-    public DateTime? LastMaintenanceDate { get; private set; }
-    public DateTime? NextMaintenanceDate { get; private set; }
+    
+    [Column("IsActive")]
+    public bool IsActive { get; private set; }
+    
+    [Column("IsMerged")]
+    public bool IsMerged { get; private set; }
+    
+    [Column("MergedWithBusId")]
+    public Guid? MergedWithBusId { get; private set; }
+    
+    [Column("CreatedAt")]
     public DateTime CreatedAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
+    
+    [Column("CreatedBy")]
     public Guid? CreatedBy { get; private set; }
+    
+    [Column("UpdatedAt")]
+    public DateTime? UpdatedAt { get; private set; }
+    
+    [Column("UpdatedBy")]
     public Guid? UpdatedBy { get; private set; }
+    
+    [Column("IsDeleted")]
+    public bool IsDeleted { get; private set; }
+    
+    [Column("DeletedAt")]
+    public DateTime? DeletedAt { get; private set; }
+    
+    [Column("DeletedBy")]
+    public Guid? DeletedBy { get; private set; }
 
     private Bus() 
     {
         Id = Guid.NewGuid();
         CreatedAt = DateTime.UtcNow;
+        IsActive = true;
     }
 
     public static Bus Create(
         string busNumber,
-        string licensePlate,
+        int periodId,
         int capacity = 30,
-        string? model = null,
-        int? year = null)
+        string? driverName = null,
+        string? driverPhoneNumber = null)
     {
         if (string.IsNullOrWhiteSpace(busNumber))
             throw new ArgumentException("Bus number is required.", nameof(busNumber));
 
-        if (string.IsNullOrWhiteSpace(licensePlate))
-            throw new ArgumentException("License plate is required.", nameof(licensePlate));
-
         return new Bus
         {
             BusNumber = busNumber.Trim(),
-            LicensePlate = licensePlate.Trim(),
+            PeriodId = periodId,
             Capacity = capacity,
-            Model = model,
-            Year = year,
-            Status = 1 // Active
+            DriverName = driverName,
+            DriverPhoneNumber = driverPhoneNumber,
+            IsActive = true
         };
     }
 
     public void Update(
         string busNumber,
-        string licensePlate,
+        int periodId,
         int capacity,
-        string? model,
-        int? year)
+        string? driverName,
+        string? driverPhoneNumber)
     {
         BusNumber = busNumber.Trim();
-        LicensePlate = licensePlate.Trim();
+        PeriodId = periodId;
         Capacity = capacity;
-        Model = model;
-        Year = year;
+        DriverName = driverName;
+        DriverPhoneNumber = driverPhoneNumber;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void SetMaintenanceSchedule(DateTime? lastMaintenance, DateTime? nextMaintenance)
+    public void AssignRoute(Guid? routeId)
     {
-        LastMaintenanceDate = lastMaintenance;
-        NextMaintenanceDate = nextMaintenance;
+        RouteId = routeId;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void Activate() 
     { 
-        Status = 1; 
+        IsActive = true; 
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void Deactivate() 
     { 
-        Status = 0; 
+        IsActive = false; 
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public bool IsActive => Status == 1;
+    public void MarkAsMerged(Guid mergedWithBusId)
+    {
+        IsMerged = true;
+        MergedWithBusId = mergedWithBusId;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }
