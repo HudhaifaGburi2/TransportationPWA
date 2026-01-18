@@ -198,34 +198,17 @@
         }
       }
     },
-    "/api/v1/Buses": {
+    "/api/BusManagement/drivers": {
       "get": {
         "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "parameters": [
           {
-            "name": "PeriodId",
+            "name": "Search",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "RouteId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "DistrictId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           },
           {
@@ -233,13 +216,6 @@
             "in": "query",
             "schema": {
               "type": "boolean"
-            }
-          },
-          {
-            "name": "Search",
-            "in": "query",
-            "schema": {
-              "type": "string"
             }
           },
           {
@@ -265,17 +241,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoIReadOnlyListApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoIReadOnlyListApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoIReadOnlyListApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoIReadOnlyListApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoIReadOnlyListApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoIReadOnlyListApiResponse"
                 }
               }
             }
@@ -284,23 +260,23 @@
       },
       "post": {
         "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateBusDto"
+                "$ref": "#/components/schemas/CreateDriverManagementDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateBusDto"
+                "$ref": "#/components/schemas/CreateDriverManagementDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateBusDto"
+                "$ref": "#/components/schemas/CreateDriverManagementDto"
               }
             }
           }
@@ -311,17 +287,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               }
             }
@@ -329,10 +305,10 @@
         }
       }
     },
-    "/api/v1/Buses/{id}": {
+    "/api/BusManagement/drivers/{id}": {
       "get": {
         "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "parameters": [
           {
@@ -351,17 +327,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               }
             }
@@ -370,7 +346,7 @@
       },
       "put": {
         "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "parameters": [
           {
@@ -387,17 +363,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateBusDto"
+                "$ref": "#/components/schemas/UpdateDriverManagementDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateBusDto"
+                "$ref": "#/components/schemas/UpdateDriverManagementDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateBusDto"
+                "$ref": "#/components/schemas/UpdateDriverManagementDto"
               }
             }
           }
@@ -408,17 +384,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoApiResponse"
+                  "$ref": "#/components/schemas/DriverManagementDtoApiResponse"
                 }
               }
             }
@@ -427,7 +403,7 @@
       },
       "delete": {
         "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "parameters": [
           {
@@ -464,16 +440,37 @@
         }
       }
     },
-    "/api/v1/Buses/by-period/{periodId}": {
+    "/api/BusManagement/routes": {
       "get": {
         "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "parameters": [
           {
-            "name": "periodId",
-            "in": "path",
-            "required": true,
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -486,17 +483,63 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoIReadOnlyListApiResponse"
+                  "$ref": "#/components/schemas/RouteManagementDtoIReadOnlyListApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoIReadOnlyListApiResponse"
+                  "$ref": "#/components/schemas/RouteManagementDtoIReadOnlyListApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusDtoIReadOnlyListApiResponse"
+                  "$ref": "#/components/schemas/RouteManagementDtoIReadOnlyListApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "BusManagement"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRouteManagementDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRouteManagementDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRouteManagementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
                 }
               }
             }
@@ -504,10 +547,10 @@
         }
       }
     },
-    "/api/v1/Buses/{id}/statistics": {
+    "/api/BusManagement/routes/{id}": {
       "get": {
         "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "parameters": [
           {
@@ -526,57 +569,26 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusStatisticsDtoApiResponse"
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusStatisticsDtoApiResponse"
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BusStatisticsDtoApiResponse"
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
                 }
               }
             }
           }
         }
-      }
-    },
-    "/api/v1/Buses/summary": {
-      "get": {
+      },
+      "put": {
         "tags": [
-          "Buses"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/BusSummaryDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BusSummaryDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BusSummaryDtoApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/Buses/{id}/districts": {
-      "post": {
-        "tags": [
-          "Buses"
+          "BusManagement"
         ],
         "parameters": [
           {
@@ -593,33 +605,59 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "uuid"
-                }
+                "$ref": "#/components/schemas/UpdateRouteManagementDto"
               }
             },
             "text/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "uuid"
-                }
+                "$ref": "#/components/schemas/UpdateRouteManagementDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "uuid"
-                }
+                "$ref": "#/components/schemas/UpdateRouteManagementDto"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteManagementDtoApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "BusManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -637,6 +675,277 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BooleanApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BusManagement/buses": {
+      "get": {
+        "tags": [
+          "BusManagement"
+        ],
+        "parameters": [
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoIReadOnlyListApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoIReadOnlyListApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoIReadOnlyListApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "BusManagement"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBusManagementDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBusManagementDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBusManagementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BusManagement/buses/{id}": {
+      "get": {
+        "tags": [
+          "BusManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "BusManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusManagementDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusManagementDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusManagementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "BusManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BusManagement/statistics": {
+      "get": {
+        "tags": [
+          "BusManagement"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementStatisticsDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementStatisticsDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementStatisticsDtoApiResponse"
                 }
               }
             }
@@ -1689,216 +1998,6 @@
           }
         }
       }
-    },
-    "/api/v1/Routes": {
-      "get": {
-        "tags": [
-          "Routes"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoIReadOnlyListApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoIReadOnlyListApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoIReadOnlyListApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Routes"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRouteDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRouteDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRouteDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/Routes/{id}": {
-      "get": {
-        "tags": [
-          "Routes"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Routes"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateRouteDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateRouteDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateRouteDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteDtoApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Routes"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/BooleanApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BooleanApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BooleanApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -2032,83 +2131,43 @@
         },
         "additionalProperties": false
       },
-      "BusDto": {
+      "BusManagementDto": {
         "type": "object",
         "properties": {
-          "busId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
-          "plateNumber": {
+          "busNumber": {
             "type": "string",
             "nullable": true
           },
-          "periodId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "periodName": {
-            "type": "string",
-            "nullable": true
-          },
-          "routeId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "routeName": {
-            "type": "string",
-            "nullable": true
-          },
-          "driverName": {
-            "type": "string",
-            "nullable": true
-          },
-          "driverPhoneNumber": {
+          "licensePlate": {
             "type": "string",
             "nullable": true
           },
           "capacity": {
             "type": "integer",
             "format": "int32"
-          },
-          "currentStudentCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "utilizationPercentage": {
-            "type": "number",
-            "format": "double"
           },
           "isActive": {
             "type": "boolean"
           },
-          "isMerged": {
-            "type": "boolean"
-          },
-          "mergedWithBusId": {
+          "createdAt": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "districts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DistrictInfoDto"
-            },
-            "nullable": true
+            "format": "date-time"
           }
         },
         "additionalProperties": false
       },
-      "BusDtoApiResponse": {
+      "BusManagementDtoApiResponse": {
         "type": "object",
         "properties": {
           "success": {
             "type": "boolean"
           },
           "data": {
-            "$ref": "#/components/schemas/BusDto"
+            "$ref": "#/components/schemas/BusManagementDto"
           },
           "message": {
             "type": "string",
@@ -2127,7 +2186,7 @@
         },
         "additionalProperties": false
       },
-      "BusDtoIReadOnlyListApiResponse": {
+      "BusManagementDtoIReadOnlyListApiResponse": {
         "type": "object",
         "properties": {
           "success": {
@@ -2136,7 +2195,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/BusDto"
+              "$ref": "#/components/schemas/BusManagementDto"
             },
             "nullable": true
           },
@@ -2157,74 +2216,7 @@
         },
         "additionalProperties": false
       },
-      "BusStatisticsDto": {
-        "type": "object",
-        "properties": {
-          "busId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "plateNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "totalStudents": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "activeStudents": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "suspendedStudents": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "capacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "utilizationRate": {
-            "type": "number",
-            "format": "double"
-          },
-          "districtBreakdown": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DistrictStudentCount"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "BusStatisticsDtoApiResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "data": {
-            "$ref": "#/components/schemas/BusStatisticsDto"
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "BusSummaryDto": {
+      "BusManagementStatisticsDto": {
         "type": "object",
         "properties": {
           "totalBuses": {
@@ -2243,32 +2235,33 @@
             "type": "integer",
             "format": "int32"
           },
-          "totalStudentsAssigned": {
+          "totalDrivers": {
             "type": "integer",
             "format": "int32"
           },
-          "overallUtilization": {
-            "type": "number",
-            "format": "double"
+          "activeDrivers": {
+            "type": "integer",
+            "format": "int32"
           },
-          "byPeriod": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PeriodBusSummary"
-            },
-            "nullable": true
+          "totalRoutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "activeRoutes": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
       },
-      "BusSummaryDtoApiResponse": {
+      "BusManagementStatisticsDtoApiResponse": {
         "type": "object",
         "properties": {
           "success": {
             "type": "boolean"
           },
           "data": {
-            "$ref": "#/components/schemas/BusSummaryDto"
+            "$ref": "#/components/schemas/BusManagementStatisticsDto"
           },
           "message": {
             "type": "string",
@@ -2287,50 +2280,28 @@
         },
         "additionalProperties": false
       },
-      "CreateBusDto": {
+      "CreateBusManagementDto": {
         "required": [
-          "periodId",
-          "plateNumber"
+          "busNumber",
+          "licensePlate"
         ],
         "type": "object",
         "properties": {
-          "plateNumber": {
+          "busNumber": {
             "maxLength": 20,
             "minLength": 1,
             "type": "string"
           },
-          "periodId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "routeId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "driverName": {
-            "maxLength": 200,
-            "type": "string",
-            "nullable": true
-          },
-          "driverPhoneNumber": {
+          "licensePlate": {
             "maxLength": 20,
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "capacity": {
             "maximum": 100,
             "minimum": 1,
             "type": "integer",
             "format": "int32"
-          },
-          "districtIds": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2350,6 +2321,26 @@
             "maxLength": 200,
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateDriverManagementDto": {
+        "required": [
+          "fullName",
+          "phoneNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "phoneNumber": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -2429,16 +2420,60 @@
         },
         "additionalProperties": false
       },
-      "CreateRouteDto": {
+      "CreateRouteManagementDto": {
+        "required": [
+          "code",
+          "district",
+          "dropoffTime",
+          "meetingPoint",
+          "name",
+          "pickupTime"
+        ],
         "type": "object",
         "properties": {
-          "routeName": {
-            "type": "string",
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "code": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+          },
+          "district": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "meetingPoint": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "meetingPointLatitude": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
-          "routeDescription": {
-            "type": "string",
+          "meetingPointLongitude": {
+            "type": "number",
+            "format": "double",
             "nullable": true
+          },
+          "pickupTime": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "dropoffTime": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "capacity": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -2520,38 +2555,83 @@
         },
         "additionalProperties": false
       },
-      "DistrictInfoDto": {
+      "DriverManagementDto": {
         "type": "object",
         "properties": {
-          "districtId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
-          "districtNameAr": {
+          "fullName": {
             "type": "string",
             "nullable": true
           },
-          "districtNameEn": {
+          "phoneNumber": {
             "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DriverManagementDtoApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/DriverManagementDto"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "DistrictStudentCount": {
+      "DriverManagementDtoIReadOnlyListApiResponse": {
         "type": "object",
         "properties": {
-          "districtId": {
-            "type": "string",
-            "format": "uuid"
+          "success": {
+            "type": "boolean"
           },
-          "districtName": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DriverManagementDto"
+            },
+            "nullable": true
+          },
+          "message": {
             "type": "string",
             "nullable": true
           },
-          "studentCount": {
-            "type": "integer",
-            "format": "int32"
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2899,36 +2979,6 @@
         },
         "additionalProperties": false
       },
-      "PeriodBusSummary": {
-        "type": "object",
-        "properties": {
-          "periodId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "periodName": {
-            "type": "string",
-            "nullable": true
-          },
-          "busCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "studentCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalCapacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "utilization": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false
-      },
       "PeriodDto": {
         "type": "object",
         "properties": {
@@ -3214,39 +3264,69 @@
         },
         "additionalProperties": false
       },
-      "RouteDto": {
+      "RouteManagementDto": {
         "type": "object",
         "properties": {
-          "routeId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
-          "routeName": {
+          "name": {
             "type": "string",
             "nullable": true
           },
-          "routeDescription": {
+          "code": {
             "type": "string",
             "nullable": true
+          },
+          "district": {
+            "type": "string",
+            "nullable": true
+          },
+          "meetingPoint": {
+            "type": "string",
+            "nullable": true
+          },
+          "meetingPointLatitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "meetingPointLongitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "pickupTime": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "dropoffTime": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32"
           },
           "isActive": {
             "type": "boolean"
           },
-          "busCount": {
-            "type": "integer",
-            "format": "int32"
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
       },
-      "RouteDtoApiResponse": {
+      "RouteManagementDtoApiResponse": {
         "type": "object",
         "properties": {
           "success": {
             "type": "boolean"
           },
           "data": {
-            "$ref": "#/components/schemas/RouteDto"
+            "$ref": "#/components/schemas/RouteManagementDto"
           },
           "message": {
             "type": "string",
@@ -3265,7 +3345,7 @@
         },
         "additionalProperties": false
       },
-      "RouteDtoIReadOnlyListApiResponse": {
+      "RouteManagementDtoIReadOnlyListApiResponse": {
         "type": "object",
         "properties": {
           "success": {
@@ -3274,7 +3354,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/RouteDto"
+              "$ref": "#/components/schemas/RouteManagementDto"
             },
             "nullable": true
           },
@@ -3396,36 +3476,22 @@
         },
         "additionalProperties": false
       },
-      "UpdateBusDto": {
+      "UpdateBusManagementDto": {
         "required": [
-          "periodId",
-          "plateNumber"
+          "busNumber",
+          "licensePlate"
         ],
         "type": "object",
         "properties": {
-          "plateNumber": {
+          "busNumber": {
             "maxLength": 20,
             "minLength": 1,
             "type": "string"
           },
-          "periodId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "routeId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "driverName": {
-            "maxLength": 200,
-            "type": "string",
-            "nullable": true
-          },
-          "driverPhoneNumber": {
+          "licensePlate": {
             "maxLength": 20,
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "capacity": {
             "maximum": 100,
@@ -3433,13 +3499,28 @@
             "type": "integer",
             "format": "int32"
           },
-          "districtIds": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "nullable": true
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateDriverManagementDto": {
+        "required": [
+          "fullName",
+          "phoneNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "phoneNumber": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
           },
           "isActive": {
             "type": "boolean"
@@ -3447,16 +3528,60 @@
         },
         "additionalProperties": false
       },
-      "UpdateRouteDto": {
+      "UpdateRouteManagementDto": {
+        "required": [
+          "code",
+          "district",
+          "dropoffTime",
+          "meetingPoint",
+          "name",
+          "pickupTime"
+        ],
         "type": "object",
         "properties": {
-          "routeName": {
-            "type": "string",
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "code": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+          },
+          "district": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "meetingPoint": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "meetingPointLatitude": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
-          "routeDescription": {
-            "type": "string",
+          "meetingPointLongitude": {
+            "type": "number",
+            "format": "double",
             "nullable": true
+          },
+          "pickupTime": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "dropoffTime": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "capacity": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
           },
           "isActive": {
             "type": "boolean"
