@@ -87,30 +87,11 @@
           <div class="flex justify-between items-start">
             <div>
               <h3 class="font-bold text-lg">{{ route.name }}</h3>
-              <p class="text-sm text-base-content/60">{{ route.code }}</p>
+              <p v-if="route.description" class="text-sm text-base-content/60">{{ route.description }}</p>
             </div>
             <span :class="['badge', route.isActive ? 'badge-success' : 'badge-ghost']">
               {{ route.isActive ? 'نشط' : 'غير نشط' }}
             </span>
-          </div>
-          
-          <div class="mt-3 space-y-2 text-sm">
-            <div class="flex items-center gap-2">
-              <MapPin class="w-4 h-4 text-base-content/40" />
-              <span>{{ route.district }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <Navigation class="w-4 h-4 text-base-content/40" />
-              <span>{{ route.meetingPoint }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <Clock class="w-4 h-4 text-base-content/40" />
-              <span>{{ formatTime(route.pickupTime) }} - {{ formatTime(route.dropoffTime) }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <Users class="w-4 h-4 text-base-content/40" />
-              <span>السعة: {{ route.capacity }}</span>
-            </div>
           </div>
 
           <div class="card-actions justify-end mt-4 pt-3 border-t border-base-200">
@@ -132,34 +113,14 @@
       <div class="modal-box w-11/12 max-w-2xl">
         <h3 class="font-bold text-lg mb-4">{{ isEditing ? 'تعديل بيانات المسار' : 'إضافة مسار جديد' }}</h3>
         <form @submit.prevent="submitForm">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 gap-4">
             <div class="form-control">
               <label class="label"><span class="label-text">اسم المسار *</span></label>
               <input v-model="form.name" type="text" class="input input-bordered" required />
             </div>
             <div class="form-control">
-              <label class="label"><span class="label-text">رمز المسار *</span></label>
-              <input v-model="form.code" type="text" class="input input-bordered" required />
-            </div>
-            <div class="form-control">
-              <label class="label"><span class="label-text">الحي *</span></label>
-              <input v-model="form.district" type="text" class="input input-bordered" required />
-            </div>
-            <div class="form-control">
-              <label class="label"><span class="label-text">نقطة التجمع *</span></label>
-              <input v-model="form.meetingPoint" type="text" class="input input-bordered" required />
-            </div>
-            <div class="form-control">
-              <label class="label"><span class="label-text">وقت الذهاب *</span></label>
-              <input v-model="form.pickupTime" type="time" class="input input-bordered" required />
-            </div>
-            <div class="form-control">
-              <label class="label"><span class="label-text">وقت العودة *</span></label>
-              <input v-model="form.dropoffTime" type="time" class="input input-bordered" required />
-            </div>
-            <div class="form-control">
-              <label class="label"><span class="label-text">السعة *</span></label>
-              <input v-model.number="form.capacity" type="number" min="1" max="100" class="input input-bordered" required />
+              <label class="label"><span class="label-text">الوصف</span></label>
+              <textarea v-model="form.description" class="textarea textarea-bordered" rows="3"></textarea>
             </div>
             <div v-if="isEditing" class="form-control">
               <label class="label"><span class="label-text">الحالة</span></label>
@@ -204,7 +165,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useBusManagementStore, type Route, type CreateRouteDto, type UpdateRouteDto } from '@/stores/busManagement'
 import { storeToRefs } from 'pinia'
 import { 
-  Search, MapPin, MapPinPlus, Navigation, Clock, Users, AlertCircle,
+  Search, MapPin, MapPinPlus, Navigation, AlertCircle,
   Pencil, Trash2 
 } from 'lucide-vue-next'
 
@@ -221,12 +182,7 @@ const routeToDelete = ref<Route | null>(null)
 
 const form = ref<CreateRouteDto & { isActive?: boolean }>({
   name: '',
-  code: '',
-  district: '',
-  meetingPoint: '',
-  pickupTime: '15:00',
-  dropoffTime: '17:00',
-  capacity: 30,
+  description: '',
   isActive: true
 })
 
@@ -245,23 +201,12 @@ async function loadRoutes() {
   })
 }
 
-function formatTime(timeStr: string) {
-  if (!timeStr) return ''
-  const parts = timeStr.split(':')
-  return `${parts[0]}:${parts[1]}`
-}
-
 function openAddModal() {
   isEditing.value = false
   editingId.value = null
   form.value = {
     name: '',
-    code: '',
-    district: '',
-    meetingPoint: '',
-    pickupTime: '15:00',
-    dropoffTime: '17:00',
-    capacity: 30,
+    description: '',
     isActive: true
   }
   formModal.value?.showModal()
@@ -272,12 +217,7 @@ function openEditModal(route: Route) {
   editingId.value = route.id
   form.value = {
     name: route.name,
-    code: route.code,
-    district: route.district,
-    meetingPoint: route.meetingPoint,
-    pickupTime: formatTime(route.pickupTime),
-    dropoffTime: formatTime(route.dropoffTime),
-    capacity: route.capacity,
+    description: route.description || '',
     isActive: route.isActive
   }
   formModal.value?.showModal()
