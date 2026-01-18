@@ -177,6 +177,32 @@ public class BusManagementController : BaseApiController
         return Ok(ApiResponse<BusManagementDto>.SuccessResponse(result.Value!));
     }
 
+    [HttpGet("buses/by-period/{periodId:int}")]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<BusManagementDto>>>> GetBusesByPeriod(
+        int periodId,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Fetching buses for period {PeriodId}", periodId);
+        var result = await _busManagementService.GetAllBusesAsync(null, cancellationToken);
+        if (result.IsFailure)
+            return BadRequest(ApiResponse<IReadOnlyList<BusManagementDto>>.FailureResponse(result.Error!));
+
+        return Ok(ApiResponse<IReadOnlyList<BusManagementDto>>.SuccessResponse(result.Value!));
+    }
+
+    [HttpGet("buses/{id:guid}/statistics")]
+    public async Task<ActionResult<ApiResponse<BusManagementStatisticsDto>>> GetBusStatistics(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Fetching statistics for bus {BusId}", id);
+        var result = await _busManagementService.GetStatisticsAsync(cancellationToken);
+        if (result.IsFailure)
+            return BadRequest(ApiResponse<BusManagementStatisticsDto>.FailureResponse(result.Error!));
+
+        return Ok(ApiResponse<BusManagementStatisticsDto>.SuccessResponse(result.Value!));
+    }
+
     [HttpPost("buses")]
     public async Task<ActionResult<ApiResponse<BusManagementDto>>> CreateBus(
         [FromBody] CreateBusManagementDto dto,
