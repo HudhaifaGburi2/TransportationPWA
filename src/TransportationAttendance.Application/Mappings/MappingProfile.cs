@@ -1,5 +1,7 @@
 using AutoMapper;
+using TransportationAttendance.Application.DTOs.Department;
 using TransportationAttendance.Application.DTOs.District;
+using TransportationAttendance.Application.DTOs.Driver;
 using TransportationAttendance.Application.DTOs.Location;
 using TransportationAttendance.Application.DTOs.Lookups;
 using TransportationAttendance.Application.DTOs.Registration;
@@ -45,6 +47,15 @@ public class MappingProfile : Profile
 
         // Student Halaqa Info mapping
         CreateMap<StudentHalaqaInfo, StudentHalaqaInfoDto>();
+
+        // Driver mappings
+        CreateMap<Driver, DriverDto>()
+            .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department != null ? src.Department.NameAr : null));
+
+        // Department mappings
+        CreateMap<Department, DepartmentDto>()
+            .ForMember(dest => dest.DriversCount, opt => opt.MapFrom(src => src.Drivers.Count))
+            .ForMember(dest => dest.BusesCount, opt => opt.MapFrom(src => src.Buses.Count));
     }
 
     private static List<string>? DeserializePeriods(string? periodsJson)
