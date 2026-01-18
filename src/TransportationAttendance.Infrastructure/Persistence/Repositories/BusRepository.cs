@@ -4,90 +4,91 @@ using TransportationAttendance.Domain.Interfaces.Repositories;
 
 namespace TransportationAttendance.Infrastructure.Persistence.Repositories;
 
-public class BusRepository : BaseRepository<Bus>, IBusRepository
+public class BusRepository : IBusRepository
 {
-    public BusRepository(TransportationDbContext context) : base(context)
+    private readonly TransportationDbContext _context;
+
+    public BusRepository(TransportationDbContext context)
     {
+        _context = context;
     }
 
-    public override async Task<IReadOnlyList<Bus>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<Bus?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet
+        return await _context.Buses
             .AsNoTracking()
-            .Include(b => b.Route)
-            .Include(b => b.BusDistricts)
-                .ThenInclude(bd => bd.District)
-            .Include(b => b.StudentAssignments)
-            .OrderBy(b => b.PeriodId)
-            .ThenBy(b => b.PlateNumber)
+            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Bus>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Buses
+            .AsNoTracking()
+            .OrderBy(b => b.BusNumber)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Bus>> GetByPeriodAsync(int periodId, CancellationToken cancellationToken = default)
+    public async Task<Bus?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)
     {
-        return await _dbSet
+        return await _context.Buses
             .AsNoTracking()
-            .Include(b => b.Route)
-            .Include(b => b.BusDistricts)
-                .ThenInclude(bd => bd.District)
-            .Include(b => b.StudentAssignments)
-            .Where(b => b.PeriodId == periodId && b.IsActive)
-            .OrderBy(b => b.PlateNumber)
-            .ToListAsync(cancellationToken);
+            .FirstOrDefaultAsync(b => b.LicensePlate == licensePlate, cancellationToken);
+    }
+
+    public async Task<Bus?> GetByBusNumberAsync(string busNumber, CancellationToken cancellationToken = default)
+    {
+        return await _context.Buses
+            .AsNoTracking()
+            .FirstOrDefaultAsync(b => b.BusNumber == busNumber, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Bus>> GetActiveBusesAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbSet
+        return await _context.Buses
             .AsNoTracking()
-            .Include(b => b.Route)
-            .Include(b => b.BusDistricts)
-                .ThenInclude(bd => bd.District)
-            .Include(b => b.StudentAssignments)
             .Where(b => b.IsActive)
-            .OrderBy(b => b.PlateNumber)
+            .OrderBy(b => b.BusNumber)
             .ToListAsync(cancellationToken);
     }
 
-    /// <summary>
-    /// Get bus by PlateNumber within a specific period.
-    /// Uniqueness is enforced on (PlateNumber + PeriodId) - same plate can exist in different periods.
-    /// </summary>
-    public async Task<Bus?> GetByPlateNumberAsync(string plateNumber, int periodId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Bus>> SearchAsync(string searchTerm, CancellationToken cancellationToken = default)
     {
-        return await _dbSet
-            .Include(b => b.Route)
-            .Include(b => b.BusDistricts)
-                .ThenInclude(bd => bd.District)
-            .FirstOrDefaultAsync(b => b.PlateNumber == plateNumber && b.PeriodId == periodId, cancellationToken);
-    }
-
-    public override async Task<Bus?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await _dbSet
-            .Include(b => b.Route)
-            .Include(b => b.BusDistricts)
-                .ThenInclude(bd => bd.District)
-            .Include(b => b.StudentAssignments)
-            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<Bus>> GetByDistrictAsync(Guid districtId, CancellationToken cancellationToken = default)
-    {
-        return await _dbSet
+        return await _context.Buses
             .AsNoTracking()
-            .Include(b => b.Route)
-            .Include(b => b.BusDistricts)
-                .ThenInclude(bd => bd.District)
-            .Include(b => b.StudentAssignments)
-            .Where(b => b.IsActive && b.BusDistricts.Any(bd => bd.DistrictId == districtId))
-            .OrderBy(b => b.PlateNumber)
+            .Where(b => b.BusNumber.Contains(searchTerm) || b.LicensePlate.Contains(searchTerm))
+            .OrderBy(b => b.BusNumber)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> GetStudentCountAsync(Guid busId, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Bus bus, CancellationToken cancellationToken = default)
     {
-        return await _context.Set<StudentBusAssignment>()
-            .CountAsync(s => s.BusId == busId && s.IsActive, cancellationToken);
+        await _context.Buses.AddAsync(bus, cancellationToken);
+    }
+
+    public void Update(Bus bus)
+    {
+        _context.Buses.Update(bus);
+    }
+
+    public void Remove(Bus bus)
+    {
+        _context.Buses.Remove(bus);
+    }
+
+    public async Task<int> GetTotalCountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Buses.CountAsync(cancellationToken);
+    }
+
+    public async Task<int> GetActiveCountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Buses.CountAsync(b => b.IsActive, cancellationToken);
+    }
+
+    public async Task<int> GetTotalCapacityAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Buses
+            .Where(b => b.IsActive)
+            .SumAsync(b => b.Capacity, cancellationToken);
     }
 }
