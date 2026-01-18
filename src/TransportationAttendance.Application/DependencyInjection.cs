@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IBusService, BusService>();
         services.AddScoped<IRouteService, RouteService>();
+        services.AddScoped<IBusManagementService, BusManagementService>();
 
         return services;
     }
