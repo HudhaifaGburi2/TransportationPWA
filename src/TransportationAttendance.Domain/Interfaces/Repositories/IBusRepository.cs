@@ -6,7 +6,6 @@ public interface IBusRepository
 {
     Task<Bus?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Bus>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<Bus?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default);
     Task<Bus?> GetByBusNumberAsync(string busNumber, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Bus>> GetActiveBusesAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Bus>> SearchAsync(string searchTerm, CancellationToken cancellationToken = default);
