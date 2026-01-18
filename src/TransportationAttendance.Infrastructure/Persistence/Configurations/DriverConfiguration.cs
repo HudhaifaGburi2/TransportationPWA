@@ -10,49 +10,25 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
     {
         builder.ToTable("Drivers");
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).HasColumnName("DriverId");
+        builder.HasKey(d => d.Id);
 
-        builder.Property(e => e.FullName)
-            .HasColumnName("FullName")
+        builder.Property(d => d.FullName)
             .HasMaxLength(200)
             .IsRequired();
 
-        builder.Property(e => e.PhoneNumber)
-            .HasColumnName("PhoneNumber")
+        builder.Property(d => d.PhoneNumber)
             .HasMaxLength(20)
             .IsRequired();
 
-        builder.Property(e => e.DepartmentId)
-            .HasColumnName("DepartmentId")
+        builder.Property(d => d.LicenseNumber)
+            .HasMaxLength(50)
             .IsRequired();
 
-        builder.Property(e => e.IsActive)
-            .HasColumnName("IsActive")
-            .HasDefaultValue(true);
+        builder.Property(d => d.EmployeeId)
+            .HasMaxLength(50);
 
-        // Audit fields
-        builder.Property(e => e.CreatedAt).HasColumnName("CreatedAt");
-        builder.Property(e => e.CreatedBy).HasColumnName("CreatedBy");
-        builder.Property(e => e.UpdatedAt).HasColumnName("UpdatedAt");
-        builder.Property(e => e.UpdatedBy).HasColumnName("UpdatedBy");
-        builder.Property(e => e.IsDeleted).HasColumnName("IsDeleted");
-        builder.Property(e => e.DeletedAt).HasColumnName("DeletedAt");
-        builder.Property(e => e.DeletedBy).HasColumnName("DeletedBy");
-
-        // Relationships
-        builder.HasOne(e => e.Department)
-            .WithMany(d => d.Drivers)
-            .HasForeignKey(e => e.DepartmentId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // Indexes
-        builder.HasIndex(e => e.PhoneNumber);
-        builder.HasIndex(e => e.DepartmentId);
-        builder.HasIndex(e => e.IsActive);
-        builder.HasIndex(e => e.IsDeleted);
-
-        // Query filter for soft delete
-        builder.HasQueryFilter(e => !e.IsDeleted);
+        builder.HasIndex(d => d.PhoneNumber);
+        builder.HasIndex(d => d.LicenseNumber)
+            .IsUnique();
     }
 }
