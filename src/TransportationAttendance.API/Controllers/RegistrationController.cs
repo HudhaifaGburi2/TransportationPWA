@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TransportationAttendance.API.Infrastructure;
 using TransportationAttendance.Application.DTOs.Common;
-using TransportationAttendance.Application.DTOs.NationalAddress;
 using TransportationAttendance.Application.DTOs.Registration;
 using TransportationAttendance.Application.DTOs.Student;
 using TransportationAttendance.Application.Interfaces;
@@ -14,16 +13,13 @@ namespace TransportationAttendance.API.Controllers;
 public class RegistrationController : BaseApiController
 {
     private readonly IRegistrationService _registrationService;
-    private readonly INationalAddressService _nationalAddressService;
     private readonly ILogger<RegistrationController> _logger;
 
     public RegistrationController(
         IRegistrationService registrationService, 
-        INationalAddressService nationalAddressService,
         ILogger<RegistrationController> logger)
     {
         _registrationService = registrationService;
-        _nationalAddressService = nationalAddressService;
         _logger = logger;
     }
 
@@ -160,28 +156,5 @@ public class RegistrationController : BaseApiController
         _logger.LogInformation("Registration {RegistrationId} {Action} by {ReviewerId}", id, action, reviewerId);
 
         return Ok(ApiResponse<RegistrationRequestDto>.SuccessResponse(result.Value!, $"Registration {action} successfully."));
-    }
-
-    /// <summary>
-    /// Lookup full address from short national address code
-    /// </summary>
-    /// <param name="shortAddress">Short national address (e.g., RRRD2929)</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    [HttpGet("lookup-address/{shortAddress}")]
-    [Authorize]
-    public async Task<ActionResult<ApiResponse<NationalAddressDto>>> LookupNationalAddress(
-        string shortAddress,
-        CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Looking up national address: {ShortAddress}", shortAddress);
-
-        var result = await _nationalAddressService.LookupAddressAsync(shortAddress, cancellationToken);
-
-        if (result.IsFailure)
-        {
-            return BadRequest(ApiResponse<NationalAddressDto>.FailureResponse(result.Error!));
-        }
-
-        return Ok(ApiResponse<NationalAddressDto>.SuccessResponse(result.Value!));
     }
 }
