@@ -119,10 +119,10 @@
                 <div class="flex flex-wrap gap-3 p-4 bg-base-200/50 rounded-lg">
                   <span v-if="periodsLoading" class="loading loading-spinner loading-sm"></span>
                   <span v-else-if="availablePeriods.length === 0" class="text-base-content/60 text-sm">لا توجد فترات متاحة</span>
-                  <label v-else v-for="period in availablePeriods" :key="period.id" class="flex items-center gap-2 cursor-pointer">
+                  <label v-else v-for="period in availablePeriods" :key="period.periodId" class="flex items-center gap-2 cursor-pointer">
                     <input 
                       type="checkbox" 
-                      :value="period.id.toString()" 
+                      :value="period.periodId.toString()" 
                       v-model="form.periods" 
                       class="checkbox checkbox-primary" 
                     />
@@ -134,21 +134,72 @@
                 </label>
               </div>
 
-              <!-- District Selection -->
+              <!-- District Selection (Searchable) -->
               <div class="form-control">
                 <label class="label">
                   <span class="label-text font-semibold">المنطقة</span>
                   <span class="badge badge-ghost">اختياري</span>
                 </label>
-                <select 
-                  v-model="form.districtId" 
-                  class="select select-bordered select-lg w-full"
-                >
-                  <option value="">اختر المنطقة السكنية</option>
-                  <option v-for="district in districts" :key="district.id" :value="district.id">
-                    {{ district.districtNameAr }}
-                  </option>
-                </select>
+                <div class="relative">
+                  <div 
+                    class="input input-bordered input-lg w-full flex items-center cursor-pointer"
+                    :class="{ 'input-focus': districtDropdownOpen }"
+                    @click="districtDropdownOpen = !districtDropdownOpen"
+                  >
+                    <span v-if="form.districtId" class="flex-1">{{ selectedDistrictName }}</span>
+                    <span v-else class="flex-1 text-base-content/50">اختر المنطقة السكنية</span>
+                    <ChevronDown class="w-5 h-5 text-base-content/50 transition-transform" :class="{ 'rotate-180': districtDropdownOpen }" />
+                  </div>
+                  
+                  <!-- Dropdown -->
+                  <div 
+                    v-if="districtDropdownOpen" 
+                    class="absolute z-50 top-full left-0 right-0 mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-64 overflow-hidden"
+                  >
+                    <!-- Search Input -->
+                    <div class="p-2 border-b border-base-200">
+                      <div class="relative">
+                        <input 
+                          v-model="districtSearch"
+                          type="text"
+                          class="input input-bordered input-sm w-full pr-8"
+                          placeholder="ابحث عن المنطقة..."
+                          @click.stop
+                        />
+                        <Search class="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2 text-base-content/40" />
+                      </div>
+                    </div>
+                    
+                    <!-- Options List -->
+                    <div class="overflow-y-auto max-h-48">
+                      <div 
+                        class="px-4 py-2 hover:bg-base-200 cursor-pointer text-base-content/60"
+                        @click="selectDistrict('')"
+                      >
+                        -- بدون تحديد --
+                      </div>
+                      <div 
+                        v-for="district in filteredDistricts" 
+                        :key="district.id"
+                        class="px-4 py-2 hover:bg-base-200 cursor-pointer"
+                        :class="{ 'bg-primary/10 text-primary': form.districtId === district.id }"
+                        @click="selectDistrict(district.id)"
+                      >
+                        {{ district.districtNameAr }}
+                      </div>
+                      <div v-if="filteredDistricts.length === 0" class="px-4 py-3 text-center text-base-content/50">
+                        لا توجد نتائج
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Click outside to close -->
+                <div 
+                  v-if="districtDropdownOpen" 
+                  class="fixed inset-0 z-40" 
+                  @click="districtDropdownOpen = false"
+                ></div>
               </div>
 
               <!-- National Short Address -->
@@ -210,6 +261,16 @@
                       <p v-if="addressDetails" class="text-sm text-base-content/60 mt-1">
                         {{ addressDetails }}
                       </p>
+                      <!-- Google Maps Link -->
+                      <a 
+                        v-if="googleMapsUrl" 
+                        :href="googleMapsUrl" 
+                        target="_blank" 
+                        class="link link-primary text-sm flex items-center gap-1 mt-2"
+                      >
+                        <ExternalLink class="w-3 h-3" />
+                        عرض على خرائط جوجل
+                      </a>
                     </div>
                     <label class="flex items-center gap-2 cursor-pointer">
                       <input 
@@ -220,6 +281,20 @@
                       <span class="text-sm font-medium text-success">تأكيد</span>
                     </label>
                   </div>
+                </div>
+                
+                <!-- Map Preview -->
+                <div v-if="googleMapsEmbedUrl" class="mt-3 rounded-lg overflow-hidden border border-base-300">
+                  <iframe 
+                    :src="googleMapsEmbedUrl"
+                    width="100%" 
+                    height="200" 
+                    style="border:0;" 
+                    allowfullscreen
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade"
+                    class="w-full"
+                  ></iframe>
                 </div>
               </div>
 
@@ -284,7 +359,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X, ArrowRight, Search } from 'lucide-vue-next'
+import { Bus, User, MapPin, Home, Send, AlertCircle, RefreshCw, CheckCircle2, Info, ExternalLink, X, ArrowRight, Search, ChevronDown } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 import BaseButton from '@/components/ui/BaseButton.vue'
 
@@ -323,6 +398,31 @@ const error = ref<string | null>(null)
 const studentInfo = ref<StudentInfo | null>(null)
 const districts = ref<District[]>([])
 
+// Searchable district dropdown state
+const districtDropdownOpen = ref(false)
+const districtSearch = ref('')
+
+const filteredDistricts = computed(() => {
+  if (!districtSearch.value) return districts.value
+  const search = districtSearch.value.toLowerCase()
+  return districts.value.filter(d => 
+    d.districtNameAr.toLowerCase().includes(search) ||
+    (d.districtNameEn?.toLowerCase().includes(search))
+  )
+})
+
+const selectedDistrictName = computed(() => {
+  if (!form.value.districtId) return ''
+  const district = districts.value.find(d => d.id === form.value.districtId)
+  return district?.districtNameAr || ''
+})
+
+const selectDistrict = (id: string) => {
+  form.value.districtId = id
+  districtDropdownOpen.value = false
+  districtSearch.value = ''
+}
+
 const form = ref({
   districtId: '',
   nationalShortAddress: '',
@@ -333,7 +433,7 @@ const form = ref({
 
 // Available periods for multi-select (fetched from API)
 interface Period {
-  id: number
+  periodId: number
   periodName: string
 }
 const availablePeriods = ref<Period[]>([])
@@ -382,6 +482,27 @@ const fullAddress = ref('')
 const addressDetails = ref('')
 const addressError = ref('')
 const addressConfirmed = ref(false)
+const addressLatitude = ref<number | null>(null)
+const addressLongitude = ref<number | null>(null)
+
+// Google Maps URL for the resolved address
+const googleMapsUrl = computed(() => {
+  if (addressLatitude.value && addressLongitude.value) {
+    return `https://www.google.com/maps?q=${addressLatitude.value},${addressLongitude.value}`
+  }
+  // Fallback to short address search
+  if (form.value.nationalShortAddress && isAddressValid.value) {
+    return `https://www.google.com/maps/search/${form.value.nationalShortAddress.toUpperCase()}`
+  }
+  return null
+})
+
+const googleMapsEmbedUrl = computed(() => {
+  if (addressLatitude.value && addressLongitude.value) {
+    return `https://maps.google.com/maps?q=${addressLatitude.value},${addressLongitude.value}&z=17&output=embed`
+  }
+  return null
+})
 
 const isAddressValid = computed(() => {
   const addressPattern = /^[A-Za-z]{4}\d{4}$/
@@ -411,14 +532,14 @@ const loadStudentInfo = async () => {
   isLoading.value = true
   error.value = null
   
-  // Check if student already has a registration
-  const hasExisting = await checkExistingRegistration()
-  if (hasExisting) return
-  
-  // Load periods (from cache or API)
-  await loadPeriods()
-  
   try {
+    // Check if student already has a registration
+    const hasExisting = await checkExistingRegistration()
+    if (hasExisting) return
+    
+    // Load periods (from cache or API)
+    await loadPeriods()
+    
     const [studentResponse, districtsResponse] = await Promise.all([
       apiClient.get('/registration/student-info'),
       apiClient.get('/districts')
@@ -445,6 +566,8 @@ const onAddressInput = () => {
   addressError.value = ''
   addressConfirmed.value = false
   form.value.fullNationalAddress = ''
+  addressLatitude.value = null
+  addressLongitude.value = null
 }
 
 // Lookup address from National Address API
@@ -464,11 +587,16 @@ const lookupAddress = async () => {
       const data = response.data.data
       fullAddress.value = data.fullAddress || ''
       form.value.fullNationalAddress = data.fullAddress || ''
+      addressLatitude.value = data.latitude || null
+      addressLongitude.value = data.longitude || null
       
       // Build additional details
       const details = []
       if (data.city) details.push(`المدينة: ${data.city}`)
       if (data.postalCode) details.push(`الرمز البريدي: ${data.postalCode}`)
+      if (data.latitude && data.longitude) {
+        details.push(`الإحداثيات: ${data.latitude.toFixed(6)}, ${data.longitude.toFixed(6)}`)
+      }
       addressDetails.value = details.join(' | ')
     } else {
       addressError.value = response.data.message || 'لم يتم العثور على العنوان'
