@@ -134,6 +134,14 @@
               <td class="text-center">
                 <div v-if="request.status === 'pending'" class="flex items-center justify-center gap-1">
                   <button 
+                    v-if="request.nationalShortAddress"
+                    @click="previewAddress(request)" 
+                    class="btn btn-ghost btn-sm btn-square tooltip tooltip-right" 
+                    data-tip="عرض العنوان"
+                  >
+                    <MapPin class="w-4 h-4 text-primary" />
+                  </button>
+                  <button 
                     @click="approveRequest(request)" 
                     class="btn btn-success btn-sm gap-1"
                     :disabled="processing"
@@ -151,6 +159,14 @@
                   </button>
                 </div>
                 <div v-else class="flex items-center justify-center gap-1">
+                  <button 
+                    v-if="request.nationalShortAddress"
+                    @click="previewAddress(request)" 
+                    class="btn btn-ghost btn-sm btn-square tooltip tooltip-right" 
+                    data-tip="عرض العنوان على الخريطة"
+                  >
+                    <MapPin class="w-4 h-4 text-primary" />
+                  </button>
                   <button 
                     @click="viewDetails(request)" 
                     class="btn btn-ghost btn-sm btn-square tooltip" 
@@ -246,12 +262,102 @@
       </div>
       <div class="modal-backdrop bg-black/50" @click="showDetailsDialog = false"></div>
     </dialog>
+
+    <!-- Address Preview Modal -->
+    <dialog :open="showAddressPreviewDialog" class="modal modal-open">
+      <div class="modal-box max-w-2xl">
+        <button @click="showAddressPreviewDialog = false" class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2">✕</button>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-primary/10 rounded-lg">
+            <MapPin class="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h3 class="font-bold text-xl">التحقق من العنوان الوطني</h3>
+            <p class="text-base-content/60 text-sm">{{ selectedRequest?.studentName }}</p>
+          </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div v-if="addressPreviewLoading" class="flex flex-col items-center justify-center py-12">
+          <span class="loading loading-spinner loading-lg text-primary mb-4"></span>
+          <p class="text-base-content/60">جاري البحث عن العنوان...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div v-else-if="addressPreviewError" class="alert alert-error mb-4">
+          <XCircle class="w-5 h-5" />
+          <span>{{ addressPreviewError }}</span>
+        </div>
+        
+        <!-- Address Details -->
+        <div v-else-if="addressPreview" class="space-y-4">
+          <div class="bg-base-200/50 rounded-lg p-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm text-base-content/60">العنوان المختصر</label>
+                <p class="font-mono font-bold text-lg" dir="ltr">{{ addressPreview.shortAddress }}</p>
+              </div>
+              <div>
+                <label class="text-sm text-base-content/60">المدينة</label>
+                <p class="font-semibold">{{ addressPreview.city || '-' }}</p>
+              </div>
+              <div>
+                <label class="text-sm text-base-content/60">الحي</label>
+                <p>{{ addressPreview.district || '-' }}</p>
+              </div>
+              <div>
+                <label class="text-sm text-base-content/60">الرمز البريدي</label>
+                <p dir="ltr">{{ addressPreview.postalCode || '-' }}</p>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-base-300">
+              <label class="text-sm text-base-content/60">العنوان الكامل</label>
+              <p class="font-medium">{{ addressPreview.fullAddress || '-' }}</p>
+            </div>
+            <div v-if="addressPreview.latitude && addressPreview.longitude" class="mt-2">
+              <label class="text-sm text-base-content/60">الإحداثيات</label>
+              <p class="font-mono text-sm" dir="ltr">{{ addressPreview.latitude.toFixed(6) }}, {{ addressPreview.longitude.toFixed(6) }}</p>
+            </div>
+          </div>
+          
+          <!-- Map Preview -->
+          <div v-if="getGoogleMapsEmbedUrl(addressPreview)" class="rounded-lg overflow-hidden border border-base-300">
+            <iframe 
+              :src="getGoogleMapsEmbedUrl(addressPreview)!"
+              width="100%" 
+              height="250" 
+              style="border:0;" 
+              allowfullscreen
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade"
+              class="w-full"
+            ></iframe>
+          </div>
+          
+          <!-- Open in Google Maps -->
+          <a 
+            :href="getGoogleMapsUrl(addressPreview)" 
+            target="_blank" 
+            class="btn btn-primary btn-block gap-2"
+          >
+            <ExternalLink class="w-4 h-4" />
+            فتح في خرائط جوجل
+          </a>
+        </div>
+        
+        <div class="modal-action">
+          <button class="btn" @click="showAddressPreviewDialog = false">إغلاق</button>
+        </div>
+      </div>
+      <div class="modal-backdrop bg-black/50" @click="showAddressPreviewDialog = false"></div>
+    </dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FileText, Search, RefreshCw, Clock, CheckCircle, XCircle, Check, X, Eye } from 'lucide-vue-next'
+import { FileText, Search, RefreshCw, Clock, CheckCircle, XCircle, Check, X, Eye, MapPin, ExternalLink } from 'lucide-vue-next'
+import apiClient from '@/services/api/axios.config'
 
 interface RegistrationRequest {
   id: string
@@ -262,9 +368,21 @@ interface RegistrationRequest {
   districtName: string
   periodId: number
   periodName: string
+  nationalShortAddress?: string
+  fullNationalAddress?: string
   status: 'pending' | 'approved' | 'rejected'
   createdAt: string
   rejectionReason?: string
+}
+
+interface AddressPreview {
+  shortAddress: string
+  fullAddress?: string
+  city?: string
+  district?: string
+  postalCode?: string
+  latitude?: number
+  longitude?: number
 }
 
 const requests = ref<RegistrationRequest[]>([])
@@ -275,8 +393,12 @@ const filterStatus = ref('all')
 
 const showRejectDialog = ref(false)
 const showDetailsDialog = ref(false)
+const showAddressPreviewDialog = ref(false)
 const selectedRequest = ref<RegistrationRequest | null>(null)
 const rejectReason = ref('')
+const addressPreview = ref<AddressPreview | null>(null)
+const addressPreviewLoading = ref(false)
+const addressPreviewError = ref('')
 
 // Computed stats
 const pendingCount = computed(() => requests.value.filter(r => r.status === 'pending').length)
@@ -319,6 +441,7 @@ const fetchRequests = async () => {
         districtName: 'الرياض',
         periodId: 1,
         periodName: 'الفترة الأولى',
+        nationalShortAddress: 'RRRD2929',
         status: 'pending',
         createdAt: new Date().toISOString()
       },
@@ -331,6 +454,7 @@ const fetchRequests = async () => {
         districtName: 'جدة',
         periodId: 2,
         periodName: 'الفترة الثانية',
+        nationalShortAddress: 'DMMA7667',
         status: 'approved',
         createdAt: new Date(Date.now() - 86400000).toISOString()
       },
@@ -343,6 +467,7 @@ const fetchRequests = async () => {
         districtName: 'الرياض',
         periodId: 1,
         periodName: 'الفترة الأولى',
+        nationalShortAddress: 'RRYA1234',
         status: 'rejected',
         createdAt: new Date(Date.now() - 172800000).toISOString(),
         rejectionReason: 'عدم استيفاء الشروط المطلوبة'
@@ -428,6 +553,53 @@ const confirmReject = async () => {
 const viewDetails = (request: RegistrationRequest) => {
   selectedRequest.value = request
   showDetailsDialog.value = true
+}
+
+// Address preview for admin verification
+const previewAddress = async (request: RegistrationRequest) => {
+  if (!request.nationalShortAddress) return
+  
+  selectedRequest.value = request
+  addressPreview.value = null
+  addressPreviewError.value = ''
+  addressPreviewLoading.value = true
+  showAddressPreviewDialog.value = true
+  
+  try {
+    const response = await apiClient.get(`/registration/lookup-address/${request.nationalShortAddress.toUpperCase()}`)
+    
+    if (response.data.success && response.data.data) {
+      addressPreview.value = {
+        shortAddress: request.nationalShortAddress.toUpperCase(),
+        fullAddress: response.data.data.fullAddress,
+        city: response.data.data.city,
+        district: response.data.data.district,
+        postalCode: response.data.data.postalCode,
+        latitude: response.data.data.latitude,
+        longitude: response.data.data.longitude
+      }
+    } else {
+      addressPreviewError.value = response.data.message || 'لم يتم العثور على العنوان'
+    }
+  } catch (err: any) {
+    addressPreviewError.value = err.response?.data?.message || 'حدث خطأ أثناء البحث عن العنوان'
+  } finally {
+    addressPreviewLoading.value = false
+  }
+}
+
+const getGoogleMapsUrl = (address: AddressPreview) => {
+  if (address.latitude && address.longitude) {
+    return `https://www.google.com/maps?q=${address.latitude},${address.longitude}`
+  }
+  return `https://www.google.com/maps/search/${address.shortAddress}`
+}
+
+const getGoogleMapsEmbedUrl = (address: AddressPreview) => {
+  if (address.latitude && address.longitude) {
+    return `https://maps.google.com/maps?q=${address.latitude},${address.longitude}&z=17&output=embed`
+  }
+  return null
 }
 
 onMounted(fetchRequests)
