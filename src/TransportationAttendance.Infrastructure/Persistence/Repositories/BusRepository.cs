@@ -28,13 +28,6 @@ public class BusRepository : IBusRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Bus?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)
-    {
-        return await _context.Buses
-            .AsNoTracking()
-            .FirstOrDefaultAsync(b => b.LicensePlate == licensePlate, cancellationToken);
-    }
-
     public async Task<Bus?> GetByBusNumberAsync(string busNumber, CancellationToken cancellationToken = default)
     {
         return await _context.Buses
@@ -55,7 +48,8 @@ public class BusRepository : IBusRepository
     {
         return await _context.Buses
             .AsNoTracking()
-            .Where(b => b.BusNumber.Contains(searchTerm) || b.LicensePlate.Contains(searchTerm))
+            .Where(b => b.BusNumber.Contains(searchTerm) || 
+                       (b.DriverName != null && b.DriverName.Contains(searchTerm)))
             .OrderBy(b => b.BusNumber)
             .ToListAsync(cancellationToken);
     }
