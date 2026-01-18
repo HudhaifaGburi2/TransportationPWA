@@ -144,31 +144,13 @@
               <label class="label"><span class="label-text">السعة *</span></label>
               <input v-model.number="form.capacity" type="number" min="1" max="100" class="input input-bordered" required />
             </div>
-            <div class="form-control">
-              <label class="label"><span class="label-text">الموديل</span></label>
-              <input v-model="form.model" type="text" class="input input-bordered" />
+            <div v-if="isEditing" class="form-control">
+              <label class="label"><span class="label-text">الحالة</span></label>
+              <label class="label cursor-pointer justify-start gap-3">
+                <input v-model="form.isActive" type="checkbox" class="toggle toggle-success" />
+                <span class="label-text">نشط</span>
+              </label>
             </div>
-            <div class="form-control">
-              <label class="label"><span class="label-text">السنة</span></label>
-              <input v-model.number="form.year" type="number" min="2000" max="2030" class="input input-bordered" />
-            </div>
-            <template v-if="isEditing">
-              <div class="form-control">
-                <label class="label"><span class="label-text">آخر صيانة</span></label>
-                <input v-model="form.lastMaintenanceDate" type="date" class="input input-bordered" />
-              </div>
-              <div class="form-control">
-                <label class="label"><span class="label-text">الصيانة القادمة</span></label>
-                <input v-model="form.nextMaintenanceDate" type="date" class="input input-bordered" />
-              </div>
-              <div class="form-control">
-                <label class="label"><span class="label-text">الحالة</span></label>
-                <label class="label cursor-pointer justify-start gap-3">
-                  <input v-model="form.isActive" type="checkbox" class="toggle toggle-success" />
-                  <span class="label-text">نشط</span>
-                </label>
-              </div>
-            </template>
           </div>
           <div class="modal-action">
             <button type="button" class="btn btn-ghost" @click="closeModal">إلغاء</button>
@@ -205,7 +187,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useBusManagementStore, type Bus, type CreateBusDto, type UpdateBusDto } from '@/stores/busManagement'
 import { storeToRefs } from 'pinia'
 import { 
-  Search, Bus as BusIcon, BusFront, CheckCircle, Users, Wrench, AlertCircle,
+  Search, Bus as BusIcon, BusFront, CheckCircle, Users, AlertCircle,
   Pencil, Trash2 
 } from 'lucide-vue-next'
 
@@ -222,20 +204,15 @@ const isEditing = ref(false)
 const editingId = ref<string | null>(null)
 const busToDelete = ref<Bus | null>(null)
 
-const form = ref<CreateBusDto & { isActive?: boolean; lastMaintenanceDate?: string; nextMaintenanceDate?: string }>({
+const form = ref<CreateBusDto & { isActive?: boolean }>({
   busNumber: '',
   licensePlate: '',
   capacity: 30,
-  model: '',
-  year: undefined,
-  isActive: true,
-  lastMaintenanceDate: '',
-  nextMaintenanceDate: ''
+  isActive: true
 })
 
-const activeBuses = computed(() => buses.value.filter(b => b.isActive))
-const totalCapacity = computed(() => activeBuses.value.reduce((sum, b) => sum + b.capacity, 0))
-const busesNeedingMaintenance = computed(() => buses.value.filter(b => b.needsMaintenance))
+const activeBuses = computed(() => buses.value.filter((b: Bus) => b.isActive))
+const totalCapacity = computed(() => activeBuses.value.reduce((sum: number, b: Bus) => sum + b.capacity, 0))
 
 let searchTimeout: ReturnType<typeof setTimeout>
 function debouncedSearch() {
@@ -250,11 +227,6 @@ async function loadBuses() {
   })
 }
 
-function formatDate(dateStr: string) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('ar-SA')
-}
-
 function openAddModal() {
   isEditing.value = false
   editingId.value = null
@@ -262,11 +234,7 @@ function openAddModal() {
     busNumber: '',
     licensePlate: '',
     capacity: 30,
-    model: '',
-    year: undefined,
-    isActive: true,
-    lastMaintenanceDate: '',
-    nextMaintenanceDate: ''
+    isActive: true
   }
   formModal.value?.showModal()
 }
@@ -278,11 +246,7 @@ function openEditModal(bus: Bus) {
     busNumber: bus.busNumber,
     licensePlate: bus.licensePlate,
     capacity: bus.capacity,
-    model: bus.model || '',
-    year: bus.year,
-    isActive: bus.isActive,
-    lastMaintenanceDate: bus.lastMaintenanceDate?.split('T')[0] || '',
-    nextMaintenanceDate: bus.nextMaintenanceDate?.split('T')[0] || ''
+    isActive: bus.isActive
   }
   formModal.value?.showModal()
 }
