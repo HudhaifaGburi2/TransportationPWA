@@ -24,8 +24,8 @@
         <div class="stat-value">{{ summary?.totalCapacity || 0 }}</div>
       </div>
       <div class="stat bg-base-100 rounded-lg shadow">
-        <div class="stat-title">نسبة الاستخدام</div>
-        <div class="stat-value text-info">{{ summary?.overallUtilization || 0 }}%</div>
+        <div class="stat-title">إجمالي المسارات</div>
+        <div class="stat-value text-info">{{ summary?.totalRoutes || 0 }}</div>
       </div>
     </div>
 
@@ -78,7 +78,7 @@
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <BusCard
         v-for="bus in filteredBuses"
-        :key="bus.busId"
+        :key="bus.id || bus.busId"
         :bus="bus"
         @edit="editBus"
         @delete="confirmDelete"
@@ -104,7 +104,7 @@
     <dialog :open="showDeleteModal" class="modal modal-open">
       <div class="modal-box">
         <h3 class="font-bold text-lg">تأكيد الحذف</h3>
-        <p class="py-4">هل أنت متأكد من حذف الباص رقم {{ busToDelete?.plateNumber }}؟</p>
+        <p class="py-4">هل أنت متأكد من حذف الباص رقم {{ busToDelete?.busNumber || busToDelete?.plateNumber || busToDelete?.licensePlate }}؟</p>
         <div class="modal-action">
           <button class="btn btn-ghost" @click="showDeleteModal = false">إلغاء</button>
           <button class="btn btn-error" @click="deleteBusConfirmed">حذف</button>
@@ -159,7 +159,7 @@ const filteredBuses = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(b =>
-      b.plateNumber.toLowerCase().includes(query) ||
+      (b.busNumber || b.plateNumber || '').toLowerCase().includes(query) ||
       b.driverName?.toLowerCase().includes(query)
     )
   }
@@ -193,7 +193,7 @@ const editBus = (bus: Bus) => {
 }
 
 const viewBus = (bus: Bus) => {
-  router.push({ name: 'BusDetail', params: { id: bus.busId } })
+  router.push({ name: 'BusDetail', params: { id: bus.id || bus.busId } })
 }
 
 const confirmDelete = (bus: Bus) => {
@@ -203,7 +203,7 @@ const confirmDelete = (bus: Bus) => {
 
 const deleteBusConfirmed = async () => {
   if (busToDelete.value) {
-    await busStore.deleteBus(busToDelete.value.busId)
+    await busStore.deleteBus(busToDelete.value.id || busToDelete.value.busId!)
     showDeleteModal.value = false
     busToDelete.value = null
   }
@@ -211,7 +211,7 @@ const deleteBusConfirmed = async () => {
 
 const saveBus = async (busData: any) => {
   if (showEditModal.value && selectedBus.value) {
-    await busStore.updateBus(selectedBus.value.busId, busData)
+    await busStore.updateBus(selectedBus.value.id || selectedBus.value.busId!, busData)
   } else {
     await busStore.createBus(busData)
   }
