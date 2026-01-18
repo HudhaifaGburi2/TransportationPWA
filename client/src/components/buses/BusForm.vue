@@ -132,7 +132,7 @@ const districts = ref<DistrictItem[]>([])
 
 const fetchRoutes = async () => {
   try {
-    const response = await apiClient.get('/routes')
+    const response = await apiClient.get('/bus-management/routes')
     if (response.data.success) {
       routes.value = response.data.data.filter((r: RouteItem) => r.isActive)
     }
@@ -176,6 +176,17 @@ const form = reactive({
   isActive: true
 })
 
+const resetForm = () => {
+  form.plateNumber = ''
+  form.periodId = 0
+  form.driverName = ''
+  form.driverPhoneNumber = ''
+  form.capacity = 30
+  form.routeId = undefined
+  form.districtIds = []
+  form.isActive = true
+}
+
 watch(() => props.bus, (newBus) => {
   if (newBus) {
     form.plateNumber = newBus.plateNumber
@@ -190,17 +201,6 @@ watch(() => props.bus, (newBus) => {
     resetForm()
   }
 }, { immediate: true })
-
-const resetForm = () => {
-  form.plateNumber = ''
-  form.periodId = 0
-  form.driverName = ''
-  form.driverPhoneNumber = ''
-  form.capacity = 30
-  form.routeId = undefined
-  form.districtIds = []
-  form.isActive = true
-}
 
 const validate = (): boolean => {
   Object.keys(errors).forEach(key => delete errors[key])
