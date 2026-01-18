@@ -117,14 +117,16 @@
                   <span class="label-text font-semibold">الفترات المطلوبة <span class="text-error">*</span></span>
                 </label>
                 <div class="flex flex-wrap gap-3 p-4 bg-base-200/50 rounded-lg">
-                  <label v-for="period in availablePeriods" :key="period.id" class="flex items-center gap-2 cursor-pointer">
+                  <span v-if="periodsLoading" class="loading loading-spinner loading-sm"></span>
+                  <span v-else-if="availablePeriods.length === 0" class="text-base-content/60 text-sm">لا توجد فترات متاحة</span>
+                  <label v-else v-for="period in availablePeriods" :key="period.id" class="flex items-center gap-2 cursor-pointer">
                     <input 
                       type="checkbox" 
                       :value="period.id.toString()" 
                       v-model="form.periods" 
                       class="checkbox checkbox-primary" 
                     />
-                    <span class="text-sm font-medium">{{ period.name }}</span>
+                    <span class="text-sm font-medium">{{ period.periodName }}</span>
                   </label>
                 </div>
                 <label v-if="form.periods.length === 0" class="label">
@@ -329,14 +331,50 @@ const form = ref({
   periods: [] as string[]
 })
 
-// Available periods for multi-select
-const availablePeriods = [
-  { id: 1, name: 'الفترة الأولى' },
-  { id: 2, name: 'الفترة الثانية' },
-  { id: 3, name: 'الفترة الثالثة' },
-  { id: 4, name: 'الفترة الرابعة' },
-  { id: 5, name: 'الفترة الخامسة' }
-]
+// Available periods for multi-select (fetched from API)
+interface Period {
+  id: number
+  periodName: string
+}
+const availablePeriods = ref<Period[]>([])
+const periodsLoading = ref(false)
+
+// Cache key for periods in sessionStorage
+const PERIODS_CACHE_KEY = 'tums_periods_cache'
+const PERIODS_CACHE_EXPIRY = 1000 * 60 * 30 // 30 minutes
+
+const loadPeriods = async () => {
+  // Check cache first
+  const cached = sessionStorage.getItem(PERIODS_CACHE_KEY)
+  if (cached) {
+    try {
+      const { data, timestamp } = JSON.parse(cached)
+      if (Date.now() - timestamp < PERIODS_CACHE_EXPIRY) {
+        availablePeriods.value = data
+        return
+      }
+    } catch {
+      sessionStorage.removeItem(PERIODS_CACHE_KEY)
+    }
+  }
+
+  periodsLoading.value = true
+  try {
+    const response = await apiClient.get('/lookups/periods')
+    if (response.data.success && response.data.data) {
+      availablePeriods.value = response.data.data
+      // Cache the result
+      sessionStorage.setItem(PERIODS_CACHE_KEY, JSON.stringify({
+        data: response.data.data,
+        timestamp: Date.now()
+      }))
+    }
+  } catch (err) {
+    console.error('Failed to load periods:', err)
+  } finally {
+    periodsLoading.value = false
+  }
+}
 
 // Address lookup state
 const isLookingUp = ref(false)
@@ -376,6 +414,9 @@ const loadStudentInfo = async () => {
   // Check if student already has a registration
   const hasExisting = await checkExistingRegistration()
   if (hasExisting) return
+  
+  // Load periods (from cache or API)
+  await loadPeriods()
   
   try {
     const [studentResponse, districtsResponse] = await Promise.all([
