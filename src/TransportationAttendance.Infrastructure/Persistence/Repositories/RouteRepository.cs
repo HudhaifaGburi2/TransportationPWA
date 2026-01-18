@@ -28,13 +28,6 @@ public class RouteRepository : IRouteRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Route?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
-    {
-        return await _context.Routes
-            .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Code == code, cancellationToken);
-    }
-
     public async Task<Route?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         return await _context.Routes
@@ -55,7 +48,8 @@ public class RouteRepository : IRouteRepository
     {
         return await _context.Routes
             .AsNoTracking()
-            .Where(r => r.Name.Contains(searchTerm) || r.Code.Contains(searchTerm) || r.District.Contains(searchTerm))
+            .Where(r => r.Name.Contains(searchTerm) || 
+                       (r.Description != null && r.Description.Contains(searchTerm)))
             .OrderBy(r => r.Name)
             .ToListAsync(cancellationToken);
     }
