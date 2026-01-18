@@ -84,6 +84,14 @@
         <span class="loading loading-spinner loading-lg text-primary"></span>
       </div>
 
+      <div v-else-if="error" class="text-center py-16">
+        <div class="text-error/30 mb-4">
+          <XCircle class="w-16 h-16 mx-auto" />
+        </div>
+        <p class="text-error text-lg">{{ error }}</p>
+        <button @click="fetchRequests" class="btn btn-primary btn-sm mt-4">إعادة المحاولة</button>
+      </div>
+
       <div v-else-if="filteredRequests.length === 0" class="text-center py-16">
         <div class="text-base-content/30 mb-4">
           <FileText class="w-16 h-16 mx-auto" />
@@ -135,9 +143,9 @@
                 <div v-if="request.status === 'pending'" class="flex items-center justify-center gap-1">
                   <button 
                     v-if="request.nationalShortAddress"
-                    @click="previewAddress(request)" 
+                    @click="openAddressOnMap(request.nationalShortAddress)" 
                     class="btn btn-ghost btn-sm btn-square tooltip tooltip-right" 
-                    data-tip="عرض العنوان"
+                    data-tip="عرض على خرائط جوجل"
                   >
                     <MapPin class="w-4 h-4 text-primary" />
                   </button>
@@ -161,9 +169,9 @@
                 <div v-else class="flex items-center justify-center gap-1">
                   <button 
                     v-if="request.nationalShortAddress"
-                    @click="previewAddress(request)" 
+                    @click="openAddressOnMap(request.nationalShortAddress)" 
                     class="btn btn-ghost btn-sm btn-square tooltip tooltip-right" 
-                    data-tip="عرض العنوان على الخريطة"
+                    data-tip="عرض على خرائط جوجل"
                   >
                     <MapPin class="w-4 h-4 text-primary" />
                   </button>
@@ -263,100 +271,12 @@
       <div class="modal-backdrop bg-black/50" @click="showDetailsDialog = false"></div>
     </dialog>
 
-    <!-- Address Preview Modal -->
-    <dialog :open="showAddressPreviewDialog" class="modal modal-open">
-      <div class="modal-box max-w-2xl">
-        <button @click="showAddressPreviewDialog = false" class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2">✕</button>
-        <div class="flex items-center gap-3 mb-4">
-          <div class="p-2 bg-primary/10 rounded-lg">
-            <MapPin class="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h3 class="font-bold text-xl">التحقق من العنوان الوطني</h3>
-            <p class="text-base-content/60 text-sm">{{ selectedRequest?.studentName }}</p>
-          </div>
-        </div>
-        
-        <!-- Loading State -->
-        <div v-if="addressPreviewLoading" class="flex flex-col items-center justify-center py-12">
-          <span class="loading loading-spinner loading-lg text-primary mb-4"></span>
-          <p class="text-base-content/60">جاري البحث عن العنوان...</p>
-        </div>
-        
-        <!-- Error State -->
-        <div v-else-if="addressPreviewError" class="alert alert-error mb-4">
-          <XCircle class="w-5 h-5" />
-          <span>{{ addressPreviewError }}</span>
-        </div>
-        
-        <!-- Address Details -->
-        <div v-else-if="addressPreview" class="space-y-4">
-          <div class="bg-base-200/50 rounded-lg p-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="text-sm text-base-content/60">العنوان المختصر</label>
-                <p class="font-mono font-bold text-lg" dir="ltr">{{ addressPreview.shortAddress }}</p>
-              </div>
-              <div>
-                <label class="text-sm text-base-content/60">المدينة</label>
-                <p class="font-semibold">{{ addressPreview.city || '-' }}</p>
-              </div>
-              <div>
-                <label class="text-sm text-base-content/60">الحي</label>
-                <p>{{ addressPreview.district || '-' }}</p>
-              </div>
-              <div>
-                <label class="text-sm text-base-content/60">الرمز البريدي</label>
-                <p dir="ltr">{{ addressPreview.postalCode || '-' }}</p>
-              </div>
-            </div>
-            <div class="mt-3 pt-3 border-t border-base-300">
-              <label class="text-sm text-base-content/60">العنوان الكامل</label>
-              <p class="font-medium">{{ addressPreview.fullAddress || '-' }}</p>
-            </div>
-            <div v-if="addressPreview.latitude && addressPreview.longitude" class="mt-2">
-              <label class="text-sm text-base-content/60">الإحداثيات</label>
-              <p class="font-mono text-sm" dir="ltr">{{ addressPreview.latitude.toFixed(6) }}, {{ addressPreview.longitude.toFixed(6) }}</p>
-            </div>
-          </div>
-          
-          <!-- Map Preview -->
-          <div v-if="getGoogleMapsEmbedUrl(addressPreview)" class="rounded-lg overflow-hidden border border-base-300">
-            <iframe 
-              :src="getGoogleMapsEmbedUrl(addressPreview)!"
-              width="100%" 
-              height="250" 
-              style="border:0;" 
-              allowfullscreen
-              loading="lazy" 
-              referrerpolicy="no-referrer-when-downgrade"
-              class="w-full"
-            ></iframe>
-          </div>
-          
-          <!-- Open in Google Maps -->
-          <a 
-            :href="getGoogleMapsUrl(addressPreview)" 
-            target="_blank" 
-            class="btn btn-primary btn-block gap-2"
-          >
-            <ExternalLink class="w-4 h-4" />
-            فتح في خرائط جوجل
-          </a>
-        </div>
-        
-        <div class="modal-action">
-          <button class="btn" @click="showAddressPreviewDialog = false">إغلاق</button>
-        </div>
-      </div>
-      <div class="modal-backdrop bg-black/50" @click="showAddressPreviewDialog = false"></div>
-    </dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FileText, Search, RefreshCw, Clock, CheckCircle, XCircle, Check, X, Eye, MapPin, ExternalLink } from 'lucide-vue-next'
+import { FileText, Search, RefreshCw, Clock, CheckCircle, XCircle, Check, X, Eye, MapPin } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface RegistrationRequest {
@@ -375,30 +295,18 @@ interface RegistrationRequest {
   rejectionReason?: string
 }
 
-interface AddressPreview {
-  shortAddress: string
-  fullAddress?: string
-  city?: string
-  district?: string
-  postalCode?: string
-  latitude?: number
-  longitude?: number
-}
 
 const requests = ref<RegistrationRequest[]>([])
 const loading = ref(false)
 const processing = ref(false)
+const error = ref<string | null>(null)
 const searchQuery = ref('')
 const filterStatus = ref('all')
 
 const showRejectDialog = ref(false)
 const showDetailsDialog = ref(false)
-const showAddressPreviewDialog = ref(false)
 const selectedRequest = ref<RegistrationRequest | null>(null)
 const rejectReason = ref('')
-const addressPreview = ref<AddressPreview | null>(null)
-const addressPreviewLoading = ref(false)
-const addressPreviewError = ref('')
 
 // Computed stats
 const pendingCount = computed(() => requests.value.filter(r => r.status === 'pending').length)
@@ -425,56 +333,31 @@ const filteredRequests = computed(() => {
 
 const fetchRequests = async () => {
   loading.value = true
+  error.value = null
   try {
-    // TODO: Replace with actual API call
-    // const response = await apiClient.get('/api/v1/registration-requests')
-    // requests.value = response.data.data
-    
-    // Mock data for now
-    requests.value = [
-      {
-        id: '1',
-        studentId: 'STU001',
-        studentName: 'أحمد محمد العلي',
-        nationalId: '1234567890',
-        districtId: 'd1',
-        districtName: 'الرياض',
-        periodId: 1,
-        periodName: 'الفترة الأولى',
-        nationalShortAddress: 'RRRD2929',
-        status: 'pending',
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: '2',
-        studentId: 'STU002',
-        studentName: 'خالد عبدالله السعيد',
-        nationalId: '0987654321',
-        districtId: 'd2',
-        districtName: 'جدة',
-        periodId: 2,
-        periodName: 'الفترة الثانية',
-        nationalShortAddress: 'DMMA7667',
-        status: 'approved',
-        createdAt: new Date(Date.now() - 86400000).toISOString()
-      },
-      {
-        id: '3',
-        studentId: 'STU003',
-        studentName: 'محمد سعد القحطاني',
-        nationalId: '1122334455',
-        districtId: 'd1',
-        districtName: 'الرياض',
-        periodId: 1,
-        periodName: 'الفترة الأولى',
-        nationalShortAddress: 'RRYA1234',
-        status: 'rejected',
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        rejectionReason: 'عدم استيفاء الشروط المطلوبة'
-      }
-    ]
-  } catch (e) {
-    console.error('Error fetching requests:', e)
+    // Fetch all registration requests from API
+    const response = await apiClient.get('/registration/pending')
+    if (response.data.success && response.data.data) {
+      // Map API response to our interface
+      requests.value = response.data.data.map((r: any) => ({
+        id: r.id,
+        studentId: r.studentId || r.studentUserId?.toString(),
+        studentName: r.studentName,
+        nationalId: r.nationalId || '',
+        districtId: r.districtId,
+        districtName: r.districtName || '',
+        periodId: r.periodId,
+        periodName: r.periodName || `فترة ${r.periodId}`,
+        nationalShortAddress: r.nationalShortAddress,
+        fullNationalAddress: r.fullNationalAddress,
+        status: r.status?.toLowerCase() || 'pending',
+        createdAt: r.createdAt,
+        rejectionReason: r.rejectionReason
+      }))
+    }
+  } catch (err: any) {
+    console.error('Error fetching requests:', err)
+    error.value = err.response?.data?.message || 'فشل في تحميل الطلبات'
   } finally {
     loading.value = false
   }
@@ -517,11 +400,14 @@ const getStatusBadgeClass = (status: string) => {
 const approveRequest = async (request: RegistrationRequest) => {
   processing.value = true
   try {
-    // TODO: API call to approve
-    // await apiClient.post(`/api/v1/registration-requests/${request.id}/approve`)
+    await apiClient.post(`/registration/${request.id}/review`, {
+      isApproved: true
+    })
     request.status = 'approved'
-  } catch (e) {
-    console.error('Error approving request:', e)
+    await fetchRequests()
+  } catch (err: any) {
+    console.error('Error approving request:', err)
+    alert(err.response?.data?.message || 'فشل في قبول الطلب')
   } finally {
     processing.value = false
   }
@@ -538,13 +424,17 @@ const confirmReject = async () => {
   
   processing.value = true
   try {
-    // TODO: API call to reject
-    // await apiClient.post(`/api/v1/registration-requests/${selectedRequest.value.id}/reject`, { reason: rejectReason.value })
+    await apiClient.post(`/registration/${selectedRequest.value.id}/review`, {
+      isApproved: false,
+      rejectionReason: rejectReason.value
+    })
     selectedRequest.value.status = 'rejected'
     selectedRequest.value.rejectionReason = rejectReason.value
     showRejectDialog.value = false
-  } catch (e) {
-    console.error('Error rejecting request:', e)
+    await fetchRequests()
+  } catch (err: any) {
+    console.error('Error rejecting request:', err)
+    alert(err.response?.data?.message || 'فشل في رفض الطلب')
   } finally {
     processing.value = false
   }
@@ -555,51 +445,10 @@ const viewDetails = (request: RegistrationRequest) => {
   showDetailsDialog.value = true
 }
 
-// Address preview for admin verification
-const previewAddress = async (request: RegistrationRequest) => {
-  if (!request.nationalShortAddress) return
-  
-  selectedRequest.value = request
-  addressPreview.value = null
-  addressPreviewError.value = ''
-  addressPreviewLoading.value = true
-  showAddressPreviewDialog.value = true
-  
-  try {
-    const response = await apiClient.get(`/registration/lookup-address/${request.nationalShortAddress.toUpperCase()}`)
-    
-    if (response.data.success && response.data.data) {
-      addressPreview.value = {
-        shortAddress: request.nationalShortAddress.toUpperCase(),
-        fullAddress: response.data.data.fullAddress,
-        city: response.data.data.city,
-        district: response.data.data.district,
-        postalCode: response.data.data.postalCode,
-        latitude: response.data.data.latitude,
-        longitude: response.data.data.longitude
-      }
-    } else {
-      addressPreviewError.value = response.data.message || 'لم يتم العثور على العنوان'
-    }
-  } catch (err: any) {
-    addressPreviewError.value = err.response?.data?.message || 'حدث خطأ أثناء البحث عن العنوان'
-  } finally {
-    addressPreviewLoading.value = false
-  }
-}
-
-const getGoogleMapsUrl = (address: AddressPreview) => {
-  if (address.latitude && address.longitude) {
-    return `https://www.google.com/maps?q=${address.latitude},${address.longitude}`
-  }
-  return `https://www.google.com/maps/search/${address.shortAddress}`
-}
-
-const getGoogleMapsEmbedUrl = (address: AddressPreview) => {
-  if (address.latitude && address.longitude) {
-    return `https://maps.google.com/maps?q=${address.latitude},${address.longitude}&z=17&output=embed`
-  }
-  return null
+// Open address on Google Maps directly (no API needed)
+const openAddressOnMap = (shortAddress: string) => {
+  const url = `https://www.google.com/maps/search/${shortAddress.toUpperCase()}`
+  window.open(url, '_blank')
 }
 
 onMounted(fetchRequests)
