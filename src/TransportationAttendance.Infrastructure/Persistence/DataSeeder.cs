@@ -154,7 +154,7 @@ public static class DataSeeder
 
         foreach (var busNum in asrBuses)
         {
-            var bus = Bus.Create(busNum, $"ASR-{busNum}", 30);
+            var bus = Bus.Create(busNum, 3, 30); // Period 3 = ASR
             await context.Buses.AddAsync(bus);
         }
 
@@ -164,7 +164,7 @@ public static class DataSeeder
 
         foreach (var busNum in maghribBuses)
         {
-            var bus = Bus.Create(busNum, $"MAG-{busNum}", 30);
+            var bus = Bus.Create(busNum, 4, 30); // Period 4 = MAGHRIB
             await context.Buses.AddAsync(bus);
         }
 
@@ -175,7 +175,7 @@ public static class DataSeeder
 
         foreach (var busNum in fajrBuses)
         {
-            var bus = Bus.Create(busNum, $"FJR-{busNum}", 30);
+            var bus = Bus.Create(busNum, 1, 30); // Period 1 = FAJR_DUHA
             await context.Buses.AddAsync(bus);
         }
 
