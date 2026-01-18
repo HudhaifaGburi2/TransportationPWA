@@ -198,7 +198,7 @@
         }
       }
     },
-    "/api/BusManagement/drivers": {
+    "/api/v1/BusManagement/drivers": {
       "get": {
         "tags": [
           "BusManagement"
@@ -305,7 +305,7 @@
         }
       }
     },
-    "/api/BusManagement/drivers/{id}": {
+    "/api/v1/BusManagement/drivers/{id}": {
       "get": {
         "tags": [
           "BusManagement"
@@ -440,7 +440,7 @@
         }
       }
     },
-    "/api/BusManagement/routes": {
+    "/api/v1/BusManagement/routes": {
       "get": {
         "tags": [
           "BusManagement"
@@ -547,7 +547,7 @@
         }
       }
     },
-    "/api/BusManagement/routes/{id}": {
+    "/api/v1/BusManagement/routes/{id}": {
       "get": {
         "tags": [
           "BusManagement"
@@ -682,7 +682,7 @@
         }
       }
     },
-    "/api/BusManagement/buses": {
+    "/api/v1/BusManagement/buses": {
       "get": {
         "tags": [
           "BusManagement"
@@ -789,7 +789,7 @@
         }
       }
     },
-    "/api/BusManagement/buses/{id}": {
+    "/api/v1/BusManagement/buses/{id}": {
       "get": {
         "tags": [
           "BusManagement"
@@ -924,7 +924,87 @@
         }
       }
     },
-    "/api/BusManagement/statistics": {
+    "/api/v1/BusManagement/buses/by-period/{periodId}": {
+      "get": {
+        "tags": [
+          "BusManagement"
+        ],
+        "parameters": [
+          {
+            "name": "periodId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoIReadOnlyListApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoIReadOnlyListApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementDtoIReadOnlyListApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/BusManagement/buses/{id}/statistics": {
+      "get": {
+        "tags": [
+          "BusManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementStatisticsDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementStatisticsDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusManagementStatisticsDtoApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/BusManagement/statistics": {
       "get": {
         "tags": [
           "BusManagement"
