@@ -1,18 +1,18 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Plate Number -->
+      <!-- Bus Number -->
       <div class="form-control">
-        <label class="label"><span class="label-text">رقم اللوحة *</span></label>
+        <label class="label"><span class="label-text">رقم الباص *</span></label>
         <input
-          v-model="form.plateNumber"
+          v-model="form.busNumber"
           type="text"
           class="input input-bordered"
-          :class="{ 'input-error': errors.plateNumber }"
+          :class="{ 'input-error': errors.busNumber }"
           required
         />
-        <label v-if="errors.plateNumber" class="label">
-          <span class="label-text-alt text-error">{{ errors.plateNumber }}</span>
+        <label v-if="errors.busNumber" class="label">
+          <span class="label-text-alt text-error">{{ errors.busNumber }}</span>
         </label>
       </div>
 
@@ -60,26 +60,6 @@
       </div>
     </div>
 
-    <!-- Districts Selection -->
-    <div class="form-control">
-      <label class="label"><span class="label-text">المناطق المخدومة</span></label>
-      <div class="flex flex-wrap gap-2 p-3 border border-base-300 rounded-lg min-h-12 bg-base-100">
-        <span v-if="!districts.length" class="text-base-content/50 text-sm">جاري تحميل المناطق...</span>
-        <label 
-          v-for="d in districts" 
-          :key="d.districtId" 
-          class="flex items-center gap-2 cursor-pointer"
-        >
-          <input 
-            type="checkbox" 
-            :value="d.districtId" 
-            v-model="form.districtIds" 
-            class="checkbox checkbox-sm checkbox-primary" 
-          />
-          <span class="text-sm">{{ d.districtNameAr }}</span>
-        </label>
-      </div>
-    </div>
 
     <!-- Active Status (Edit only) -->
     <div v-if="bus" class="form-control">
@@ -166,37 +146,34 @@ const submitting = ref(false)
 const errors = reactive<Record<string, string>>({})
 
 const form = reactive({
-  plateNumber: '',
-  periodId: 0,
+  busNumber: '',
+  periodId: 1,
   driverName: '',
   driverPhoneNumber: '',
   capacity: 30,
   routeId: undefined as string | undefined,
-  districtIds: [] as string[],
   isActive: true
 })
 
 const resetForm = () => {
-  form.plateNumber = ''
-  form.periodId = 0
+  form.busNumber = ''
+  form.periodId = 1
   form.driverName = ''
   form.driverPhoneNumber = ''
   form.capacity = 30
   form.routeId = undefined
-  form.districtIds = []
   form.isActive = true
 }
 
 watch(() => props.bus, (newBus) => {
   if (newBus) {
-    form.plateNumber = newBus.plateNumber || newBus.busNumber || newBus.licensePlate || ''
-    form.periodId = newBus.periodId || 0
+    form.busNumber = newBus.busNumber || ''
+    form.periodId = newBus.periodId || 1
     form.driverName = newBus.driverName || ''
     form.driverPhoneNumber = newBus.driverPhoneNumber || ''
     form.capacity = newBus.capacity
     form.routeId = newBus.routeId
     form.isActive = newBus.isActive
-    form.districtIds = newBus.districts?.map(d => d.districtId) || []
   } else {
     resetForm()
   }
@@ -205,8 +182,8 @@ watch(() => props.bus, (newBus) => {
 const validate = (): boolean => {
   Object.keys(errors).forEach(key => delete errors[key])
 
-  if (!form.plateNumber.trim()) {
-    errors.plateNumber = 'رقم اللوحة مطلوب'
+  if (!form.busNumber.trim()) {
+    errors.busNumber = 'رقم الباص مطلوب'
   }
 
   if (!form.periodId || form.periodId === 0) {
@@ -226,13 +203,12 @@ const handleSubmit = () => {
   submitting.value = true
 
   const data: CreateBusDto | UpdateBusDto = {
-    plateNumber: form.plateNumber,
+    busNumber: form.busNumber,
     periodId: form.periodId,
     driverName: form.driverName || undefined,
     driverPhoneNumber: form.driverPhoneNumber || undefined,
     capacity: form.capacity,
     routeId: form.routeId,
-    districtIds: form.districtIds,
     ...(props.bus ? { isActive: form.isActive } : {})
   }
 
