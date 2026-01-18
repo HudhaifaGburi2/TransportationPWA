@@ -38,7 +38,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       <div class="stat bg-base-100 rounded-box shadow-sm">
         <div class="stat-figure text-primary">
           <Bus class="w-8 h-8" />
@@ -59,13 +59,6 @@
         </div>
         <div class="stat-title">إجمالي السعة</div>
         <div class="stat-value text-info">{{ totalCapacity }}</div>
-      </div>
-      <div class="stat bg-base-100 rounded-box shadow-sm">
-        <div class="stat-figure text-warning">
-          <Wrench class="w-8 h-8" />
-        </div>
-        <div class="stat-title">تحتاج صيانة</div>
-        <div class="stat-value text-warning">{{ busesNeedingMaintenance.length }}</div>
       </div>
     </div>
 
@@ -103,9 +96,6 @@
               <th>رقم الباص</th>
               <th>رقم اللوحة</th>
               <th>السعة</th>
-              <th>الموديل</th>
-              <th>السنة</th>
-              <th>الصيانة القادمة</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
             </tr>
@@ -115,20 +105,6 @@
               <td class="font-bold">{{ bus.busNumber }}</td>
               <td>{{ bus.licensePlate }}</td>
               <td>{{ bus.capacity }}</td>
-              <td>{{ bus.model || '-' }}</td>
-              <td>{{ bus.year || '-' }}</td>
-              <td>
-                <span 
-                  v-if="bus.nextMaintenanceDate"
-                  :class="[
-                    'badge',
-                    bus.needsMaintenance ? 'badge-error' : 'badge-ghost'
-                  ]"
-                >
-                  {{ formatDate(bus.nextMaintenanceDate) }}
-                </span>
-                <span v-else class="text-base-content/40">-</span>
-              </td>
               <td>
                 <span :class="['badge', bus.isActive ? 'badge-success' : 'badge-ghost']">
                   {{ bus.isActive ? 'نشط' : 'غير نشط' }}
