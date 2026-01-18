@@ -10,27 +10,34 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
     {
         builder.ToTable("Routes");
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).HasColumnName("RouteId");
+        builder.HasKey(r => r.Id);
 
-        builder.Property(e => e.RouteName).HasColumnName("RouteName").HasMaxLength(200).IsRequired();
-        builder.Property(e => e.RouteDescription).HasColumnName("RouteDescription");
-        builder.Property(e => e.IsActive).HasColumnName("IsActive");
+        builder.Property(r => r.Name)
+            .HasMaxLength(200)
+            .IsRequired();
 
-        // Audit fields
-        builder.Property(e => e.CreatedAt).HasColumnName("CreatedAt");
-        builder.Property(e => e.CreatedBy).HasColumnName("CreatedBy");
-        builder.Property(e => e.UpdatedAt).HasColumnName("UpdatedAt");
-        builder.Property(e => e.UpdatedBy).HasColumnName("UpdatedBy");
-        builder.Property(e => e.IsDeleted).HasColumnName("IsDeleted");
-        builder.Property(e => e.DeletedAt).HasColumnName("DeletedAt");
-        builder.Property(e => e.DeletedBy).HasColumnName("DeletedBy");
+        builder.Property(r => r.Code)
+            .HasMaxLength(50)
+            .IsRequired();
 
-        // Indexes
-        builder.HasIndex(e => e.IsActive);
-        builder.HasIndex(e => e.IsDeleted);
+        builder.Property(r => r.District)
+            .HasMaxLength(100);
 
-        // Query filter for soft delete
-        builder.HasQueryFilter(e => !e.IsDeleted);
+        builder.Property(r => r.MeetingPoint)
+            .HasMaxLength(500);
+
+        builder.Property(r => r.EntranceAssignment)
+            .HasMaxLength(50);
+
+        builder.Property(r => r.MeetingPointLatitude)
+            .HasPrecision(18, 6);
+
+        builder.Property(r => r.MeetingPointLongitude)
+            .HasPrecision(18, 6);
+
+        builder.HasIndex(r => r.Code)
+            .IsUnique();
+
+        builder.HasIndex(r => r.Name);
     }
 }
