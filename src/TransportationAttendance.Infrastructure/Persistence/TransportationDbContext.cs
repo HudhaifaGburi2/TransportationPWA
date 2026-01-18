@@ -23,11 +23,6 @@ public class TransportationDbContext : DbContext
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Driver> Drivers => Set<Driver>();
     public DbSet<Department> Departments => Set<Department>();
-    
-    // Actual schema entities (matching existing database)
-    public DbSet<ActualDriver> ActualDrivers => Set<ActualDriver>();
-    public DbSet<ActualRoute> ActualRoutes => Set<ActualRoute>();
-    public DbSet<ActualBus> ActualBuses => Set<ActualBus>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
