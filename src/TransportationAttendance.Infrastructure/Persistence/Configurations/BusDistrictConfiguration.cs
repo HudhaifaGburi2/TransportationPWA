@@ -19,7 +19,7 @@ public class BusDistrictConfiguration : IEntityTypeConfiguration<BusDistrict>
             .IsRequired();
 
         builder.HasOne(bd => bd.Bus)
-            .WithMany(b => b.BusDistricts)
+            .WithMany()
             .HasForeignKey(bd => bd.BusId)
             .OnDelete(DeleteBehavior.Cascade);
 
