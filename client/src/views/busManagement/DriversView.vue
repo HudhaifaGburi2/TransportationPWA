@@ -212,11 +212,6 @@ function formatPhone(phone: string) {
   return phone.startsWith('0') ? phone : `0${phone}`
 }
 
-function formatDate(dateStr: string) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('ar-SA')
-}
-
 function openAddModal() {
   isEditing.value = false
   editingId.value = null
