@@ -7,13 +7,8 @@ export interface Driver {
   id: string
   fullName: string
   phoneNumber: string
-  licenseNumber: string
-  licenseExpiryDate: string
-  employeeId?: string
   isActive: boolean
   createdAt: string
-  isLicenseExpired: boolean
-  daysUntilLicenseExpiry: number
 }
 
 export interface Route {
@@ -36,13 +31,8 @@ export interface Bus {
   busNumber: string
   licensePlate: string
   capacity: number
-  model?: string
-  year?: number
   isActive: boolean
-  lastMaintenanceDate?: string
-  nextMaintenanceDate?: string
   createdAt: string
-  needsMaintenance: boolean
 }
 
 export interface Statistics {
@@ -50,10 +40,8 @@ export interface Statistics {
   activeBuses: number
   inactiveBuses: number
   totalCapacity: number
-  busesNeedingMaintenance: number
   totalDrivers: number
   activeDrivers: number
-  driversWithExpiringLicense: number
   totalRoutes: number
   activeRoutes: number
 }
@@ -61,12 +49,11 @@ export interface Statistics {
 export interface CreateDriverDto {
   fullName: string
   phoneNumber: string
-  licenseNumber: string
-  licenseExpiryDate: string
-  employeeId?: string
 }
 
-export interface UpdateDriverDto extends CreateDriverDto {
+export interface UpdateDriverDto {
+  fullName: string
+  phoneNumber: string
   isActive: boolean
 }
 
@@ -90,14 +77,13 @@ export interface CreateBusDto {
   busNumber: string
   licensePlate: string
   capacity: number
-  model?: string
-  year?: number
 }
 
-export interface UpdateBusDto extends CreateBusDto {
+export interface UpdateBusDto {
+  busNumber: string
+  licensePlate: string
+  capacity: number
   isActive: boolean
-  lastMaintenanceDate?: string
-  nextMaintenanceDate?: string
 }
 
 export const useBusManagementStore = defineStore('busManagement', () => {
@@ -113,10 +99,6 @@ export const useBusManagementStore = defineStore('busManagement', () => {
   const activeDrivers = computed(() => drivers.value.filter(d => d.isActive))
   const activeRoutes = computed(() => routes.value.filter(r => r.isActive))
   const activeBuses = computed(() => buses.value.filter(b => b.isActive))
-  const driversWithExpiringLicense = computed(() =>
-    drivers.value.filter(d => d.daysUntilLicenseExpiry <= 30 && d.daysUntilLicenseExpiry >= 0)
-  )
-  const busesNeedingMaintenance = computed(() => buses.value.filter(b => b.needsMaintenance))
 
   // Driver Actions
   async function fetchDrivers(query?: { search?: string; isActive?: boolean }) {
@@ -397,8 +379,6 @@ export const useBusManagementStore = defineStore('busManagement', () => {
     activeDrivers,
     activeRoutes,
     activeBuses,
-    driversWithExpiringLicense,
-    busesNeedingMaintenance,
     // Driver Actions
     fetchDrivers,
     createDriver,
