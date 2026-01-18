@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
       <div>
         <h1 class="text-2xl font-bold text-base-content">إدارة السائقين</h1>
-        <p class="text-base-content/60 mt-1">إدارة بيانات السائقين ورخصهم</p>
+        <p class="text-base-content/60 mt-1">سائقو الباصات المعينون للنقل</p>
       </div>
       <button @click="openAddModal" class="btn btn-primary gap-2">
         <UserPlus class="w-5 h-5" />
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       <div class="stat bg-base-100 rounded-box shadow-sm">
         <div class="stat-figure text-primary">
           <Users class="w-8 h-8" />
@@ -52,13 +52,6 @@
         </div>
         <div class="stat-title">السائقون النشطون</div>
         <div class="stat-value text-success">{{ activeDrivers.length }}</div>
-      </div>
-      <div class="stat bg-base-100 rounded-box shadow-sm">
-        <div class="stat-figure text-warning">
-          <AlertTriangle class="w-8 h-8" />
-        </div>
-        <div class="stat-title">رخص تنتهي قريباً</div>
-        <div class="stat-value text-warning">{{ driversWithExpiringLicense.length }}</div>
       </div>
     </div>
 
@@ -95,8 +88,6 @@
             <tr>
               <th>الاسم</th>
               <th>رقم الهاتف</th>
-              <th>رقم الرخصة</th>
-              <th>انتهاء الرخصة</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
             </tr>
@@ -105,18 +96,6 @@
             <tr v-for="driver in drivers" :key="driver.id">
               <td class="font-medium">{{ driver.fullName }}</td>
               <td dir="ltr" class="text-right">{{ formatPhone(driver.phoneNumber) }}</td>
-              <td>{{ driver.licenseNumber }}</td>
-              <td>
-                <span 
-                  :class="[
-                    'badge',
-                    driver.isLicenseExpired ? 'badge-error' :
-                    driver.daysUntilLicenseExpiry <= 30 ? 'badge-warning' : 'badge-ghost'
-                  ]"
-                >
-                  {{ formatDate(driver.licenseExpiryDate) }}
-                </span>
-              </td>
               <td>
                 <span :class="['badge', driver.isActive ? 'badge-success' : 'badge-ghost']">
                   {{ driver.isActive ? 'نشط' : 'غير نشط' }}
@@ -150,18 +129,6 @@
           <div class="form-control mb-4">
             <label class="label"><span class="label-text">رقم الهاتف *</span></label>
             <input v-model="form.phoneNumber" type="tel" dir="ltr" class="input input-bordered text-right" required />
-          </div>
-          <div class="form-control mb-4">
-            <label class="label"><span class="label-text">رقم الرخصة *</span></label>
-            <input v-model="form.licenseNumber" type="text" class="input input-bordered" required />
-          </div>
-          <div class="form-control mb-4">
-            <label class="label"><span class="label-text">تاريخ انتهاء الرخصة *</span></label>
-            <input v-model="form.licenseExpiryDate" type="date" class="input input-bordered" required />
-          </div>
-          <div class="form-control mb-4">
-            <label class="label"><span class="label-text">رقم الموظف (اختياري)</span></label>
-            <input v-model="form.employeeId" type="text" class="input input-bordered" />
           </div>
           <div v-if="isEditing" class="form-control mb-4">
             <label class="label cursor-pointer justify-start gap-3">
@@ -204,7 +171,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useBusManagementStore, type Driver, type CreateDriverDto, type UpdateDriverDto } from '@/stores/busManagement'
 import { storeToRefs } from 'pinia'
 import { 
-  Search, Users, UserPlus, UserCheck, AlertTriangle, AlertCircle, 
+  Search, Users, UserPlus, UserCheck, AlertCircle, 
   Pencil, Trash2 
 } from 'lucide-vue-next'
 
@@ -222,16 +189,10 @@ const driverToDelete = ref<Driver | null>(null)
 const form = ref<CreateDriverDto & { isActive?: boolean }>({
   fullName: '',
   phoneNumber: '',
-  licenseNumber: '',
-  licenseExpiryDate: '',
-  employeeId: '',
   isActive: true
 })
 
-const activeDrivers = computed(() => drivers.value.filter(d => d.isActive))
-const driversWithExpiringLicense = computed(() => 
-  drivers.value.filter(d => d.daysUntilLicenseExpiry <= 30 && d.daysUntilLicenseExpiry >= 0)
-)
+const activeDrivers = computed(() => drivers.value.filter((d: Driver) => d.isActive))
 
 let searchTimeout: ReturnType<typeof setTimeout>
 function debouncedSearch() {
@@ -262,9 +223,6 @@ function openAddModal() {
   form.value = {
     fullName: '',
     phoneNumber: '',
-    licenseNumber: '',
-    licenseExpiryDate: '',
-    employeeId: '',
     isActive: true
   }
   formModal.value?.showModal()
@@ -276,9 +234,6 @@ function openEditModal(driver: Driver) {
   form.value = {
     fullName: driver.fullName,
     phoneNumber: driver.phoneNumber,
-    licenseNumber: driver.licenseNumber,
-    licenseExpiryDate: (driver.licenseExpiryDate?.split('T')[0]) ?? '',
-    employeeId: driver.employeeId || '',
     isActive: driver.isActive
   }
   formModal.value?.showModal()
