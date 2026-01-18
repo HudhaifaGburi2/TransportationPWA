@@ -1155,32 +1155,6 @@
   },
   {
     "ContainingType": "TransportationAttendance.API.Controllers.RegistrationController",
-    "Method": "LookupNationalAddress",
-    "RelativePath": "api/v1/Registration/lookup-address/{shortAddress}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "shortAddress",
-        "Type": "System.String",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.NationalAddress.NationalAddressDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.RegistrationController",
     "Method": "GetMyRegistration",
     "RelativePath": "api/v1/Registration/my-registration",
     "HttpMethod": "GET",
