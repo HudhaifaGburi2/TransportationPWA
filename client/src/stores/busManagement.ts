@@ -14,14 +14,7 @@ export interface Driver {
 export interface Route {
   id: string
   name: string
-  code: string
-  district: string
-  meetingPoint: string
-  meetingPointLatitude?: number
-  meetingPointLongitude?: number
-  pickupTime: string
-  dropoffTime: string
-  capacity: number
+  description?: string
   isActive: boolean
   createdAt: string
 }
@@ -29,9 +22,13 @@ export interface Route {
 export interface Bus {
   id: string
   busNumber: string
-  licensePlate: string
+  periodId: number
+  routeId?: string
+  driverName?: string
+  driverPhoneNumber?: string
   capacity: number
   isActive: boolean
+  isMerged: boolean
   createdAt: string
 }
 
@@ -59,14 +56,7 @@ export interface UpdateDriverDto {
 
 export interface CreateRouteDto {
   name: string
-  code: string
-  district: string
-  meetingPoint: string
-  meetingPointLatitude?: number
-  meetingPointLongitude?: number
-  pickupTime: string
-  dropoffTime: string
-  capacity: number
+  description?: string
 }
 
 export interface UpdateRouteDto extends CreateRouteDto {
@@ -75,13 +65,19 @@ export interface UpdateRouteDto extends CreateRouteDto {
 
 export interface CreateBusDto {
   busNumber: string
-  licensePlate: string
+  periodId: number
+  routeId?: string
+  driverName?: string
+  driverPhoneNumber?: string
   capacity: number
 }
 
 export interface UpdateBusDto {
   busNumber: string
-  licensePlate: string
+  periodId: number
+  routeId?: string
+  driverName?: string
+  driverPhoneNumber?: string
   capacity: number
   isActive: boolean
 }
