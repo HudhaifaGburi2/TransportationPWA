@@ -38,19 +38,25 @@ public class NationalAddressService : INationalAddressService
 
         try
         {
-            var url = $"{BaseUrl}?format=json&language=ar&shortaddress={shortAddress.ToUpper()}";
-            _logger.LogInformation("Looking up national address: {ShortAddress}", shortAddress);
+            // API parameters: format=json, language=ar (Arabic), encode=utf8 (for proper UTF-8 response)
+            var url = $"{BaseUrl}?format=json&language=ar&encode=utf8&shortaddress={shortAddress.ToUpper()}";
+            _logger.LogInformation("Looking up national address: {ShortAddress} at {Url}", shortAddress, url);
 
-            var response = await _httpClient.GetAsync(url, cancellationToken);
+            // Set timeout for the request
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(TimeSpan.FromSeconds(30));
+
+            var response = await _httpClient.GetAsync(url, cts.Token);
             
+            var content = await response.Content.ReadAsStringAsync(cts.Token);
+            _logger.LogDebug("National Address API response: {StatusCode} - {Content}", response.StatusCode, content);
+
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("National Address API returned status {StatusCode} for {ShortAddress}", 
-                    response.StatusCode, shortAddress);
+                _logger.LogWarning("National Address API returned status {StatusCode} for {ShortAddress}. Response: {Content}", 
+                    response.StatusCode, shortAddress, content);
                 return Result.Failure<NationalAddressDto>("فشل في الاتصال بخدمة العنوان الوطني. حاول مرة أخرى.");
             }
-
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
             
             var options = new JsonSerializerOptions
             {
