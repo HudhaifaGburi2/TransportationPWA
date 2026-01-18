@@ -1,475 +1,5 @@
 [
   {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "GetAllBuses",
-    "RelativePath": "api/BusManagement/buses",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Search",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "IsActive",
-        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageNumber",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "CreateBus",
-    "RelativePath": "api/BusManagement/buses",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "TransportationAttendance.Application.DTOs.BusManagement.CreateBusManagementDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "GetBusById",
-    "RelativePath": "api/BusManagement/buses/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "UpdateBus",
-    "RelativePath": "api/BusManagement/buses/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "dto",
-        "Type": "TransportationAttendance.Application.DTOs.BusManagement.UpdateBusManagementDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "DeleteBus",
-    "RelativePath": "api/BusManagement/buses/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "GetAllDrivers",
-    "RelativePath": "api/BusManagement/drivers",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Search",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "IsActive",
-        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageNumber",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "CreateDriver",
-    "RelativePath": "api/BusManagement/drivers",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "TransportationAttendance.Application.DTOs.BusManagement.CreateDriverManagementDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "GetDriverById",
-    "RelativePath": "api/BusManagement/drivers/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "UpdateDriver",
-    "RelativePath": "api/BusManagement/drivers/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "dto",
-        "Type": "TransportationAttendance.Application.DTOs.BusManagement.UpdateDriverManagementDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "DeleteDriver",
-    "RelativePath": "api/BusManagement/drivers/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "GetAllRoutes",
-    "RelativePath": "api/BusManagement/routes",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Search",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "IsActive",
-        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageNumber",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "CreateRoute",
-    "RelativePath": "api/BusManagement/routes",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "TransportationAttendance.Application.DTOs.BusManagement.CreateRouteManagementDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "GetRouteById",
-    "RelativePath": "api/BusManagement/routes/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "UpdateRoute",
-    "RelativePath": "api/BusManagement/routes/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "dto",
-        "Type": "TransportationAttendance.Application.DTOs.BusManagement.UpdateRouteManagementDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "DeleteRoute",
-    "RelativePath": "api/BusManagement/routes/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
-    "Method": "GetStatistics",
-    "RelativePath": "api/BusManagement/statistics",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementStatisticsDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
     "ContainingType": "TransportationAttendance.API.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/v1/Auth/login",
@@ -577,6 +107,528 @@
     "ReturnTypes": [
       {
         "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Object, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetAllBuses",
+    "RelativePath": "api/v1/BusManagement/buses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsActive",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageNumber",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "CreateBus",
+    "RelativePath": "api/v1/BusManagement/buses",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TransportationAttendance.Application.DTOs.BusManagement.CreateBusManagementDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetBusById",
+    "RelativePath": "api/v1/BusManagement/buses/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "UpdateBus",
+    "RelativePath": "api/v1/BusManagement/buses/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TransportationAttendance.Application.DTOs.BusManagement.UpdateBusManagementDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "DeleteBus",
+    "RelativePath": "api/v1/BusManagement/buses/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetBusStatistics",
+    "RelativePath": "api/v1/BusManagement/buses/{id}/statistics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementStatisticsDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetBusesByPeriod",
+    "RelativePath": "api/v1/BusManagement/buses/by-period/{periodId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "periodId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetAllDrivers",
+    "RelativePath": "api/v1/BusManagement/drivers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsActive",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageNumber",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "CreateDriver",
+    "RelativePath": "api/v1/BusManagement/drivers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TransportationAttendance.Application.DTOs.BusManagement.CreateDriverManagementDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetDriverById",
+    "RelativePath": "api/v1/BusManagement/drivers/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "UpdateDriver",
+    "RelativePath": "api/v1/BusManagement/drivers/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TransportationAttendance.Application.DTOs.BusManagement.UpdateDriverManagementDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.DriverManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "DeleteDriver",
+    "RelativePath": "api/v1/BusManagement/drivers/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetAllRoutes",
+    "RelativePath": "api/v1/BusManagement/routes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsActive",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageNumber",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "CreateRoute",
+    "RelativePath": "api/v1/BusManagement/routes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TransportationAttendance.Application.DTOs.BusManagement.CreateRouteManagementDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetRouteById",
+    "RelativePath": "api/v1/BusManagement/routes/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "UpdateRoute",
+    "RelativePath": "api/v1/BusManagement/routes/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TransportationAttendance.Application.DTOs.BusManagement.UpdateRouteManagementDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.RouteManagementDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "DeleteRoute",
+    "RelativePath": "api/v1/BusManagement/routes/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TransportationAttendance.API.Controllers.BusManagementController",
+    "Method": "GetStatistics",
+    "RelativePath": "api/v1/BusManagement/statistics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "TransportationAttendance.Application.DTOs.Common.ApiResponse\u00601[[TransportationAttendance.Application.DTOs.BusManagement.BusManagementStatisticsDto, TransportationAttendance.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
