@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex items-start justify-between">
         <div>
-          <h3 class="card-title text-lg">{{ bus.plateNumber }}</h3>
+          <h3 class="card-title text-lg">{{ bus.busNumber || bus.plateNumber }}</h3>
           <p class="text-sm text-base-content/60">{{ bus.periodName }}</p>
         </div>
         <div class="dropdown dropdown-end">
@@ -91,14 +91,14 @@ defineEmits<{
 }>()
 
 const utilizationClass = computed(() => {
-  const pct = props.bus.utilizationPercentage
+  const pct = props.bus.utilizationPercentage || 0
   if (pct >= 90) return 'progress-error'
   if (pct >= 70) return 'progress-warning'
   return 'progress-success'
 })
 
 const utilizationTextClass = computed(() => {
-  const pct = props.bus.utilizationPercentage
+  const pct = props.bus.utilizationPercentage || 0
   if (pct >= 90) return 'text-error'
   if (pct >= 70) return 'text-warning'
   return 'text-success'
