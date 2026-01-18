@@ -9,15 +9,15 @@ namespace TransportationAttendance.Application.Services;
 
 public class BusManagementService : IBusManagementService
 {
-    private readonly IActualDriverRepository _driverRepository;
-    private readonly IActualRouteRepository _routeRepository;
-    private readonly IActualBusRepository _busRepository;
+    private readonly IDriverRepository _driverRepository;
+    private readonly IRouteRepository _routeRepository;
+    private readonly IBusRepository _busRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public BusManagementService(
-        IActualDriverRepository driverRepository,
-        IActualRouteRepository routeRepository,
-        IActualBusRepository busRepository,
+        IDriverRepository driverRepository,
+        IRouteRepository routeRepository,
+        IBusRepository busRepository,
         IUnitOfWork unitOfWork)
     {
         _driverRepository = driverRepository;
@@ -65,7 +65,7 @@ public class BusManagementService : IBusManagementService
         if (existingByPhone != null)
             return Result.Failure<DriverManagementDto>("رقم الهاتف مسجل مسبقاً");
 
-        var driver = ActualDriver.Create(
+        var driver = Driver.Create(
             dto.FullName,
             dto.PhoneNumber,
             $"DRV-{Guid.NewGuid():N}".Substring(0, 20),
@@ -155,7 +155,7 @@ public class BusManagementService : IBusManagementService
         if (existingByCode != null)
             return Result.Failure<RouteManagementDto>("رمز المسار مسجل مسبقاً");
 
-        var route = ActualRoute.Create(
+        var route = Route.Create(
             dto.Name,
             dto.Code,
             dto.District,
@@ -252,7 +252,7 @@ public class BusManagementService : IBusManagementService
         if (existingByPlate != null)
             return Result.Failure<BusManagementDto>("رقم اللوحة مسجل مسبقاً");
 
-        var bus = ActualBus.Create(
+        var bus = Bus.Create(
             dto.BusNumber,
             dto.LicensePlate,
             dto.Capacity,
@@ -329,7 +329,7 @@ public class BusManagementService : IBusManagementService
 
     #region Mapping Helpers
 
-    private static DriverManagementDto MapDriverToDto(ActualDriver driver) => new()
+    private static DriverManagementDto MapDriverToDto(Driver driver) => new()
     {
         Id = driver.Id,
         FullName = driver.FullName,
@@ -338,7 +338,7 @@ public class BusManagementService : IBusManagementService
         CreatedAt = driver.CreatedAt
     };
 
-    private static RouteManagementDto MapRouteToDto(ActualRoute route) => new()
+    private static RouteManagementDto MapRouteToDto(Route route) => new()
     {
         Id = route.Id,
         Name = route.Name,
@@ -354,7 +354,7 @@ public class BusManagementService : IBusManagementService
         CreatedAt = route.CreatedAt
     };
 
-    private static BusManagementDto MapBusToDto(ActualBus bus) => new()
+    private static BusManagementDto MapBusToDto(Bus bus) => new()
     {
         Id = bus.Id,
         BusNumber = bus.BusNumber,
