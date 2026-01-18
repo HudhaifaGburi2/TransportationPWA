@@ -29,7 +29,7 @@ public class AttendanceSessionRepository : BaseRepository<AttendanceSession>, IA
             .Include(s => s.Location)
             .Where(s => s.AttendanceDate == date)
             .OrderBy(s => s.PeriodId)
-            .ThenBy(s => s.Bus!.PlateNumber)
+            .ThenBy(s => s.Bus!.BusNumber)
             .ToListAsync(cancellationToken);
     }
 
