@@ -43,9 +43,6 @@ public class BusManagementService : IBusManagementService
             if (query.IsActive.HasValue)
                 filtered = filtered.Where(d => d.IsActive == query.IsActive.Value);
 
-            if (query.LicenseExpiringSoon == true)
-                filtered = filtered.Where(d => d.LicenseExpiryDate <= DateTime.UtcNow.AddDays(30));
-
             drivers = filtered.ToList();
         }
 
@@ -68,16 +65,12 @@ public class BusManagementService : IBusManagementService
         if (existingByPhone != null)
             return Result.Failure<DriverManagementDto>("رقم الهاتف مسجل مسبقاً");
 
-        var existingByLicense = await _driverRepository.GetByLicenseNumberAsync(dto.LicenseNumber, cancellationToken);
-        if (existingByLicense != null)
-            return Result.Failure<DriverManagementDto>("رقم الرخصة مسجل مسبقاً");
-
         var driver = ActualDriver.Create(
             dto.FullName,
             dto.PhoneNumber,
-            dto.LicenseNumber,
-            dto.LicenseExpiryDate,
-            dto.EmployeeId);
+            $"DRV-{Guid.NewGuid():N}".Substring(0, 20),
+            DateTime.UtcNow.AddYears(5),
+            null);
 
         await _driverRepository.AddAsync(driver, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -95,11 +88,7 @@ public class BusManagementService : IBusManagementService
         if (existingByPhone != null && existingByPhone.Id != id)
             return Result.Failure<DriverManagementDto>("رقم الهاتف مسجل مسبقاً");
 
-        var existingByLicense = await _driverRepository.GetByLicenseNumberAsync(dto.LicenseNumber, cancellationToken);
-        if (existingByLicense != null && existingByLicense.Id != id)
-            return Result.Failure<DriverManagementDto>("رقم الرخصة مسجل مسبقاً");
-
-        driver.Update(dto.FullName, dto.PhoneNumber, dto.LicenseNumber, dto.LicenseExpiryDate, dto.EmployeeId);
+        driver.Update(dto.FullName, dto.PhoneNumber, driver.LicenseNumber, driver.LicenseExpiryDate, driver.EmployeeId);
         
         if (dto.IsActive)
             driver.Activate();
@@ -241,9 +230,6 @@ public class BusManagementService : IBusManagementService
             if (query.IsActive.HasValue)
                 filtered = filtered.Where(b => b.IsActive == query.IsActive.Value);
 
-            if (query.NeedsMaintenance == true)
-                filtered = filtered.Where(b => b.NextMaintenanceDate.HasValue && b.NextMaintenanceDate.Value < DateTime.UtcNow);
-
             buses = filtered.ToList();
         }
 
@@ -270,8 +256,8 @@ public class BusManagementService : IBusManagementService
             dto.BusNumber,
             dto.LicensePlate,
             dto.Capacity,
-            dto.Model,
-            dto.Year);
+            null,
+            null);
 
         await _busRepository.AddAsync(bus, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -289,8 +275,7 @@ public class BusManagementService : IBusManagementService
         if (existingByPlate != null && existingByPlate.Id != id)
             return Result.Failure<BusManagementDto>("رقم اللوحة مسجل مسبقاً");
 
-        bus.Update(dto.BusNumber, dto.LicensePlate, dto.Capacity, dto.Model, dto.Year);
-        bus.SetMaintenanceSchedule(dto.LastMaintenanceDate, dto.NextMaintenanceDate);
+        bus.Update(dto.BusNumber, dto.LicensePlate, dto.Capacity, bus.Model, bus.Year);
 
         if (dto.IsActive)
             bus.Activate();
@@ -331,10 +316,8 @@ public class BusManagementService : IBusManagementService
             ActiveBuses = buses.Count(b => b.IsActive),
             InactiveBuses = buses.Count(b => !b.IsActive),
             TotalCapacity = buses.Where(b => b.IsActive).Sum(b => b.Capacity),
-            BusesNeedingMaintenance = buses.Count(b => b.NextMaintenanceDate.HasValue && b.NextMaintenanceDate.Value < DateTime.UtcNow),
             TotalDrivers = drivers.Count,
             ActiveDrivers = drivers.Count(d => d.IsActive),
-            DriversWithExpiringLicense = drivers.Count(d => d.LicenseExpiryDate <= DateTime.UtcNow.AddDays(30)),
             TotalRoutes = routes.Count,
             ActiveRoutes = routes.Count(r => r.IsActive)
         };
@@ -351,9 +334,6 @@ public class BusManagementService : IBusManagementService
         Id = driver.Id,
         FullName = driver.FullName,
         PhoneNumber = driver.PhoneNumber,
-        LicenseNumber = driver.LicenseNumber,
-        LicenseExpiryDate = driver.LicenseExpiryDate,
-        EmployeeId = driver.EmployeeId,
         IsActive = driver.IsActive,
         CreatedAt = driver.CreatedAt
     };
@@ -380,11 +360,7 @@ public class BusManagementService : IBusManagementService
         BusNumber = bus.BusNumber,
         LicensePlate = bus.LicensePlate,
         Capacity = bus.Capacity,
-        Model = bus.Model,
-        Year = bus.Year,
         IsActive = bus.IsActive,
-        LastMaintenanceDate = bus.LastMaintenanceDate,
-        NextMaintenanceDate = bus.NextMaintenanceDate,
         CreatedAt = bus.CreatedAt
     };
 
