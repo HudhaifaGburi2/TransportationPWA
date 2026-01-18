@@ -19,8 +19,6 @@ public static class DependencyInjection
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<ILookupService, LookupService>();
         services.AddScoped<IRegistrationService, RegistrationService>();
-        services.AddScoped<IBusService, BusService>();
-        services.AddScoped<IRouteService, RouteService>();
         services.AddScoped<IBusManagementService, BusManagementService>();
 
         return services;
