@@ -250,9 +250,8 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                         .HasColumnName("BusId");
 
                     b.Property<string>("BusNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("BusNumber");
 
                     b.Property<int>("Capacity")
@@ -274,6 +273,14 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("DeletedBy");
+
+                    b.Property<Guid?>("DepartmentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DepartmentId");
+
+                    b.Property<Guid?>("DriverId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DriverId");
 
                     b.Property<string>("DriverName")
                         .HasMaxLength(200)
@@ -305,6 +312,12 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasColumnName("PeriodId");
 
+                    b.Property<string>("PlateNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("PlateNumber");
+
                     b.Property<Guid?>("RouteId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("RouteId");
@@ -319,7 +332,9 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BusNumber");
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DriverId");
 
                     b.HasIndex("IsActive");
 
@@ -329,7 +344,12 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PeriodId");
 
+                    b.HasIndex("PlateNumber");
+
                     b.HasIndex("RouteId");
+
+                    b.HasIndex("PlateNumber", "PeriodId")
+                        .IsUnique();
 
                     b.ToTable("Buses", (string)null);
                 });
@@ -375,6 +395,77 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("BusDistricts", (string)null);
+                });
+
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.Department", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DepartmentId");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletedAt");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeletedBy");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("NameAr");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("NameEn");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UpdatedBy");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.District", b =>
@@ -436,6 +527,76 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("Districts", (string)null);
+                });
+
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.Driver", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DriverId");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletedAt");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeletedBy");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DepartmentId");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("FullName");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("PhoneNumber");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UpdatedBy");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("PhoneNumber");
+
+                    b.ToTable("Drivers", (string)null);
                 });
 
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.Location", b =>
@@ -537,6 +698,11 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("DistrictId");
 
+                    b.Property<string>("FullNationalAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("FullNationalAddress");
+
                     b.Property<string>("HalaqaGender")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
@@ -583,6 +749,10 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.Property<int?>("PeriodId")
                         .HasColumnType("int")
                         .HasColumnName("PeriodId");
+
+                    b.Property<string>("Periods")
+                        .HasColumnType("NVARCHAR(MAX)")
+                        .HasColumnName("Periods");
 
                     b.Property<DateTime>("RequestedAt")
                         .HasColumnType("datetime2")
@@ -976,6 +1146,16 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.Bus", b =>
                 {
+                    b.HasOne("TransportationAttendance.Domain.Entities.Department", "Department")
+                        .WithMany("Buses")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TransportationAttendance.Domain.Entities.Driver", "Driver")
+                        .WithMany("Buses")
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("TransportationAttendance.Domain.Entities.Bus", "MergedWithBus")
                         .WithMany()
                         .HasForeignKey("MergedWithBusId")
@@ -985,6 +1165,10 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Driver");
 
                     b.Navigation("MergedWithBus");
 
@@ -1008,6 +1192,17 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.Navigation("Bus");
 
                     b.Navigation("District");
+                });
+
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.Driver", b =>
+                {
+                    b.HasOne("TransportationAttendance.Domain.Entities.Department", "Department")
+                        .WithMany("Drivers")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("TransportationAttendance.Domain.Entities.RegistrationRequest", b =>
@@ -1079,6 +1274,18 @@ namespace TransportationAttendance.Infrastructure.Persistence.Migrations
                     b.Navigation("BusDistricts");
 
                     b.Navigation("StudentAssignments");
+                });
+
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.Department", b =>
+                {
+                    b.Navigation("Buses");
+
+                    b.Navigation("Drivers");
+                });
+
+            modelBuilder.Entity("TransportationAttendance.Domain.Entities.Driver", b =>
+                {
+                    b.Navigation("Buses");
                 });
 #pragma warning restore 612, 618
         }
