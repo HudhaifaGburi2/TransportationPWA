@@ -30,10 +30,10 @@ public static class DependencyInjection
         // Central DB Repository
         services.AddScoped<ICentralDbRepository, CentralDbRepository>();
 
-        // Actual Schema Repositories (Phase 2 Bus Management)
-        services.AddScoped<IActualDriverRepository, ActualDriverRepository>();
-        services.AddScoped<IActualRouteRepository, ActualRouteRepository>();
-        services.AddScoped<IActualBusRepository, ActualBusRepository>();
+        // Bus Management Repositories
+        services.AddScoped<IDriverRepository, DriverRepository>();
+        services.AddScoped<IRouteRepository, RouteRepository>();
+        services.AddScoped<IBusRepository, BusRepository>();
 
         // JWT Settings
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
