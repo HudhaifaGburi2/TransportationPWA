@@ -413,19 +413,22 @@ const formatDate = (dateStr: string) => {
 const loadRegistration = async () => {
   isLoading.value = true
   error.value = null
-  
-  // Load periods from cache or API
-  await loadPeriods()
+  registration.value = null
   
   try {
+    // Load periods from cache or API (non-blocking)
+    loadPeriods().catch(console.error)
+    
     const response = await apiClient.get('/registration/my-registration')
-    if (response.data.success) {
+    if (response.data.success && response.data.data) {
       registration.value = response.data.data
     }
   } catch (err: any) {
+    // 404 means no registration found - this is expected for new users
     if (err.response?.status === 404) {
       registration.value = null
     } else {
+      console.error('Failed to load registration:', err)
       error.value = err.response?.data?.message || 'حدث خطأ أثناء تحميل البيانات'
     }
   } finally {
