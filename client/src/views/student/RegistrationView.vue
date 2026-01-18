@@ -207,39 +207,27 @@
                 <label class="label">
                   <span class="label-text font-semibold">العنوان الوطني المختصر <span class="text-error">*</span></span>
                 </label>
-                <div class="flex gap-2">
-                  <div class="relative flex-1">
-                    <input 
-                      v-model="form.nationalShortAddress"
-                      type="text"
-                      class="input input-bordered input-lg w-full uppercase tracking-widest text-center font-mono"
-                      :class="{ 'input-success': addressConfirmed, 'input-error': addressError }"
-                      placeholder="XXXX0000"
-                      maxlength="8"
-                      pattern="[A-Za-z]{4}[0-9]{4}"
-                      dir="ltr"
-                      required
-                      @input="onAddressInput"
-                    />
-                    <div class="absolute left-3 top-1/2 -translate-y-1/2">
-                      <Home class="w-5 h-5 text-base-content/30" />
-                    </div>
+                <div class="relative">
+                  <input 
+                    v-model="form.nationalShortAddress"
+                    type="text"
+                    class="input input-bordered input-lg w-full uppercase tracking-widest text-center font-mono"
+                    :class="{ 'input-success': isAddressValid && form.nationalShortAddress.length === 8 }"
+                    placeholder="XXXX0000"
+                    maxlength="8"
+                    pattern="[A-Za-z]{4}[0-9]{4}"
+                    dir="ltr"
+                    required
+                    @input="onAddressInput"
+                  />
+                  <div class="absolute left-3 top-1/2 -translate-y-1/2">
+                    <Home class="w-5 h-5 text-base-content/30" />
                   </div>
-                  <button 
-                    type="button" 
-                    class="btn btn-primary btn-lg" 
-                    :disabled="!isAddressValid || isLookingUp"
-                    @click="lookupAddress"
-                  >
-                    <span v-if="isLookingUp" class="loading loading-spinner loading-sm"></span>
-                    <Search v-else class="w-5 h-5" />
-                    بحث
-                  </button>
                 </div>
                 <label class="label">
                   <span class="label-text-alt flex items-center gap-1">
                     <Info class="w-3 h-3" />
-                    4 أحرف إنجليزية + 4 أرقام (مثال: RRRD2929)
+                    4 أحرف إنجليزية + 4 أرقام (مثال: DMMA7667)
                   </span>
                   <a href="https://splonline.com.sa/ar/national-address-1/" target="_blank" class="label-text-alt link link-primary flex items-center gap-1">
                     <ExternalLink class="w-3 h-3" />
@@ -247,23 +235,16 @@
                   </a>
                 </label>
               </div>
-
-              <!-- Full Address Display -->
-              <div v-if="fullAddress" class="form-control">
-                <label class="label">
-                  <span class="label-text font-semibold">العنوان الكامل</span>
-                </label>
-                <div class="bg-success/10 border border-success/30 rounded-lg p-4">
+              
+              <!-- Address Preview (when valid format) -->
+              <div v-if="isAddressValid" class="form-control">
+                <div class="bg-primary/10 border border-primary/30 rounded-lg p-4">
                   <div class="flex items-start gap-3">
-                    <MapPin class="w-5 h-5 text-success mt-0.5" />
+                    <MapPin class="w-5 h-5 text-primary mt-0.5" />
                     <div class="flex-1">
-                      <p class="font-medium text-base-content">{{ fullAddress }}</p>
-                      <p v-if="addressDetails" class="text-sm text-base-content/60 mt-1">
-                        {{ addressDetails }}
-                      </p>
-                      <!-- Google Maps Link -->
+                      <p class="font-mono font-bold text-lg" dir="ltr">{{ form.nationalShortAddress.toUpperCase() }}</p>
+                      <p class="text-sm text-base-content/60 mt-1">العنوان الوطني المختصر</p>
                       <a 
-                        v-if="googleMapsUrl" 
                         :href="googleMapsUrl" 
                         target="_blank" 
                         class="link link-primary text-sm flex items-center gap-1 mt-2"
@@ -276,33 +257,15 @@
                       <input 
                         type="checkbox" 
                         v-model="addressConfirmed" 
-                        class="checkbox checkbox-success" 
+                        class="checkbox checkbox-primary" 
                       />
-                      <span class="text-sm font-medium text-success">تأكيد</span>
+                      <span class="text-sm font-medium text-primary">تأكيد</span>
                     </label>
                   </div>
                 </div>
-                
-                <!-- Map Preview -->
-                <div v-if="googleMapsEmbedUrl" class="mt-3 rounded-lg overflow-hidden border border-base-300">
-                  <iframe 
-                    :src="googleMapsEmbedUrl"
-                    width="100%" 
-                    height="200" 
-                    style="border:0;" 
-                    allowfullscreen
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade"
-                    class="w-full"
-                  ></iframe>
-                </div>
               </div>
 
-              <!-- Address Error -->
-              <div v-if="addressError" class="alert alert-error shadow-sm">
-                <AlertCircle class="w-5 h-5" />
-                <span>{{ addressError }}</span>
-              </div>
+
 
               <!-- Home Address (Optional) -->
               <div class="form-control">
@@ -476,32 +439,15 @@ const loadPeriods = async () => {
   }
 }
 
-// Address lookup state
-const isLookingUp = ref(false)
-const fullAddress = ref('')
-const addressDetails = ref('')
-const addressError = ref('')
+// Address confirmation state
 const addressConfirmed = ref(false)
-const addressLatitude = ref<number | null>(null)
-const addressLongitude = ref<number | null>(null)
 
-// Google Maps URL for the resolved address
+// Google Maps URL for the short address
 const googleMapsUrl = computed(() => {
-  if (addressLatitude.value && addressLongitude.value) {
-    return `https://www.google.com/maps?q=${addressLatitude.value},${addressLongitude.value}`
-  }
-  // Fallback to short address search
   if (form.value.nationalShortAddress && isAddressValid.value) {
     return `https://www.google.com/maps/search/${form.value.nationalShortAddress.toUpperCase()}`
   }
-  return null
-})
-
-const googleMapsEmbedUrl = computed(() => {
-  if (addressLatitude.value && addressLongitude.value) {
-    return `https://maps.google.com/maps?q=${addressLatitude.value},${addressLongitude.value}&z=17&output=embed`
-  }
-  return null
+  return ''
 })
 
 const isAddressValid = computed(() => {
@@ -559,53 +505,9 @@ const loadStudentInfo = async () => {
   }
 }
 
-// Reset address state when input changes
+// Reset address confirmation when input changes
 const onAddressInput = () => {
-  fullAddress.value = ''
-  addressDetails.value = ''
-  addressError.value = ''
   addressConfirmed.value = false
-  form.value.fullNationalAddress = ''
-  addressLatitude.value = null
-  addressLongitude.value = null
-}
-
-// Lookup address from National Address API
-const lookupAddress = async () => {
-  if (!isAddressValid.value) return
-  
-  isLookingUp.value = true
-  addressError.value = ''
-  fullAddress.value = ''
-  addressDetails.value = ''
-  addressConfirmed.value = false
-  
-  try {
-    const response = await apiClient.get(`/registration/lookup-address/${form.value.nationalShortAddress.toUpperCase()}`)
-    
-    if (response.data.success && response.data.data) {
-      const data = response.data.data
-      fullAddress.value = data.fullAddress || ''
-      form.value.fullNationalAddress = data.fullAddress || ''
-      addressLatitude.value = data.latitude || null
-      addressLongitude.value = data.longitude || null
-      
-      // Build additional details
-      const details = []
-      if (data.city) details.push(`المدينة: ${data.city}`)
-      if (data.postalCode) details.push(`الرمز البريدي: ${data.postalCode}`)
-      if (data.latitude && data.longitude) {
-        details.push(`الإحداثيات: ${data.latitude.toFixed(6)}, ${data.longitude.toFixed(6)}`)
-      }
-      addressDetails.value = details.join(' | ')
-    } else {
-      addressError.value = response.data.message || 'لم يتم العثور على العنوان'
-    }
-  } catch (err: any) {
-    addressError.value = err.response?.data?.message || 'حدث خطأ أثناء البحث عن العنوان'
-  } finally {
-    isLookingUp.value = false
-  }
 }
 
 const submitRegistration = async () => {
