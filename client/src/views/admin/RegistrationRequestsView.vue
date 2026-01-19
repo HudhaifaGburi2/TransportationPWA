@@ -316,6 +316,14 @@
               <label class="text-sm text-base-content/60">الفترة</label>
               <p>{{ selectedRequest.periodName }}</p>
             </div>
+            <div v-if="selectedRequest.teacherName">
+              <label class="text-sm text-base-content/60">اسم المعلم</label>
+              <p>{{ selectedRequest.teacherName }}</p>
+            </div>
+            <div v-if="selectedRequest.ageGroupName">
+              <label class="text-sm text-base-content/60">الفئة العمرية</label>
+              <p>{{ selectedRequest.ageGroupName }}</p>
+            </div>
             <div>
               <label class="text-sm text-base-content/60">تاريخ الطلب</label>
               <p>{{ formatDate(selectedRequest.createdAt) }}</p>
@@ -323,6 +331,12 @@
             <div>
               <label class="text-sm text-base-content/60">الحالة</label>
               <p><span :class="getStatusBadgeClass(selectedRequest.status)">{{ getStatusText(selectedRequest.status) }}</span></p>
+            </div>
+          </div>
+          <div v-if="selectedRequest.periods && selectedRequest.periods.length > 0" class="bg-base-200 p-4 rounded-lg">
+            <label class="text-sm text-base-content/60 font-medium">الفترات المطلوبة</label>
+            <div class="flex gap-2 mt-2">
+              <span v-for="p in selectedRequest.periods" :key="p" class="badge badge-primary">{{ getPeriodName(p) }}</span>
             </div>
           </div>
           <div v-if="selectedRequest.assignedBusNumber" class="bg-info/10 p-4 rounded-lg">
@@ -358,6 +372,10 @@ interface RegistrationRequest {
   districtName: string
   periodId: number
   periodName: string
+  periods?: string[] // Requested periods array
+  ageGroupId?: number
+  ageGroupName?: string
+  teacherName?: string
   nationalShortAddress?: string
   fullNationalAddress?: string
   status: 'pending' | 'approved' | 'rejected'
@@ -365,6 +383,16 @@ interface RegistrationRequest {
   rejectionReason?: string
   assignedBusId?: string
   assignedBusNumber?: string
+}
+
+interface Period {
+  id: number
+  name: string
+}
+
+interface AgeGroup {
+  id: number
+  name: string
 }
 
 interface Bus {
@@ -390,6 +418,24 @@ const rejectReason = ref('')
 const buses = ref<Bus[]>([])
 const selectedBusId = ref('')
 const assignNotes = ref('')
+
+// Lookups
+const periods = ref<Period[]>([
+  { id: 1, name: 'العصر' },
+  { id: 2, name: 'المغرب' },
+  { id: 3, name: 'الضحى' }
+])
+const ageGroups = ref<AgeGroup[]>([
+  { id: 1, name: 'الأولى' },
+  { id: 2, name: 'الثانية' },
+  { id: 3, name: 'الثالثة' },
+  { id: 4, name: 'الرابعة' }
+])
+const getPeriodName = (periodId: string | number) => {
+  const id = typeof periodId === 'string' ? parseInt(periodId) : periodId
+  const period = periods.value.find(p => p.id === id)
+  return period?.name || `فترة ${periodId}`
+}
 
 // Computed stats
 const pendingCount = computed(() => requests.value.filter(r => r.status === 'pending').length)
@@ -422,23 +468,45 @@ const fetchRequests = async () => {
     const response = await apiClient.get('/registration')
     if (response.data.success && response.data.data) {
       // Map API response to our interface
-      requests.value = response.data.data.map((r: any) => ({
-        id: r.id,
-        studentId: r.studentId || r.studentUserId?.toString(),
-        studentName: r.studentName,
-        nationalId: r.nationalId || '',
-        districtId: r.districtId,
-        districtName: r.districtName || '',
-        periodId: r.periodId,
-        periodName: r.periodName || `فترة ${r.periodId}`,
-        nationalShortAddress: r.nationalShortAddress,
-        fullNationalAddress: r.fullNationalAddress,
-        status: r.status?.toLowerCase() || 'pending',
-        createdAt: r.createdAt,
-        rejectionReason: r.rejectionReason,
-        assignedBusId: r.assignedBusId,
-        assignedBusNumber: r.assignedBusNumber
-      }))
+      requests.value = response.data.data.map((r: any) => {
+        // Parse periods array from JSON string if needed
+        let periodsArray: string[] = []
+        if (r.periods) {
+          try {
+            periodsArray = typeof r.periods === 'string' ? JSON.parse(r.periods) : r.periods
+          } catch { periodsArray = [] }
+        }
+        
+        // Map period ID to name
+        const period = periods.value.find(p => p.id === r.periodId)
+        const periodName = period?.name || `فترة ${r.periodId}`
+        
+        // Map age group ID to name
+        const ageGroup = ageGroups.value.find(a => a.id === r.ageGroupId)
+        const ageGroupName = ageGroup?.name || ''
+        
+        return {
+          id: r.id,
+          studentId: r.studentId || r.studentUserId?.toString(),
+          studentName: r.studentName,
+          nationalId: r.nationalId || '',
+          districtId: r.districtId,
+          districtName: r.districtName || '',
+          periodId: r.periodId,
+          periodName,
+          periods: periodsArray,
+          ageGroupId: r.ageGroupId,
+          ageGroupName,
+          teacherName: r.teacherName || '',
+          nationalShortAddress: r.nationalShortAddress,
+          fullNationalAddress: r.fullNationalAddress,
+          status: r.status?.toLowerCase() || 'pending',
+          createdAt: r.createdAt,
+          rejectionReason: r.rejectionReason,
+          assignedBusId: r.assignedBusId,
+          assignedBusNumber: r.assignedBusNumber
+        }
+      })
     }
   } catch (err: any) {
     console.error('Error fetching requests:', err)
