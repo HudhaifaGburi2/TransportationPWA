@@ -360,7 +360,7 @@ public class BusManagementService : IBusManagementService
             Id = a.StudentId,
             StudentId = a.Student?.StudentId ?? "",
             StudentName = a.Student?.StudentName ?? "",
-            DistrictName = a.Student?.District?.NameAr,
+            DistrictName = a.Student?.District?.DistrictNameAr,
             PeriodName = null,
             AssignedAt = a.AssignedAt
         }).ToList();
