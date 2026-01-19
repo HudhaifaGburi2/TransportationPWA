@@ -16,6 +16,7 @@ public class RegistrationRequestRepository : BaseRepository<RegistrationRequest>
         return await _dbSet
             .AsNoTracking()
             .Include(r => r.District)
+            .Include(r => r.AssignedBus)
             .Where(r => r.Status == status)
             .OrderByDescending(r => r.RequestedAt)
             .ToListAsync(cancellationToken);
@@ -26,6 +27,7 @@ public class RegistrationRequestRepository : BaseRepository<RegistrationRequest>
         return await _dbSet
             .AsNoTracking()
             .Include(r => r.District)
+            .Include(r => r.AssignedBus)
             .Where(r => r.DistrictId == districtId)
             .OrderByDescending(r => r.RequestedAt)
             .ToListAsync(cancellationToken);
@@ -35,6 +37,7 @@ public class RegistrationRequestRepository : BaseRepository<RegistrationRequest>
     {
         return await _dbSet
             .Include(r => r.District)
+            .Include(r => r.AssignedBus)
             .FirstOrDefaultAsync(r => r.StudentUserId == studentUserId, cancellationToken);
     }
 
@@ -43,6 +46,7 @@ public class RegistrationRequestRepository : BaseRepository<RegistrationRequest>
         return await _dbSet
             .AsNoTracking()
             .Include(r => r.District)
+            .Include(r => r.AssignedBus)
             .Where(r => r.Status == RegistrationStatus.Pending)
             .OrderBy(r => r.RequestedAt)
             .ToListAsync(cancellationToken);
@@ -57,6 +61,17 @@ public class RegistrationRequestRepository : BaseRepository<RegistrationRequest>
     {
         return await _dbSet
             .Include(r => r.District)
+            .Include(r => r.AssignedBus)
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
+    public override async Task<IReadOnlyList<RegistrationRequest>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Include(r => r.District)
+            .Include(r => r.AssignedBus)
+            .OrderByDescending(r => r.RequestedAt)
+            .ToListAsync(cancellationToken);
     }
 }

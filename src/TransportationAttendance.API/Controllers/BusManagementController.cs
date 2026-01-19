@@ -241,6 +241,20 @@ public class BusManagementController : BaseApiController
         return Ok(ApiResponse<bool>.SuccessResponse(true, "تم حذف الباص بنجاح"));
     }
 
+    [HttpGet("buses/{id:guid}/students")]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
+    public async Task<ActionResult<ApiResponse<BusStudentsDto>>> GetBusStudents(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Fetching students for bus {BusId}", id);
+        var result = await _busManagementService.GetBusStudentsAsync(id, cancellationToken);
+        if (result.IsFailure)
+            return NotFound(ApiResponse<BusStudentsDto>.FailureResponse(result.Error!));
+
+        return Ok(ApiResponse<BusStudentsDto>.SuccessResponse(result.Value!));
+    }
+
     #endregion
 
     #region Statistics

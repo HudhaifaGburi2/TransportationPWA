@@ -143,7 +143,7 @@
     </div>
 
     <!-- Add/Edit Modal -->
-    <dialog :open="showAddModal || showEditModal" class="modal modal-open">
+    <dialog class="modal" :class="{ 'modal-open': showAddModal || showEditModal }">
       <div class="modal-box max-w-lg">
         <button @click="closeModal" class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2">✕</button>
         <div class="text-center mb-6">
@@ -206,7 +206,7 @@
     </dialog>
 
     <!-- Delete Confirmation -->
-    <dialog :open="showDeleteModal" class="modal modal-open">
+    <dialog class="modal" :class="{ 'modal-open': showDeleteModal }">
       <div class="modal-box max-w-sm text-center">
         <div class="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <AlertTriangle class="w-8 h-8 text-error" />

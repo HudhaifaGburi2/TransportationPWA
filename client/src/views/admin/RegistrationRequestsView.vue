@@ -1,5 +1,19 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Back Navigation -->
+    <div class="flex items-center gap-4">
+      <router-link to="/" class="btn btn-ghost btn-sm gap-2">
+        <ArrowRight class="w-4 h-4" />
+        الرئيسية
+      </router-link>
+      <div class="text-sm breadcrumbs">
+        <ul>
+          <li><router-link to="/">الرئيسية</router-link></li>
+          <li>طلبات التسجيل</li>
+        </ul>
+      </div>
+    </div>
+
     <!-- Page Header -->
     <div class="bg-gradient-to-l from-warning/10 to-transparent p-6 rounded-xl">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -109,6 +123,7 @@
               <th class="font-bold">رقم الهوية</th>
               <th class="font-bold">المنطقة</th>
               <th class="font-bold">الفترة</th>
+              <th class="font-bold">الباص</th>
               <th class="font-bold text-center">تاريخ الطلب</th>
               <th class="font-bold text-center">الحالة</th>
               <th class="font-bold text-center">الإجراءات</th>
@@ -133,6 +148,10 @@
               <td dir="ltr" class="font-mono">{{ request.nationalId }}</td>
               <td>{{ request.districtName }}</td>
               <td>{{ request.periodName }}</td>
+              <td>
+                <span v-if="request.assignedBusNumber" class="badge badge-info">{{ request.assignedBusNumber }}</span>
+                <span v-else class="text-base-content/40">-</span>
+              </td>
               <td class="text-center text-sm">{{ formatDate(request.createdAt) }}</td>
               <td class="text-center">
                 <span :class="getStatusBadgeClass(request.status)">
@@ -150,12 +169,12 @@
                     <MapPin class="w-4 h-4 text-primary" />
                   </button>
                   <button 
-                    @click="approveRequest(request)" 
-                    class="btn btn-success btn-sm gap-1"
+                    @click="showAssignBusModal(request)" 
+                    class="btn btn-primary btn-sm gap-1"
                     :disabled="processing"
                   >
-                    <Check class="w-4 h-4" />
-                    قبول
+                    <Bus class="w-4 h-4" />
+                    تعيين باص
                   </button>
                   <button 
                     @click="showRejectModal(request)" 
@@ -191,7 +210,7 @@
     </div>
 
     <!-- Reject Modal -->
-    <dialog :open="showRejectDialog" class="modal modal-open">
+    <dialog class="modal" :class="{ 'modal-open': showRejectDialog }">
       <div class="modal-box max-w-md">
         <button @click="showRejectDialog = false" class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2">✕</button>
         <div class="text-center mb-6">
@@ -227,8 +246,55 @@
       <div class="modal-backdrop bg-black/50" @click="showRejectDialog = false"></div>
     </dialog>
 
+    <!-- Assign Bus Modal -->
+    <dialog class="modal" :class="{ 'modal-open': showAssignBusDialog }">
+      <div class="modal-box max-w-md">
+        <button @click="showAssignBusDialog = false" class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2">✕</button>
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Bus class="w-8 h-8 text-primary" />
+          </div>
+          <h3 class="font-bold text-xl">تعيين الباص</h3>
+          <p class="text-base-content/60 text-sm mt-1">اختر الباص المناسب للطالب {{ selectedRequest?.studentName }}</p>
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-medium">الباص <span class="text-error">*</span></span>
+          </label>
+          <select v-model="selectedBusId" class="select select-bordered w-full">
+            <option value="">اختر الباص...</option>
+            <option v-for="bus in buses" :key="bus.busId" :value="bus.busId">
+              {{ bus.busNumber }} (السعة: {{ bus.capacity }})
+            </option>
+          </select>
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-medium">ملاحظات (اختياري)</span>
+          </label>
+          <textarea 
+            v-model="assignNotes" 
+            class="textarea textarea-bordered h-20" 
+            placeholder="أي ملاحظات إضافية..."
+          ></textarea>
+        </div>
+        <div class="flex gap-3">
+          <button class="btn btn-ghost flex-1" @click="showAssignBusDialog = false">إلغاء</button>
+          <button 
+            class="btn btn-primary flex-1 gap-2" 
+            @click="confirmAssignBus"
+            :disabled="!selectedBusId || processing"
+          >
+            <span v-if="processing" class="loading loading-spinner loading-sm"></span>
+            تأكيد التعيين
+          </button>
+        </div>
+      </div>
+      <div class="modal-backdrop bg-black/50" @click="showAssignBusDialog = false"></div>
+    </dialog>
+
     <!-- Details Modal -->
-    <dialog :open="showDetailsDialog" class="modal modal-open">
+    <dialog class="modal" :class="{ 'modal-open': showDetailsDialog }">
       <div class="modal-box max-w-lg">
         <button @click="showDetailsDialog = false" class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2">✕</button>
         <h3 class="font-bold text-xl mb-4">تفاصيل الطلب</h3>
@@ -259,6 +325,10 @@
               <p><span :class="getStatusBadgeClass(selectedRequest.status)">{{ getStatusText(selectedRequest.status) }}</span></p>
             </div>
           </div>
+          <div v-if="selectedRequest.assignedBusNumber" class="bg-info/10 p-4 rounded-lg">
+            <label class="text-sm text-info font-medium">الباص المعين</label>
+            <p class="mt-1 font-semibold">{{ selectedRequest.assignedBusNumber }}</p>
+          </div>
           <div v-if="selectedRequest.rejectionReason" class="bg-error/10 p-4 rounded-lg">
             <label class="text-sm text-error font-medium">سبب الرفض</label>
             <p class="mt-1">{{ selectedRequest.rejectionReason }}</p>
@@ -276,7 +346,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FileText, Search, RefreshCw, Clock, CheckCircle, XCircle, Check, X, Eye, MapPin } from 'lucide-vue-next'
+import { FileText, Search, RefreshCw, Clock, CheckCircle, XCircle, X, Eye, MapPin, ArrowRight, Bus } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface RegistrationRequest {
@@ -293,6 +363,15 @@ interface RegistrationRequest {
   status: 'pending' | 'approved' | 'rejected'
   createdAt: string
   rejectionReason?: string
+  assignedBusId?: string
+  assignedBusNumber?: string
+}
+
+interface Bus {
+  busId: string
+  busNumber: string
+  capacity: number
+  currentOccupancy?: number
 }
 
 
@@ -305,8 +384,12 @@ const filterStatus = ref('all')
 
 const showRejectDialog = ref(false)
 const showDetailsDialog = ref(false)
+const showAssignBusDialog = ref(false)
 const selectedRequest = ref<RegistrationRequest | null>(null)
 const rejectReason = ref('')
+const buses = ref<Bus[]>([])
+const selectedBusId = ref('')
+const assignNotes = ref('')
 
 // Computed stats
 const pendingCount = computed(() => requests.value.filter(r => r.status === 'pending').length)
@@ -335,8 +418,8 @@ const fetchRequests = async () => {
   loading.value = true
   error.value = null
   try {
-    // Fetch all registration requests from API
-    const response = await apiClient.get('/registration/pending')
+    // Fetch all registration requests from RegistrationRequests table
+    const response = await apiClient.get('/registration')
     if (response.data.success && response.data.data) {
       // Map API response to our interface
       requests.value = response.data.data.map((r: any) => ({
@@ -352,12 +435,20 @@ const fetchRequests = async () => {
         fullNationalAddress: r.fullNationalAddress,
         status: r.status?.toLowerCase() || 'pending',
         createdAt: r.createdAt,
-        rejectionReason: r.rejectionReason
+        rejectionReason: r.rejectionReason,
+        assignedBusId: r.assignedBusId,
+        assignedBusNumber: r.assignedBusNumber
       }))
     }
   } catch (err: any) {
     console.error('Error fetching requests:', err)
-    error.value = err.response?.data?.message || 'فشل في تحميل الطلبات'
+    if (err.response?.status === 403) {
+      error.value = 'ليس لديك صلاحية للوصول لهذه الصفحة. يرجى التواصل مع المسؤول.'
+    } else if (err.response?.status === 404) {
+      error.value = 'الخدمة غير متوفرة حالياً'
+    } else {
+      error.value = err.response?.data?.message || 'فشل في تحميل الطلبات'
+    }
   } finally {
     loading.value = false
   }
@@ -397,21 +488,51 @@ const getStatusBadgeClass = (status: string) => {
   }
 }
 
-const approveRequest = async (request: RegistrationRequest) => {
+const fetchBuses = async () => {
+  try {
+    const response = await apiClient.get('/busmanagement/buses')
+    if (response.data.success && response.data.data) {
+      buses.value = response.data.data.map((b: any) => ({
+        busId: b.busId || b.id,
+        busNumber: b.busNumber,
+        capacity: b.capacity,
+        currentOccupancy: b.currentOccupancy || 0
+      }))
+    }
+  } catch (err) {
+    console.error('Error fetching buses:', err)
+  }
+}
+
+const showAssignBusModal = async (request: RegistrationRequest) => {
+  selectedRequest.value = request
+  selectedBusId.value = ''
+  assignNotes.value = ''
+  if (buses.value.length === 0) {
+    await fetchBuses()
+  }
+  showAssignBusDialog.value = true
+}
+
+const confirmAssignBus = async () => {
+  if (!selectedRequest.value || !selectedBusId.value) return
+  
   processing.value = true
   try {
-    await apiClient.post(`/registration/${request.id}/review`, {
-      isApproved: true
+    await apiClient.post(`/registration/${selectedRequest.value.id}/assign-bus`, {
+      busId: selectedBusId.value,
+      notes: assignNotes.value || undefined
     })
-    request.status = 'approved'
+    showAssignBusDialog.value = false
     await fetchRequests()
   } catch (err: any) {
-    console.error('Error approving request:', err)
-    alert(err.response?.data?.message || 'فشل في قبول الطلب')
+    console.error('Error assigning bus:', err)
+    alert(err.response?.data?.message || 'فشل في تعيين الباص')
   } finally {
     processing.value = false
   }
 }
+
 
 const showRejectModal = (request: RegistrationRequest) => {
   selectedRequest.value = request

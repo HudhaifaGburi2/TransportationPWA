@@ -15,7 +15,7 @@ public class Bus
     public Guid Id { get; private set; }
     
     [Column("BusNumber")]
-    public string BusNumber { get; private set; } = string.Empty;
+    public string? BusNumber { get; private set; }
     
     [Column("PeriodId")]
     public int PeriodId { get; private set; }

@@ -35,6 +35,7 @@ public class CentralStudentDbContext : DbContext
             entity.Property(e => e.FullNameOfficialEn).HasColumnName("Full_Name_Official_EN");
             entity.Property(e => e.EmailId).HasColumnName("Email_id");
             entity.Property(e => e.MobileNo).HasColumnName("Mobile_no");
+            entity.Property(e => e.NationalId).HasColumnName("National_ID");
             entity.Property(e => e.UserLanguage).HasColumnName("User_Language");
             // IsActive - ignore if column doesn't exist in CentralDB
             entity.Ignore(e => e.IsActive);

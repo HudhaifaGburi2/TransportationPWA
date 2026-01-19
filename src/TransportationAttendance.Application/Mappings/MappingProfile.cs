@@ -32,7 +32,8 @@ public class MappingProfile : Profile
         // Registration Request mappings
         CreateMap<RegistrationRequest, RegistrationRequestDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.Periods, opt => opt.MapFrom(src => DeserializePeriods(src.Periods)));
+            .ForMember(dest => dest.Periods, opt => opt.MapFrom(src => DeserializePeriods(src.Periods)))
+            .ForMember(dest => dest.AssignedBusNumber, opt => opt.MapFrom(src => src.AssignedBus != null ? src.AssignedBus.BusNumber : null));
 
         // Central DB Lookups mappings
         CreateMap<SetPeriod, PeriodDto>()

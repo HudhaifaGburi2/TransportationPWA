@@ -21,7 +21,7 @@ export interface Route {
 
 export interface Bus {
   id: string
-  busNumber: string
+  busNumber?: string
   periodId: number
   routeId?: string
   driverName?: string

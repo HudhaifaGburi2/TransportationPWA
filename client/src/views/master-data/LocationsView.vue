@@ -4,7 +4,8 @@ import { ArrowRight, Plus, Search, X, Edit, AlertCircle } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface Location {
-  locationId: string
+  id: string
+  locationId?: string
   locationCode: string
   locationName: string
   locationType?: string
@@ -89,7 +90,7 @@ async function saveLocation() {
   
   try {
     if (isEditing.value && selectedLocation.value) {
-      await apiClient.put(`/locations/${selectedLocation.value.locationId}`, form.value)
+      await apiClient.put(`/locations/${selectedLocation.value.id || selectedLocation.value.locationId}`, form.value)
     } else {
       await apiClient.post('/locations', form.value)
     }
@@ -178,7 +179,7 @@ onMounted(() => {
     </main>
 
     <!-- Add/Edit Modal -->
-    <dialog :open="showModal" class="modal modal-open">
+    <dialog class="modal" :class="{ 'modal-open': showModal }">
       <div class="modal-box">
         <button class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2" @click="closeModal">
           <X class="w-4 h-4" />

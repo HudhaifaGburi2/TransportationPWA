@@ -17,6 +17,7 @@ public class RegistrationRequestConfiguration : IEntityTypeConfiguration<Registr
         builder.Property(e => e.StudentUserId).HasColumnName("StudentUserId").IsRequired();
         builder.Property(e => e.StudentId).HasColumnName("ExternalStudentId").HasMaxLength(50).IsRequired();
         builder.Property(e => e.StudentName).HasColumnName("StudentName").HasMaxLength(200).IsRequired();
+        builder.Property(e => e.NationalId).HasColumnName("NationalId").HasMaxLength(20);
         builder.Property(e => e.HalaqaTypeCode).HasColumnName("HalaqaTypeCode").HasMaxLength(50);
         builder.Property(e => e.HalaqaSectionId).HasColumnName("HalaqaSectionId");
         builder.Property(e => e.HalaqaGender).HasColumnName("HalaqaGender").HasMaxLength(20);
@@ -42,6 +43,9 @@ public class RegistrationRequestConfiguration : IEntityTypeConfiguration<Registr
         builder.Property(e => e.ReviewedAt).HasColumnName("ReviewedAt");
         builder.Property(e => e.ReviewedBy).HasColumnName("ReviewedBy");
         builder.Property(e => e.ReviewNotes).HasColumnName("ReviewNotes").HasMaxLength(1000);
+        
+        // Bus assignment
+        builder.Property(e => e.AssignedBusId).HasColumnName("AssignedBusId");
 
         // Audit fields
         builder.Property(e => e.CreatedAt).HasColumnName("CreatedAt");
@@ -57,12 +61,19 @@ public class RegistrationRequestConfiguration : IEntityTypeConfiguration<Registr
             .WithMany()
             .HasForeignKey(e => e.DistrictId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(e => e.AssignedBus)
+            .WithMany()
+            .HasForeignKey(e => e.AssignedBusId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes
         builder.HasIndex(e => e.StudentUserId);
         builder.HasIndex(e => e.StudentId);
         builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.DistrictId);
+        builder.HasIndex(e => e.NationalId);
+        builder.HasIndex(e => e.AssignedBusId);
         builder.HasIndex(e => e.IsDeleted);
 
         // Query filter for soft delete

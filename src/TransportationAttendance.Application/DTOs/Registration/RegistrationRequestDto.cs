@@ -10,6 +10,7 @@ public record RegistrationRequestDto
     public int StudentUserId { get; init; }
     public string StudentId { get; init; } = string.Empty;
     public string StudentName { get; init; } = string.Empty;
+    public string? NationalId { get; init; }
     public string? HalaqaTypeCode { get; init; }
     public Guid? HalaqaSectionId { get; init; }
     public string? HalaqaGender { get; init; }
@@ -39,6 +40,10 @@ public record RegistrationRequestDto
     public DateTime? ReviewedAt { get; init; }
     public Guid? ReviewedBy { get; init; }
     public string? ReviewNotes { get; init; }
+    
+    // Bus assignment
+    public Guid? AssignedBusId { get; init; }
+    public string? AssignedBusNumber { get; init; }
     
     // Navigation
     public DistrictDto? District { get; init; }

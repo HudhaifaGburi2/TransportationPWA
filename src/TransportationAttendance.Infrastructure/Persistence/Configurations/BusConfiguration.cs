@@ -14,8 +14,7 @@ public class BusConfiguration : IEntityTypeConfiguration<Bus>
         builder.Property(b => b.Id).HasColumnName("BusId");
 
         builder.Property(b => b.BusNumber)
-            .HasMaxLength(20)
-            .IsRequired();
+            .HasMaxLength(20);
 
         builder.Property(b => b.DriverName)
             .HasMaxLength(200);

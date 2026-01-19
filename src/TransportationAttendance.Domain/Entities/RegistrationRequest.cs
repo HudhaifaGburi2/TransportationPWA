@@ -8,6 +8,7 @@ public class RegistrationRequest : BaseEntity
     public int StudentUserId { get; private set; }
     public string StudentId { get; private set; } = string.Empty;
     public string StudentName { get; private set; } = string.Empty;
+    public string? NationalId { get; private set; }
     public string? HalaqaTypeCode { get; private set; }
     public Guid? HalaqaSectionId { get; private set; }
     public string? HalaqaGender { get; private set; }
@@ -38,8 +39,12 @@ public class RegistrationRequest : BaseEntity
     public Guid? ReviewedBy { get; private set; }
     public string? ReviewNotes { get; private set; }
     
+    // Bus assignment
+    public Guid? AssignedBusId { get; private set; }
+    
     // Navigation
     public District? District { get; private set; }
+    public Bus? AssignedBus { get; private set; }
 
     private RegistrationRequest() { }
 
@@ -47,6 +52,7 @@ public class RegistrationRequest : BaseEntity
         int studentUserId,
         string studentId,
         string studentName,
+        string? nationalId,
         string? halaqaTypeCode,
         Guid? halaqaSectionId,
         string? halaqaGender,
@@ -67,6 +73,7 @@ public class RegistrationRequest : BaseEntity
             StudentUserId = studentUserId,
             StudentId = studentId,
             StudentName = studentName,
+            NationalId = nationalId,
             HalaqaTypeCode = halaqaTypeCode,
             HalaqaSectionId = halaqaSectionId,
             HalaqaGender = halaqaGender,
@@ -105,4 +112,13 @@ public class RegistrationRequest : BaseEntity
     public bool IsPending() => Status == RegistrationStatus.Pending;
     public bool IsApproved() => Status == RegistrationStatus.Approved;
     public bool IsRejected() => Status == RegistrationStatus.Rejected;
+
+    public void AssignToBus(Guid busId, Guid reviewedBy, string? notes = null)
+    {
+        AssignedBusId = busId;
+        Status = RegistrationStatus.Approved;
+        ReviewedAt = DateTime.UtcNow;
+        ReviewedBy = reviewedBy;
+        ReviewNotes = notes;
+    }
 }

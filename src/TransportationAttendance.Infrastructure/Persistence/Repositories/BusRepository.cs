@@ -48,7 +48,7 @@ public class BusRepository : IBusRepository
     {
         return await _context.Buses
             .AsNoTracking()
-            .Where(b => b.BusNumber.Contains(searchTerm) || 
+            .Where(b => (b.BusNumber != null && b.BusNumber.Contains(searchTerm)) || 
                        (b.DriverName != null && b.DriverName.Contains(searchTerm)))
             .OrderBy(b => b.BusNumber)
             .ToListAsync(cancellationToken);

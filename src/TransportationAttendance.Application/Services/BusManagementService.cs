@@ -202,7 +202,7 @@ public class BusManagementService : IBusManagementService
             var filtered = buses.AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(query.Search))
-                filtered = filtered.Where(b => b.BusNumber.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
+                filtered = filtered.Where(b => (b.BusNumber != null && b.BusNumber.Contains(query.Search, StringComparison.OrdinalIgnoreCase)) ||
                                                (b.DriverName != null && b.DriverName.Contains(query.Search, StringComparison.OrdinalIgnoreCase)));
 
             if (query.IsActive.HasValue)
@@ -288,9 +288,11 @@ public class BusManagementService : IBusManagementService
 
     public async Task<Result<BusManagementStatisticsDto>> GetStatisticsAsync(CancellationToken cancellationToken = default)
     {
-        var drivers = await _driverRepository.GetAllAsync(cancellationToken);
         var routes = await _routeRepository.GetAllAsync(cancellationToken);
         var buses = await _busRepository.GetAllAsync(cancellationToken);
+
+        // Count drivers from buses that have driver names
+        var driversWithNames = buses.Where(b => !string.IsNullOrEmpty(b.DriverName)).ToList();
 
         var stats = new BusManagementStatisticsDto
         {
@@ -298,8 +300,8 @@ public class BusManagementService : IBusManagementService
             ActiveBuses = buses.Count(b => b.IsActive),
             InactiveBuses = buses.Count(b => !b.IsActive),
             TotalCapacity = buses.Where(b => b.IsActive).Sum(b => b.Capacity),
-            TotalDrivers = drivers.Count,
-            ActiveDrivers = drivers.Count(d => d.IsActive),
+            TotalDrivers = driversWithNames.Count,
+            ActiveDrivers = driversWithNames.Count(b => b.IsActive),
             TotalRoutes = routes.Count,
             ActiveRoutes = routes.Count(r => r.IsActive)
         };
@@ -344,4 +346,31 @@ public class BusManagementService : IBusManagementService
     };
 
     #endregion
+
+    public async Task<Result<BusStudentsDto>> GetBusStudentsAsync(Guid busId, CancellationToken cancellationToken = default)
+    {
+        var bus = await _busRepository.GetByIdAsync(busId, cancellationToken);
+        if (bus == null)
+            return Result.Failure<BusStudentsDto>("الباص غير موجود");
+
+        var assignments = await _unitOfWork.StudentBusAssignments.GetActiveByBusIdAsync(busId, cancellationToken);
+
+        var students = assignments.Select(a => new BusStudentDto
+        {
+            Id = a.StudentId,
+            StudentId = a.Student?.StudentId ?? "",
+            StudentName = a.Student?.StudentName ?? "",
+            DistrictName = a.Student?.District?.NameAr,
+            PeriodName = null,
+            AssignedAt = a.AssignedAt
+        }).ToList();
+
+        return Result.Success(new BusStudentsDto
+        {
+            BusId = bus.Id,
+            BusNumber = bus.BusNumber,
+            Capacity = bus.Capacity,
+            Students = students
+        });
+    }
 }

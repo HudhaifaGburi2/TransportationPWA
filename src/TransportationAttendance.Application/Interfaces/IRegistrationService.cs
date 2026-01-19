@@ -10,7 +10,9 @@ public interface IRegistrationService
     Task<Result<RegistrationRequestDto>> SubmitRegistrationAsync(int studentUserId, CreateRegistrationRequestDto dto, CancellationToken cancellationToken = default);
     Task<Result<RegistrationRequestDto>> GetRegistrationByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Result<RegistrationRequestDto>> GetMyRegistrationAsync(int studentUserId, CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyList<RegistrationRequestDto>>> GetAllRegistrationsAsync(CancellationToken cancellationToken = default);
     Task<Result<IReadOnlyList<RegistrationRequestDto>>> GetPendingRegistrationsAsync(CancellationToken cancellationToken = default);
     Task<Result<IReadOnlyList<RegistrationRequestDto>>> GetRegistrationsByDistrictAsync(Guid districtId, CancellationToken cancellationToken = default);
+    Task<Result<RegistrationRequestDto>> AssignToBusAsync(Guid requestId, Guid reviewerId, AssignBusRequestDto dto, CancellationToken cancellationToken = default);
     Task<Result<RegistrationRequestDto>> ReviewRegistrationAsync(Guid id, Guid reviewerId, ReviewRegistrationRequestDto dto, CancellationToken cancellationToken = default);
 }

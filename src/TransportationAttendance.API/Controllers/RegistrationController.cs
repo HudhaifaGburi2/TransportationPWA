@@ -111,6 +111,15 @@ public class RegistrationController : BaseApiController
         return Ok(ApiResponse<RegistrationRequestDto>.SuccessResponse(result.Value!));
     }
 
+    [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<RegistrationRequestDto>>>> GetAllRegistrations(
+        CancellationToken cancellationToken)
+    {
+        var result = await _registrationService.GetAllRegistrationsAsync(cancellationToken);
+        return Ok(ApiResponse<IReadOnlyList<RegistrationRequestDto>>.SuccessResponse(result.Value!));
+    }
+
     [HttpGet("pending")]
     [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<RegistrationRequestDto>>>> GetPendingRegistrations(
@@ -156,5 +165,32 @@ public class RegistrationController : BaseApiController
         _logger.LogInformation("Registration {RegistrationId} {Action} by {ReviewerId}", id, action, reviewerId);
 
         return Ok(ApiResponse<RegistrationRequestDto>.SuccessResponse(result.Value!, $"Registration {action} successfully."));
+    }
+
+    [HttpPost("{id:guid}/assign-bus")]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
+    public async Task<ActionResult<ApiResponse<RegistrationRequestDto>>> AssignToBus(
+        Guid id,
+        [FromBody] AssignBusRequestDto dto,
+        CancellationToken cancellationToken)
+    {
+        var reviewerId = GetCurrentUserGuid();
+        if (reviewerId == null)
+        {
+            return Unauthorized(ApiResponse<RegistrationRequestDto>.FailureResponse("User not authenticated."));
+        }
+
+        _logger.LogInformation("Assigning registration {RegistrationId} to bus {BusId} by {ReviewerId}", id, dto.BusId, reviewerId);
+
+        var result = await _registrationService.AssignToBusAsync(id, reviewerId.Value, dto, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(ApiResponse<RegistrationRequestDto>.FailureResponse(result.Error!));
+        }
+
+        _logger.LogInformation("Registration {RegistrationId} assigned to bus {BusId} by {ReviewerId}", id, dto.BusId, reviewerId);
+
+        return Ok(ApiResponse<RegistrationRequestDto>.SuccessResponse(result.Value!, "Student assigned to bus successfully."));
     }
 }

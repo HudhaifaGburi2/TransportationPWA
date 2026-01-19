@@ -5,7 +5,7 @@ namespace TransportationAttendance.Application.DTOs.BusManagement;
 public record BusManagementDto
 {
     public Guid Id { get; init; }
-    public string BusNumber { get; init; } = string.Empty;
+    public string? BusNumber { get; init; }
     public int PeriodId { get; init; }
     public Guid? RouteId { get; init; }
     public string? DriverName { get; init; }

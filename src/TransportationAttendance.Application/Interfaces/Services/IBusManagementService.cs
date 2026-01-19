@@ -25,6 +25,7 @@ public interface IBusManagementService
     Task<Result<BusManagementDto>> CreateBusAsync(CreateBusManagementDto dto, CancellationToken cancellationToken = default);
     Task<Result<BusManagementDto>> UpdateBusAsync(Guid id, UpdateBusManagementDto dto, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteBusAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Result<BusStudentsDto>> GetBusStudentsAsync(Guid busId, CancellationToken cancellationToken = default);
 
     // Statistics
     Task<Result<BusManagementStatisticsDto>> GetStatisticsAsync(CancellationToken cancellationToken = default);

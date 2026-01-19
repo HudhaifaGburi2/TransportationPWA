@@ -17,6 +17,7 @@ public class UnitOfWork : IUnitOfWork
     private IBusRepository? _buses;
     private IRouteRepository? _routes;
     private IDriverRepository? _drivers;
+    private IStudentBusAssignmentRepository? _studentBusAssignments;
     private IAttendanceSessionRepository? _attendanceSessions;
     private IAuditLogRepository? _auditLogs;
 
@@ -32,6 +33,7 @@ public class UnitOfWork : IUnitOfWork
     public IBusRepository Buses => _buses ??= new BusRepository(_context);
     public IRouteRepository Routes => _routes ??= new RouteRepository(_context);
     public IDriverRepository Drivers => _drivers ??= new DriverRepository(_context);
+    public IStudentBusAssignmentRepository StudentBusAssignments => _studentBusAssignments ??= new StudentBusAssignmentRepository(_context);
     public IAttendanceSessionRepository AttendanceSessions => _attendanceSessions ??= new AttendanceSessionRepository(_context);
     public IAuditLogRepository AuditLogs => _auditLogs ??= new AuditLogRepository(_context);
 

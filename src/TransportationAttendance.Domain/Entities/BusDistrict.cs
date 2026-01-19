@@ -5,9 +5,9 @@ public class BusDistrict : BaseEntity
     public Guid BusId { get; private set; }
     public Guid DistrictId { get; private set; }
 
-    // Navigation
+    // Navigation - District is optional to avoid query filter issues
     public Bus Bus { get; private set; } = null!;
-    public District District { get; private set; } = null!;
+    public District? District { get; private set; }
 
     private BusDistrict() { }
 

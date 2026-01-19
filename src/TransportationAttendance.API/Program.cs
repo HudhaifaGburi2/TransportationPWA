@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using TransportationAttendance.API.Infrastructure;
@@ -82,6 +83,7 @@ builder.Services.ConfigureJwtAuthentication(builder.Configuration);
 
 // Add Authorization with policies
 builder.Services.AddAuthorization(AuthorizationPolicies.ConfigurePolicies);
+builder.Services.AddSingleton<IAuthorizationHandler, CaseInsensitiveRoleHandler>();
 
 // Register Current User service
 builder.Services.AddHttpContextAccessor();

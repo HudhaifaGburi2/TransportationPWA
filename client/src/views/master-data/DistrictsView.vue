@@ -4,7 +4,8 @@ import { ArrowRight, Plus, Search, X, Edit, AlertCircle } from 'lucide-vue-next'
 import apiClient from '@/services/api/axios.config'
 
 interface District {
-  districtId: string
+  id: string
+  districtId?: string
   districtNameAr: string
   districtNameEn?: string
   isActive: boolean
@@ -86,7 +87,7 @@ async function saveDistrict() {
   
   try {
     if (isEditing.value && selectedDistrict.value) {
-      await apiClient.put(`/districts/${selectedDistrict.value.districtId}`, form.value)
+      await apiClient.put(`/districts/${selectedDistrict.value.id || selectedDistrict.value.districtId}`, form.value)
     } else {
       await apiClient.post('/districts', form.value)
     }
@@ -193,7 +194,7 @@ onMounted(() => {
     </main>
 
     <!-- Add/Edit Modal -->
-    <dialog :open="showModal" class="modal modal-open">
+    <dialog class="modal" :class="{ 'modal-open': showModal }">
       <div class="modal-box">
         <button class="btn btn-sm btn-circle btn-ghost absolute left-2 top-2" @click="closeModal">
           <X class="w-4 h-4" />

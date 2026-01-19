@@ -150,7 +150,7 @@ const form = reactive({
   periodId: 1,
   driverName: '',
   driverPhoneNumber: '',
-  capacity: 30,
+  capacity: 15,
   routeId: undefined as string | undefined,
   isActive: true
 })
@@ -160,7 +160,7 @@ const resetForm = () => {
   form.periodId = 1
   form.driverName = ''
   form.driverPhoneNumber = ''
-  form.capacity = 30
+  form.capacity = 15
   form.routeId = undefined
   form.isActive = true
 }

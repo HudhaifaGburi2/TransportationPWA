@@ -59,6 +59,15 @@ const routes: RouteRecordRaw[] = [
         }
     },
     {
+        path: '/buses/:id/students',
+        name: 'BusStudents',
+        component: () => import('@/views/buses/BusStudentsView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
         path: '/routes',
         name: 'Routes',
         component: () => import('@/views/buses/RoutesView.vue'),

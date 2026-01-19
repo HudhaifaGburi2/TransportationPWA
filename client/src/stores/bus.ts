@@ -4,7 +4,7 @@ import apiClient from '@/services/api/axios.config'
 
 export interface Bus {
     id: string
-    busNumber: string
+    busNumber?: string
     periodId: number
     routeId?: string
     driverName?: string

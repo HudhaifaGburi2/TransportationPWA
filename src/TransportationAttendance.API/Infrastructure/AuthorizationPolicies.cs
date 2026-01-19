@@ -103,11 +103,12 @@ public static class AuthorizationPolicies
             policy.RequireRole(Roles.AdminTums, Roles.SystemAdministrator);
         });
         
-        // TUMS Staff Policy - Admin_Tums, Stuff_Tums, SYSTEM_ADMINISTRATOR
+        // TUMS Staff Policy - Case-insensitive matching for Admin, Staff, Stuff roles
         options.AddPolicy(TumsStaffPolicy, policy =>
         {
             policy.RequireAuthenticatedUser();
-            policy.RequireRole(Roles.AdminTums, Roles.StuffTums, Roles.SystemAdministrator);
+            policy.AddRequirements(new CaseInsensitiveRoleRequirement(
+                "Admin", "Staff", "Stuff", "SYSTEM_ADMINISTRATOR"));
         });
         
         // TUMS Driver Policy

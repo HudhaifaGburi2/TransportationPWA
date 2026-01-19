@@ -239,7 +239,7 @@ function openAddModal() {
   form.value = {
     busNumber: '',
     periodId: 1,
-    capacity: 30,
+    capacity: 15,
     driverName: '',
     driverPhoneNumber: '',
     isActive: true
@@ -251,7 +251,7 @@ function openEditModal(bus: Bus) {
   isEditing.value = true
   editingId.value = bus.id
   form.value = {
-    busNumber: bus.busNumber,
+    busNumber: bus.busNumber || '',
     periodId: bus.periodId,
     routeId: bus.routeId,
     driverName: bus.driverName || '',

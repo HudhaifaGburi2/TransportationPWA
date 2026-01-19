@@ -85,12 +85,17 @@ public class RegistrationService : IRegistrationService
             ? System.Text.Json.JsonSerializer.Serialize(dto.Periods) 
             : null;
 
+        // Fetch National_ID from central DB user record
+        var userRecord = await _centralDbRepository.GetUserByUserIdAsync(studentUserId, cancellationToken);
+        var nationalId = userRecord?.NationalId;
+
         // Create registration request with auto-filled Central DB data
         // Note: HalaqaSectionId is int in CentralDB but stored as Guid in TumsDB - we skip this field
         var registrationRequest = RegistrationRequest.CreateFromCentralDb(
             studentUserId: studentInfo.StudentUserId,
             studentId: studentInfo.StudentId,
             studentName: studentInfo.StudentName,
+            nationalId: nationalId,
             halaqaTypeCode: studentInfo.HalaqaTypeCode,
             halaqaSectionId: null,
             halaqaGender: studentInfo.HalaqaGender,
@@ -152,6 +157,12 @@ public class RegistrationService : IRegistrationService
         }
 
         return _mapper.Map<RegistrationRequestDto>(request);
+    }
+
+    public async Task<Result<IReadOnlyList<RegistrationRequestDto>>> GetAllRegistrationsAsync(CancellationToken cancellationToken = default)
+    {
+        var requests = await _unitOfWork.RegistrationRequests.GetAllAsync(cancellationToken);
+        return Result.Success(_mapper.Map<IReadOnlyList<RegistrationRequestDto>>(requests));
     }
 
     public async Task<Result<IReadOnlyList<RegistrationRequestDto>>> GetPendingRegistrationsAsync(CancellationToken cancellationToken = default)
@@ -237,6 +248,82 @@ public class RegistrationService : IRegistrationService
                 );
                 await _unitOfWork.AuditLogs.AddAsync(rejectionLog, cancellationToken);
             }
+
+            _unitOfWork.RegistrationRequests.Update(request);
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync(cancellationToken);
+            throw;
+        }
+
+        return _mapper.Map<RegistrationRequestDto>(request);
+    }
+
+    public async Task<Result<RegistrationRequestDto>> AssignToBusAsync(Guid requestId, Guid reviewerId, AssignBusRequestDto dto, CancellationToken cancellationToken = default)
+    {
+        var request = await _unitOfWork.RegistrationRequests.GetByIdAsync(requestId, cancellationToken);
+        if (request == null)
+        {
+            return Result.Failure<RegistrationRequestDto>("Registration request not found.");
+        }
+
+        if (!request.IsPending())
+        {
+            return Result.Failure<RegistrationRequestDto>("This registration request has already been reviewed.");
+        }
+
+        // Verify bus exists
+        var bus = await _unitOfWork.Buses.GetByIdAsync(dto.BusId, cancellationToken);
+        if (bus == null)
+        {
+            return Result.Failure<RegistrationRequestDto>("Selected bus not found.");
+        }
+
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            request.AssignToBus(dto.BusId, reviewerId, dto.Notes);
+
+            // Create student record from approved registration
+            var student = Student.CreateFromCentralDb(
+                studentUserId: request.StudentUserId,
+                studentId: request.StudentId,
+                studentName: request.StudentName,
+                halaqaTypeCode: request.HalaqaTypeCode,
+                halaqaSectionId: null,
+                halaqaGender: request.HalaqaGender,
+                periodId: request.PeriodId,
+                ageGroupId: request.AgeGroupId,
+                halaqaLocationId: request.HalaqaLocationId,
+                teacherName: request.TeacherName,
+                districtId: request.DistrictId,
+                nationalShortAddress: request.NationalShortAddress,
+                latitude: request.Latitude,
+                longitude: request.Longitude,
+                homeAddress: request.HomeAddress
+            );
+
+            await _unitOfWork.Students.AddAsync(student, cancellationToken);
+
+            // Create bus assignment
+            var assignment = StudentBusAssignment.Create(
+                studentId: student.Id,
+                busId: dto.BusId,
+                assignedBy: reviewerId
+            );
+            await _unitOfWork.StudentBusAssignments.AddAsync(assignment, cancellationToken);
+
+            // Create audit log
+            var auditLog = AuditLog.Create(
+                action: "RegistrationAssignedToBus",
+                userId: reviewerId,
+                entityType: "RegistrationRequest",
+                entityId: request.Id,
+                newValues: System.Text.Json.JsonSerializer.Serialize(new { BusId = dto.BusId, StudentId = student.Id })
+            );
+            await _unitOfWork.AuditLogs.AddAsync(auditLog, cancellationToken);
 
             _unitOfWork.RegistrationRequests.Update(request);
             await _unitOfWork.CommitAsync(cancellationToken);
