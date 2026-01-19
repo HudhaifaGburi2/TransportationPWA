@@ -12,6 +12,9 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     IRouteRepository Routes { get; }
     IDriverRepository Drivers { get; }
     IStudentBusAssignmentRepository StudentBusAssignments { get; }
+    IStudentSuspensionRepository StudentSuspensions { get; }
+    IStudentLeaveRepository StudentLeaves { get; }
+    IStudentTransferRepository StudentTransfers { get; }
     IAttendanceSessionRepository AttendanceSessions { get; }
     IAuditLogRepository AuditLogs { get; }
 
