@@ -739,6 +739,7 @@ const saveAttendance = async () => {
 ## Acceptance Criteria
 
 ### Sprint 5.1
+
 - [ ] IndexedDB stores created successfully
 - [ ] Data persists after browser close/refresh
 - [ ] Sync queue tracks pending items
@@ -746,6 +747,7 @@ const saveAttendance = async () => {
 - [ ] Sync endpoint rejects duplicates (idempotent)
 
 ### Sprint 5.2
+
 - [ ] Supervisor sees only assigned buses
 - [ ] Student list loads < 200ms from cache
 - [ ] All students pre-selected as Present
@@ -754,6 +756,7 @@ const saveAttendance = async () => {
 - [ ] Full bus attendance < 5 seconds
 
 ### Sprint 5.3
+
 - [ ] Auto-sync on network reconnect
 - [ ] Manual sync button works
 - [ ] Exponential backoff for failures
@@ -762,6 +765,7 @@ const saveAttendance = async () => {
 - [ ] Zero data loss verified
 
 ### Sprint 5.4
+
 - [ ] Weekly view shows 7 days
 - [ ] Leave students marked differently
 - [ ] Consecutive absences highlighted
