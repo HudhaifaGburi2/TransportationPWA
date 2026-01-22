@@ -125,6 +125,53 @@ const routes: RouteRecordRaw[] = [
         }
     },
 
+    // Student Management routes (Phase 3)
+    {
+        path: '/students',
+        name: 'StudentsList',
+        component: () => import('@/views/students/StudentsListView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/students/suspended',
+        name: 'SuspendedStudents',
+        component: () => import('@/views/students/SuspendedStudentsView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/students/leaves',
+        name: 'StudentLeaves',
+        component: () => import('@/views/students/StudentLeavesView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/students/:id',
+        name: 'StudentDetail',
+        component: () => import('@/views/students/StudentDetailView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+    {
+        path: '/students/:id/transfer',
+        name: 'StudentTransfer',
+        component: () => import('@/views/students/StudentTransferView.vue'),
+        meta: {
+            requiresAuth: true,
+            roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+        }
+    },
+
     // Student routes - accessible to verified students (dynamic check via CentralDB)
     {
         path: '/registration',
