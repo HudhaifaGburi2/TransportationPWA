@@ -23,6 +23,9 @@ public class TransportationDbContext : DbContext
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Driver> Drivers => Set<Driver>();
     public DbSet<Department> Departments => Set<Department>();
+    public DbSet<StudentSuspension> StudentSuspensions => Set<StudentSuspension>();
+    public DbSet<StudentLeave> StudentLeaves => Set<StudentLeave>();
+    public DbSet<StudentTransfer> StudentTransfers => Set<StudentTransfer>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
