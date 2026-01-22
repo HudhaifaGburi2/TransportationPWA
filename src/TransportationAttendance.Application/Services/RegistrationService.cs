@@ -336,4 +336,55 @@ public class RegistrationService : IRegistrationService
 
         return _mapper.Map<RegistrationRequestDto>(request);
     }
+
+    public async Task<Result<RegistrationStatisticsDto>> GetStatisticsAsync(CancellationToken cancellationToken = default)
+    {
+        var allRequests = await _unitOfWork.RegistrationRequests.GetAllAsync(cancellationToken);
+        var districts = await _unitOfWork.Districts.GetAllAsync(cancellationToken);
+
+        var today = DateTime.UtcNow.Date;
+        var weekStart = today.AddDays(-(int)today.DayOfWeek);
+
+        var byDistrict = allRequests
+            .GroupBy(r => r.DistrictId)
+            .Select(g => new DistrictStatDto
+            {
+                DistrictId = g.Key,
+                DistrictName = districts.FirstOrDefault(d => d.Id == g.Key)?.DistrictNameAr ?? "غير محدد",
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.Count)
+            .ToList();
+
+        return new RegistrationStatisticsDto
+        {
+            TotalRequests = allRequests.Count,
+            PendingCount = allRequests.Count(r => r.Status == Domain.Enums.RegistrationStatus.Pending),
+            ApprovedCount = allRequests.Count(r => r.Status == Domain.Enums.RegistrationStatus.Approved),
+            RejectedCount = allRequests.Count(r => r.Status == Domain.Enums.RegistrationStatus.Rejected),
+            TodayCount = allRequests.Count(r => r.RequestedAt.Date == today),
+            ThisWeekCount = allRequests.Count(r => r.RequestedAt.Date >= weekStart),
+            ByDistrict = byDistrict
+        };
+    }
+
+    public async Task<Result<IReadOnlyList<BusSuggestionDto>>> GetBusSuggestionsAsync(Guid districtId, CancellationToken cancellationToken = default)
+    {
+        // Get all active buses - for now return all, can be optimized with district mapping later
+        var buses = await _unitOfWork.Buses.GetActiveBusesAsync(cancellationToken);
+        var allAssignments = await _unitOfWork.StudentBusAssignments.GetAllAsync(cancellationToken);
+
+        var suggestions = buses.Select(bus => new BusSuggestionDto
+        {
+            BusId = bus.Id,
+            BusNumber = bus.BusNumber,
+            RouteName = null, // Route info not loaded in basic query
+            Capacity = bus.Capacity,
+            CurrentStudentCount = allAssignments.Count(a => a.BusId == bus.Id && a.IsActive)
+        })
+        .OrderByDescending(x => x.AvailableSeats)
+        .ToList();
+
+        return Result.Success<IReadOnlyList<BusSuggestionDto>>(suggestions);
+    }
 }
