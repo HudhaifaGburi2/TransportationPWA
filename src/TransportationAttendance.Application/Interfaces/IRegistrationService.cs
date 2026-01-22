@@ -15,4 +15,6 @@ public interface IRegistrationService
     Task<Result<IReadOnlyList<RegistrationRequestDto>>> GetRegistrationsByDistrictAsync(Guid districtId, CancellationToken cancellationToken = default);
     Task<Result<RegistrationRequestDto>> AssignToBusAsync(Guid requestId, Guid reviewerId, AssignBusRequestDto dto, CancellationToken cancellationToken = default);
     Task<Result<RegistrationRequestDto>> ReviewRegistrationAsync(Guid id, Guid reviewerId, ReviewRegistrationRequestDto dto, CancellationToken cancellationToken = default);
+    Task<Result<RegistrationStatisticsDto>> GetStatisticsAsync(CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyList<BusSuggestionDto>>> GetBusSuggestionsAsync(Guid districtId, CancellationToken cancellationToken = default);
 }
