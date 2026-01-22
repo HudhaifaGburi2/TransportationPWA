@@ -108,6 +108,12 @@ const menuItems: ExtendedMenuItem[] = [
     roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
   },
   {
+    path: '/students',
+    label: 'إدارة الطلاب',
+    icon: Users,
+    roles: [TUMS_ROLES.ADMIN, TUMS_ROLES.STAFF, TUMS_ROLES.SYSTEM_ADMIN]
+  },
+  {
     path: '/districts',
     label: 'المناطق',
     icon: Map,
