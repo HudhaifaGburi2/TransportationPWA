@@ -193,4 +193,27 @@ public class RegistrationController : BaseApiController
 
         return Ok(ApiResponse<RegistrationRequestDto>.SuccessResponse(result.Value!, "Student assigned to bus successfully."));
     }
+
+    [HttpGet("statistics")]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
+    public async Task<ActionResult<ApiResponse<RegistrationStatisticsDto>>> GetStatistics(
+        CancellationToken cancellationToken)
+    {
+        var result = await _registrationService.GetStatisticsAsync(cancellationToken);
+        return Ok(ApiResponse<RegistrationStatisticsDto>.SuccessResponse(result.Value!));
+    }
+
+    [HttpGet("bus-suggestions/{districtId:guid}")]
+    [Authorize(Policy = AuthorizationPolicies.TumsStaffPolicy)]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<BusSuggestionDto>>>> GetBusSuggestions(
+        Guid districtId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _registrationService.GetBusSuggestionsAsync(districtId, cancellationToken);
+        
+        if (result.IsFailure)
+            return BadRequest(ApiResponse<IReadOnlyList<BusSuggestionDto>>.FailureResponse(result.Error!));
+
+        return Ok(ApiResponse<IReadOnlyList<BusSuggestionDto>>.SuccessResponse(result.Value!));
+    }
 }
